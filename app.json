@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "nbbang-mobile",
+    "name": "nbbang",
     "slug": "nbbang-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "nbbangmobile",
+    "scheme": "nbbang",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
