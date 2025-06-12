@@ -1,8 +1,8 @@
-import { storage } from "@/src/utils/storage";
+import { mmkvStorage } from "../../utils/storage";
 import { Redirect, Stack } from "expo-router";
 
 export default function GroupsLayout() {
-  const isAuthenticated = storage.getString('token');
+  const isAuthenticated = mmkvStorage.getItem('authToken');
 
   if (!isAuthenticated) {
     return <Redirect href="/auth" />;
