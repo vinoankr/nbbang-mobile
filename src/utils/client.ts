@@ -2,8 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { mmkvStorage } from './storage';
 import { router } from 'expo-router';
 
-// const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
 // axios 인스턴스 생성
 export const client: AxiosInstance = axios.create({
@@ -40,14 +39,30 @@ client.interceptors.response.use(
   }
 );
 
-const getAuthToken = () => {
+export const getAuthToken = () => {
   return mmkvStorage.getItem('authToken');
 }
 
-const removeAuthToken = () => {
+export const setAuthToken = (token: string) => {
+  mmkvStorage.setItem('authToken', token);
+}
+
+export const removeAuthToken = () => {
   mmkvStorage.removeItem('authToken');
 }
 
-const removeUserData = () => {
+export const getUserData = () => {
+  const userData = mmkvStorage.getItem('userData');
+  if (userData) {
+    return JSON.parse(userData);
+  }
+  return null;
+}
+
+export const setUserData = (userData: any) => {
+  mmkvStorage.setItem('userData', JSON.stringify(userData));
+}
+
+export const removeUserData = () => {
   mmkvStorage.removeItem('userData');
 }

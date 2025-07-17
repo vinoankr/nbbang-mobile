@@ -10,7 +10,7 @@ export default function GroupsLayout() {
 
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="index" options={{ headerShown: false, animation: 'none' }} />
       <Stack.Screen name="create" options={{ headerShown: true, title: '새 그룹 만들기', presentation: 'modal' }} />
       <Stack.Screen name="[groupId]" options={{ headerShown: true, title: '' }} />
     </Stack>

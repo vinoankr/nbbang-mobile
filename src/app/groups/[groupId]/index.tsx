@@ -11,6 +11,13 @@ export default function GroupDetail() {
       <Button title="Edit Group" onPress={() => {
         router.push(`/groups/${groupId}/edit`);
       }} />
+      <Button title="go back to list" onPress={() => {
+        if (router.canDismiss()) {
+          router.dismissTo('/groups');
+        } else {
+          router.replace('/groups');
+        }
+      }} />
     </View>
   );
 }

@@ -1,10 +1,11 @@
 import { Redirect } from 'expo-router';
 import React from 'react'
-import { mmkvStorage } from '../utils/storage';
+import { getAuthToken, getUserData } from '../utils/client';
 
-export default function index() {
-  const isAuthenticated = mmkvStorage.getItem('authToken');
-  const primaryGroupId = mmkvStorage.getItem('primaryGroupId');
+export default function App() {
+  const isAuthenticated = getAuthToken();
+  const primaryGroupId = getUserData()?.primary_group_id;
+
   if (isAuthenticated) {
     if (primaryGroupId) {
       return <Redirect href={`/groups/${primaryGroupId}`} />;
