@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { View, TouchableOpacity, Platform } from "react-native";
+import { View, TouchableOpacity, Keyboard } from "react-native";
 import { MenuView, MenuAction, MenuComponentRef } from "@react-native-menu/menu";
 import ChevronDown from "../.././../assets/icons/chevron-down.svg";
 import { MediumText } from "../Texts";
@@ -21,18 +21,14 @@ export const SelectField = forwardRef<any, SelectFieldProps>(
   const [isPressed, setIsPressed] = useState(false);
 
   useImperativeHandle(ref, () => ({
-    focus: () => {
-      if (Platform.OS === "android") {
-        menuRef.current?.show();
-      }
-    },
+    focus: () => {},
   }));
 
   const actions: MenuAction[] = items.map((item) => ({
     id: item.value,
     title: item.label,
     subtitle: undefined,
-    state: value === item.value ? "on" : "off",
+    state: value === item.value ? "on" : "mixed",
     attributes: {
       destructive: false,
       disabled: false,
@@ -61,8 +57,14 @@ export const SelectField = forwardRef<any, SelectFieldProps>(
   return (
     <MenuView
       actions={actions}
-      onOpenMenu={() => setIsPressed(true)}
-      onCloseMenu={() => setIsPressed(false)}
+      onOpenMenu={() => {
+        Keyboard.dismiss();
+        setIsPressed(true);
+      }}
+      onCloseMenu={() => {
+        setIsPressed(false);
+        onBlur?.();
+      }}
       onPressAction={handlePressAction}
       shouldOpenOnLongPress={false}
       ref={menuRef}
@@ -72,7 +74,6 @@ export const SelectField = forwardRef<any, SelectFieldProps>(
         style={{
           borderColor: isPressed ? '#2C7FFF' : '#EEEFF3',
         }}
-        onPress={() => setIsPressed(true)}
       >
         <MediumText className={`text-base flex-1 ${!selectedItem ? 'text-gray-400' : 'text-black'}`}>
           {displayText}

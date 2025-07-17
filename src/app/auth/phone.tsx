@@ -62,7 +62,7 @@ export default function PhoneAuthPage() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior='padding'
       style={{ flex: 1 }}
     >
       <ScrollView
@@ -75,7 +75,7 @@ export default function PhoneAuthPage() {
           <View className="flex-row justify-between items-end pt-16 pb-8">
             <TouchableOpacity onPress={() => router.dismissTo('/')}>
               <Image 
-                source={require('../../../assets/images/logo.avif')} 
+                source={require('../../../assets/images/logo.webp')} 
                 className="h-10 w-52 mt-12 mb-4"
               />
             </TouchableOpacity>

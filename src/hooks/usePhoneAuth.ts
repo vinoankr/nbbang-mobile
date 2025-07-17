@@ -5,6 +5,7 @@ import { client, setAuthToken, setUserData } from '../utils/client';
 import { AxiosError } from 'axios';
 import { BankName } from '@/src/constants/banks';
 import Toast from 'react-native-toast-message';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 export type AuthStep = 'phone' | 'verify' | 'name';
 
@@ -60,9 +61,15 @@ export const usePhoneAuth = (): UsePhoneAuthReturn => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [signupToken, setSignupToken] = useState<string | null>(null);
+  const { isInternetReachable } = useNetInfo();
 
   // 인증번호 전송
   const handleSendOtp = async () => {
+    if (!isInternetReachable) {
+      Alert.alert('오류', '인터넷 연결 후 다시 시도해주세요.');
+      return;
+    }
+
     if (!phoneNumber || phoneNumber.length < 13) {
       Alert.alert('오류', '올바른 전화번호를 입력해주세요.');
       return;
@@ -96,6 +103,11 @@ export const usePhoneAuth = (): UsePhoneAuthReturn => {
 
   // 인증번호 확인
   const handleVerifyOtp = async () => {
+    if (!isInternetReachable) {
+      Alert.alert('오류', '인터넷 연결 후 다시 시도해주세요.');
+      return;
+    }
+
     if (!verificationCode || verificationCode.length < 6) {
       Alert.alert('오류', '인증번호를 입력해주세요.');
       return;
@@ -145,6 +157,11 @@ export const usePhoneAuth = (): UsePhoneAuthReturn => {
   const handleUpdateProfile = async (
     data: { name: string, bank: BankName, accountNumber: string }
   ) => {
+    if (!isInternetReachable) {
+      Alert.alert('오류', '인터넷 연결 후 다시 시도해주세요.');
+      return;
+    }
+
     if (!data.name || !data.bank || !data.accountNumber) {
       Alert.alert('오류', '모든 필드를 입력해주세요.');
       return;
@@ -170,7 +187,8 @@ export const usePhoneAuth = (): UsePhoneAuthReturn => {
       }
       Toast.show({
         type: 'success',
-        text1: '환영합니다, ' + data.name + '님!',
+        text1: '🔥 가입을 환영합니다!',
+        visibilityTime: 1500,
       });
 
       // 로그인 토큰 저장

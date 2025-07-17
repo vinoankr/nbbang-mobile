@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
-import { View, Text, Button, ScrollView, TextInput, Alert, StyleSheet } from 'react-native'
+import { View, Text, Button, ScrollView, TextInput, Alert, StyleSheet, TouchableOpacity } from 'react-native'
 import { useQueryClient } from '@tanstack/react-query'
 
 import { clearOfflineMutations } from '../../utils/offlineQueue'
@@ -14,6 +14,9 @@ import {
   useUpdateTestData, 
   useDeleteTestData 
 } from '../../hooks'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Toast from 'react-native-toast-message'
+import { MediumText } from '@/src/components/Texts'
 
 export default function Groups() {
   const router = useRouter();
@@ -92,8 +95,17 @@ export default function Groups() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+
+    <ScrollView>
       <Text style={styles.title}>TanStack Query + MMKV 오프라인 테스트</Text>
+      <TouchableOpacity className='bg-blue-500 p-2 rounded-md' onPress={() => Toast.show({
+        type: 'success',
+        text1: '🔥 가입을 환영합니다!',
+        visibilityTime: 1500,
+      })}>
+        <MediumText>토스트</MediumText>
+      </TouchableOpacity>
 
       {/* 로그아웃 */}
       <Button title="로그아웃" onPress={() => {
@@ -135,18 +147,18 @@ export default function Groups() {
           placeholder="국가"
           value={country}
           onChangeText={setCountry}
-        />
+          />
         <TextInput
           style={styles.input}
           placeholder="도시"
           value={city}
           onChangeText={setCity}
-        />
+          />
         <Button 
           title="생성" 
           onPress={handleCreate}
           disabled={createMutation.isPending}
-        />
+          />
       </View>
 
       {/* 데이터 업데이트 섹션 */}
@@ -158,12 +170,12 @@ export default function Groups() {
           value={updateId}
           onChangeText={setUpdateId}
           keyboardType="numeric"
-        />
+          />
         <Button 
           title="업데이트" 
           onPress={handleUpdate}
           disabled={updateMutation.isPending}
-        />
+          />
       </View>
 
       {/* 데이터 삭제 섹션 */}
@@ -175,12 +187,12 @@ export default function Groups() {
           value={deleteId}
           onChangeText={setDeleteId}
           keyboardType="numeric"
-        />
+          />
         <Button 
           title="삭제" 
           onPress={handleDelete}
           disabled={deleteMutation.isPending}
-        />
+          />
       </View>
 
       {/* 유틸리티 섹션 */}
@@ -200,6 +212,7 @@ export default function Groups() {
         <Button title="그룹 생성" onPress={() => router.push('/groups/create')} />
       </View>
     </ScrollView>
+  </SafeAreaView>
   )
 }
 

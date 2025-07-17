@@ -13,7 +13,7 @@ export default function Auth() {
         <View className="max-w-md w-full rounded-2xl px-4 py-12 items-center bg-white">
           {/* 로고 이미지 */}
           <Image 
-            source={require('../../../assets/images/logo.avif')} 
+            source={require('../../../assets/images/logo.webp')} 
             className="h-10 w-56 mb-12"
           />
           
