@@ -1,6 +1,7 @@
 import React from "react";
-import { TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { SemiBoldText } from "../Texts";
+import Spinner from "../Spinner";
 
 interface PrimaryButtonProps {
   title: string;
@@ -8,6 +9,7 @@ interface PrimaryButtonProps {
   disabled?: boolean;
   loading?: boolean;
   className?: string;
+  icon?: React.ReactNode;
 }
 
 export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
@@ -16,6 +18,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   disabled = false,
   loading = false,
   className,
+  icon,
   ...rest
 }) => {
   return (
@@ -31,9 +34,12 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator color="#fff" />
+        <Spinner size={24} color="#fff" strokeWidth={2.5} />
       ) : (
-        <SemiBoldText className="text-[18px] text-white">{title}</SemiBoldText>
+        <View className="flex-row items-center gap-1.5 justify-center">
+          <SemiBoldText className="text-[18px] text-white">{title}</SemiBoldText>
+          {icon ? icon : null}
+        </View>
       )}
     </TouchableOpacity>
   );

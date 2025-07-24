@@ -1,18 +1,11 @@
-import { mmkvStorage } from "../../utils/storage";
-import { Redirect, Stack } from "expo-router";
+import { Stack } from "expo-router";
 
 export default function GroupsLayout() {
-  const isAuthenticated = mmkvStorage.getItem('authToken');
-
-  if (!isAuthenticated) {
-    return <Redirect href="/auth" />;
-  }
 
   return (
-    <Stack>
+    <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" options={{ headerShown: false, animation: 'none' }} />
-      <Stack.Screen name="create" options={{ headerShown: true, title: '새 그룹 만들기', presentation: 'modal' }} />
-      <Stack.Screen name="[groupId]" options={{ headerShown: true, title: '' }} />
+      <Stack.Screen name="create" options={{ headerShown: false }} />
     </Stack>
   );
 }

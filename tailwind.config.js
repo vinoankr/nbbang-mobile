@@ -92,6 +92,7 @@ module.exports = {
         900: '#191D28',
       },
       red: {
+        100: '#ffe2e2',
         500: '#FF4665',
       },
       blue: {

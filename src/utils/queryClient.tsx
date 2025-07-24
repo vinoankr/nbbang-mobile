@@ -5,10 +5,11 @@ import { mmkvStorage } from './storage';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: Infinity, // Prevent garbage collection
-      staleTime: 15 * 60 * 1000, // 15 minutes until data becomes stale
-      retry: 0, // Disable automatic retries
-      networkMode: 'online', // Prioritize cache
+      gcTime: Infinity,
+      staleTime: 0,
+      refetchOnMount: 'always',
+      retry: 0,
+      networkMode: 'online',
     },
     mutations: {
       networkMode: 'online',

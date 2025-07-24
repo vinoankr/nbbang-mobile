@@ -1,6 +1,7 @@
 import React from "react";
-import { TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
 import { SemiBoldText } from "../Texts";
+import Spinner from "../Spinner";
 
 interface SecondaryButtonProps {
   title: string;
@@ -31,7 +32,7 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator color="#fff" />
+        <Spinner size={24} color="#fff" strokeWidth={2.5} />
       ) : (
         <SemiBoldText className="text-[18px] text-black">{title}</SemiBoldText>
       )}

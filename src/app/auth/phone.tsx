@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { View, TouchableOpacity, Image, Alert, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, TouchableOpacity, Image, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { usePhoneAuth } from '@/src/hooks';
+import { usePhoneAuth } from '@/src/hooks/usePhoneAuth';
 import { PhoneForm, VerifyForm, ProfileForm } from '@/src/components/auth';
 
 export default function PhoneAuthPage() {
@@ -62,7 +62,7 @@ export default function PhoneAuthPage() {
 
   return (
     <KeyboardAvoidingView
-      behavior='padding'
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
       <ScrollView
