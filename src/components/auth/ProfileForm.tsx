@@ -131,7 +131,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
               value={value}
               onChangeValue={onChange}
               onBlur={()=>{}}
-              items={BANK_NAMES.map(bank => ({ label: bank, value: bank }))}
+              items={BANK_NAMES.map(bank => ({ label: bank, value: bank, title: bank }))}
               placeholder="은행을 선택해주세요"
             />
           )}

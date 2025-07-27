@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, StyleSheet } from "react-native";
+import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { SemiBoldText } from "../Texts";
 import Spinner from "../Spinner";
 
@@ -11,7 +11,7 @@ interface SecondaryButtonProps {
   className?: string;
 }
 
-export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
+export const  SecondaryButton: React.FC<SecondaryButtonProps> = ({
   title,
   onPress,
   disabled = false,
@@ -34,7 +34,9 @@ export const SecondaryButton: React.FC<SecondaryButtonProps> = ({
       {loading ? (
         <Spinner size={24} color="#fff" strokeWidth={2.5} />
       ) : (
-        <SemiBoldText className="text-[18px] text-black">{title}</SemiBoldText>
+        <View className="flex-row items-center gap-1.5 justify-center">
+          <SemiBoldText className="text-[18px] text-black">{title}</SemiBoldText>
+        </View>
       )}
     </TouchableOpacity>
   );
@@ -47,6 +49,6 @@ const styles = StyleSheet.create({
     height: 56,
     justifyContent: "center",
     alignItems: "center",
-    width: "100%",
+    flex: 1,
   },
 });

@@ -10,6 +10,7 @@ interface PrimaryButtonProps {
   loading?: boolean;
   className?: string;
   icon?: React.ReactNode;
+  doubleFlex?: boolean;
 }
 
 export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
@@ -19,6 +20,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   loading = false,
   className,
   icon,
+  doubleFlex = false,
   ...rest
 }) => {
   return (
@@ -26,6 +28,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       style={[
         styles.button,
         (disabled || loading) && { opacity: 0.5 },
+        doubleFlex && { flex: 2 },
       ]}
       className={className}
       onPress={onPress}
@@ -52,6 +55,6 @@ const styles = StyleSheet.create({
     height: 56,
     justifyContent: "center",
     alignItems: "center",
-    width: "100%",
+    flex: 1,
   },
 });

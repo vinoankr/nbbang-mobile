@@ -141,6 +141,7 @@ export default function CreateGroup() {
 
   const currencyItems = Object.entries(currencies).map(([code, { name }]) => ({
     label: `${name} (${code})`,
+    title: `${name} (${code})`,
     value: code
   }));
 
@@ -217,7 +218,7 @@ export default function CreateGroup() {
               placeholder="이름 입력 후 엔터"
               value={newParticipant}
               onChangeText={setNewParticipant}
-              returnKeyType="default"
+              returnKeyType="done"
               submitBehavior="submit"
               onSubmitEditing={handleAddParticipant}
             />

@@ -19,6 +19,7 @@ export default function GroupSettingsModal({
       
       <TouchableOpacity 
         className="w-full p-3 bg-gray-100 rounded-lg"
+        activeOpacity={0.9}
         onPress={handleOpenShareModal}
       >
         <SemiBoldText className="text-center text-base">그룹 공유하기</SemiBoldText>
@@ -26,6 +27,7 @@ export default function GroupSettingsModal({
       
       <TouchableOpacity 
         className="w-full p-3 bg-gray-100 rounded-lg"
+        activeOpacity={0.9}
         onPress={handleEditGroup}
       >
         <SemiBoldText className="text-center text-base">그룹 수정하기</SemiBoldText>
@@ -33,6 +35,7 @@ export default function GroupSettingsModal({
       
       <TouchableOpacity 
         className="w-full p-3 bg-red-100 rounded-lg"
+        activeOpacity={0.9}
         onPress={handleLeaveGroup}
       >
         <SemiBoldText className="text-center text-red-500 text-base">그룹 나가기</SemiBoldText>

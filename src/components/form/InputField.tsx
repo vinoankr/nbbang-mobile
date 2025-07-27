@@ -1,15 +1,17 @@
-import React, { useState, forwardRef } from "react";
+import React, { useState, forwardRef, useRef } from "react";
 import { TextInput, StyleSheet, TextInputProps } from "react-native";
 
 interface InputFieldProps extends TextInputProps {
   placeholder?: string;
   value: string;
   onChangeText: (text: string) => void;
+  selectTextOnFocus?: boolean;
 }
 
 export const InputField = forwardRef<TextInput, InputFieldProps>(
-  ({ placeholder, value, onChangeText, onBlur, ...rest }, ref) => {
+  ({ placeholder, value, onChangeText, onBlur, selectTextOnFocus=false, ...rest }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
+    const myRef = useRef<TextInput>(null);
 
     const handleBlur = (e: any) => {
       setIsFocused(false);
@@ -18,7 +20,7 @@ export const InputField = forwardRef<TextInput, InputFieldProps>(
 
     return (
       <TextInput
-        ref={ref}
+        ref={ref || myRef}
         style={[
           styles.input,
           isFocused && { borderColor: "#2C7FFF" }
@@ -27,7 +29,16 @@ export const InputField = forwardRef<TextInput, InputFieldProps>(
         placeholderTextColor="#9C9DA4"
         value={value}
         onChangeText={onChangeText}
-        onFocus={() => setIsFocused(true)}
+        onFocus={() => {
+          setIsFocused(true);
+          if (selectTextOnFocus) {
+            if(ref && typeof ref === 'object' && 'current' in ref) {
+              (ref as any).current?.setSelection(0, value.length);
+            } else {
+              myRef.current?.setSelection(0, value.length);
+            }
+          }
+        }}
         onBlur={handleBlur}
         {...rest}
       />

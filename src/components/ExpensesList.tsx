@@ -41,7 +41,7 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
   const { data: participants, isLoading: participantsLoading } = useExpenseParticipants(expense.id, isExpanded);
 
   const handleEdit = () => {
-    router.push(`/groups/${expense.group_id}/expenses/${expense.id}/edit`);
+    router.push(`/groups/${expense.group_id}/edit-expense?expenseId=${expense.id}`);
   };
 
   return (
