@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
+import { TouchableOpacity, StyleSheet, View, Keyboard } from "react-native";
 import { SemiBoldText } from "../Texts";
 import Spinner from "../Spinner";
 
@@ -25,7 +25,10 @@ export const  SecondaryButton: React.FC<SecondaryButtonProps> = ({
         styles.button,
         (disabled || loading) && { opacity: 0.5 }
       ]}
-      onPress={onPress}
+      onPress={() => {
+        Keyboard.dismiss();
+        onPress();
+      }}
       activeOpacity={0.8}
       disabled={disabled || loading}
       className={className}

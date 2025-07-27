@@ -7,10 +7,7 @@ export default function App() {
   const primaryGroupId = getUserData()?.primary_group_id;
 
   if (isAuthenticated) {
-    if (primaryGroupId) {
-      return <Redirect href={`/groups/${primaryGroupId}`} />;
-    }
-    return <Redirect href="/groups" />;
+    return <Redirect href={`/groups?goto=${primaryGroupId}`}  />;
   }
   return <Redirect href="/auth" />;
 }

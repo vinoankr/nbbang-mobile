@@ -11,8 +11,7 @@ export default function SettingsModal() {
 
   const handleNavigation = (path: string) => {
     closeModal();
-    // TODO: 네비게이션 로직 구현
-    console.log('Navigate to:', path);
+    router.push(path as any);
   };
 
   const handleLogout = () => {
@@ -29,7 +28,7 @@ export default function SettingsModal() {
       <TouchableOpacity 
         className="w-full p-2.5 bg-gray-100 rounded-lg"
         activeOpacity={0.9}
-        onPress={() => handleNavigation('/faq')}
+        onPress={() => handleNavigation('/profile/faq')}
       >
         <SemiBoldText className="text-center text-base">FAQ</SemiBoldText>
       </TouchableOpacity>
@@ -45,7 +44,7 @@ export default function SettingsModal() {
       <TouchableOpacity 
         className="w-full p-2.5 bg-gray-100 rounded-lg"
         activeOpacity={0.9}
-        onPress={() => handleNavigation('/profile/link-kakaopay')}
+        onPress={() => handleNavigation('/profile/kakaopay')}
       >
         <SemiBoldText className="text-center text-base">카카오페이 연동</SemiBoldText>
       </TouchableOpacity>

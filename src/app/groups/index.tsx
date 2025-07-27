@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router'
-import React, { useRef, useState } from 'react'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TouchableOpacity, View, ScrollView, Image } from 'react-native';
 import { MediumText, SemiBoldText, RegularText } from '@/src/components/Texts';
@@ -18,7 +18,7 @@ import Toast from 'react-native-toast-message';
 export default function Groups() {
   const router = useRouter();
   const { showModal } = useModal();
-  
+  const { goto } = useLocalSearchParams<{ goto?: string }>();
   // 실제 hooks 사용
   const { mutate: updatePrimaryGroup, isPending: isUpdatingPrimaryGroup } = useUpdatePrimaryGroup();
   useProfile();
@@ -75,6 +75,14 @@ export default function Groups() {
       isNavigating.current = false;
     }, 300);
   };
+
+  useEffect(() => {
+    if (goto) {
+      const newUrl = `/groups`;
+      router.replace(newUrl);
+      router.push(`/groups/${goto}` as any);
+    }
+  }, [goto, router]);
 
   return (
     <SafeAreaView className="flex-1 bg-white">

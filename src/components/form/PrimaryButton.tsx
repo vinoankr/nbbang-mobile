@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
+import { TouchableOpacity, StyleSheet, View, Keyboard } from "react-native";
 import { SemiBoldText } from "../Texts";
 import Spinner from "../Spinner";
 
@@ -31,7 +31,10 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         doubleFlex && { flex: 2 },
       ]}
       className={className}
-      onPress={onPress}
+      onPress={() => {
+        Keyboard.dismiss();
+        onPress();
+      }}
       activeOpacity={0.8}
       disabled={disabled || loading}
       {...rest}

@@ -96,6 +96,15 @@ export default function GroupDetail() {
     }
   }, [isAuthenticated, isMemberOfGroup, isLoading, group, unlinkedMembers, id, currentUser, modalShown]);
 
+  // useEffect(() => {
+  //   if (isAuthenticated && isMemberOfGroup && !isLoading && !modalShown) {
+  //     setTimeout(() => {
+  //       setModalShown(true);
+  //       router.push(`/groups/${id}/add-expense` as any);
+  //     }, 0);
+  //   }
+  // }, [isAuthenticated, isMemberOfGroup, isLoading, modalShown]);
+
   if (!id) {
     router.replace('/');
     return null;
