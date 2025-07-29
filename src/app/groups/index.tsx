@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TouchableOpacity, View, ScrollView, Image } from 'react-native';
-import { MediumText, SemiBoldText, RegularText } from '@/src/components/Texts';
+import { MediumText, SemiBoldText } from '@/src/components/Texts';
 import { useModal } from '@/src/hooks/useModal';
 import GroupCard from '@/src/components/GroupCard';
 import SettingsModal from '@/src/components/modals/SettingsModal';
@@ -111,9 +111,9 @@ export default function Groups() {
           </TouchableOpacity>
         </View>
         {loadingGroups ? (
-          <RegularText className="text-gray-600 text-base">그룹 목록을 불러오는 중...</RegularText>
+          <MediumText className="text-gray-600 text-base">그룹 목록을 불러오는 중...</MediumText>
         ) : error ? (
-          <RegularText className="text-red-500 text-base">그룹 목록을 불러오는 중 오류가 발생했습니다: {(error as Error).message}</RegularText>
+          <MediumText className="text-red-500 text-base">그룹 목록을 불러오는 중 오류가 발생했습니다: {(error as Error).message}</MediumText>
         ) : sortedGroups && sortedGroups.length > 0 ? (
           <View>
             {sortedGroups.map((group: any) => (

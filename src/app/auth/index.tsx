@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { BoldText, MediumText, RegularText, SemiBoldText } from '@/src/components/Texts';
+import { BoldText, MediumText, SemiBoldText } from '@/src/components/Texts';
 
 export default function Auth() {
   const router = useRouter();
@@ -47,9 +47,9 @@ export default function Auth() {
 
           {/* 전화번호로 시작하기 */}
           <View className="mt-8 flex-col items-center gap-1">
-            <RegularText className="text-gray-600 text-center text-sm">
+            <MediumText className="text-gray-600 text-center text-sm">
               카카오 계정이 없으신가요?
-            </RegularText>
+            </MediumText>
             <TouchableOpacity 
               onPress={() => router.push('/auth/phone')}
               className="mt-1"

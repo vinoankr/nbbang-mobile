@@ -9,9 +9,11 @@
       "distribution": "internal"
     },
     "preview": {
+      "developmentClient": false,
       "distribution": "internal"
     },
-    "production": {
+    "release": {
+      "developmentClient": false,
       "autoIncrement": true
     },
     "ios-simulator": {
@@ -22,6 +24,6 @@
     }
   },
   "submit": {
-    "production": {}
+    "release": {}
   }
 }

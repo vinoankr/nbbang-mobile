@@ -22,7 +22,7 @@ import { SelectField } from '@/src/components/form/SelectField';
 import { DateTimePickerField } from '@/src/components/form/DateTimePickerField';
 import { CheckboxField } from '@/src/components/form/CheckboxField';
 import { PrimaryButton } from '@/src/components/form/PrimaryButton';
-import { MediumText, BoldText, RegularText, SemiBoldText } from '@/src/components/Texts';
+import { MediumText, BoldText, SemiBoldText } from '@/src/components/Texts';
 import Spinner from '@/src/components/Spinner';
 import { X } from 'lucide-react-native';
 
@@ -418,9 +418,9 @@ export default function AddExpense() {
                   <SemiBoldText className="text-[17px] mr-1">
                     참가한 사람
                   </SemiBoldText>
-                  <RegularText className="text-gray-500 text-sm">
+                  <MediumText className="text-gray-500 text-sm">
                     ({participants.size}명/{members?.length}명)
-                  </RegularText>
+                  </MediumText>
                 </View>
                 
                 {/* 메뉴 드롭다운 */}
