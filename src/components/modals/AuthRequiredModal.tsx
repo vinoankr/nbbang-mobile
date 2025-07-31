@@ -32,10 +32,12 @@ export default function AuthRequiredModal({
         {`'${groupName}' 그룹에 입장하려면\n로그인이 필요합니다.`}
       </MediumText>
       
-      <PrimaryButton
-        title="로그인하기"
-        onPress={handleLogin}
-      />
+      <View className="flex-row">
+        <PrimaryButton
+          title="로그인하기"
+          onPress={handleLogin}
+        />
+      </View>
       
       <TouchableOpacity onPress={closeModal}>
         <MediumText className="text-gray-500 text-center text-base">

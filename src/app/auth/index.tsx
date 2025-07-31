@@ -1,10 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { BoldText, MediumText, SemiBoldText } from '@/src/components/Texts';
+import { login, me } from '@react-native-kakao/user';
+import { client, setAuthToken, setUserData } from '@/src/utils/client';
+import Toast from 'react-native-toast-message';
 
 export default function Auth() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleKakaoLogin = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      // 카카오 로그인
+      await login();
+      const userInfo = await me();
+
+      // 백엔드에 카카오 정보 전송
+      const response = await client.post(`/auth/kakao`, {
+        id: userInfo.id,
+        name: userInfo.name,
+        phone_number: userInfo.phoneNumber,
+      });
+      const data = response.data;
+      if (data.success) {
+        // 로그인 처리
+        setAuthToken(data.token);
+        setUserData(data.user);
+        
+        Toast.show({
+          type: 'success',
+          text1: `환영합니다! ${data.user.name}님!`,
+          visibilityTime: 1500,
+        });
+        
+        // TODO: 회원가입 후 리다이렉트 처리
+        router.dismissTo('/');
+      } else {
+        throw new Error(data.error);
+      }
+    } catch(error){
+      console.log('카카오 로그인 실패', error);
+      Toast.show({
+        type: 'error',
+        text1: '로그인 실패',
+        visibilityTime: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -30,11 +77,9 @@ export default function Auth() {
 
           {/* 카카오 로그인 버튼 */}
           <TouchableOpacity 
-            onPress={() => {
-              // 카카오 로그인 기능은 추후 구현
-              console.log('카카오 로그인 버튼 클릭');
-            }}
-            className="w-full h-14 rounded-xl flex-row items-center justify-center gap-2 bg-[#FEE500]"
+            onPress={handleKakaoLogin}
+            disabled={isLoading}
+            className={`w-full h-14 rounded-xl flex-row items-center justify-center gap-2 bg-[#FEE500] ${isLoading ? 'opacity-50' : ''}`}
           >
             <Image 
               source={require('../../../assets/images/kakao.webp')} 
@@ -51,7 +96,8 @@ export default function Auth() {
               카카오 계정이 없으신가요?
             </MediumText>
             <TouchableOpacity 
-              onPress={() => router.push('/auth/phone')}
+              onPress={() => !isLoading && router.push('/auth/phone')}
+              disabled={isLoading}
               className="mt-1"
             >
               <SemiBoldText className="text-gray-800 underline text-sm">

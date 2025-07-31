@@ -12,6 +12,7 @@ import { FormLabel } from "../../components/form/FormLabel";
 import { InputField } from "../../components/form/InputField";
 import { FormInfo } from "../../components/form/FormInfo";
 import Spinner from "../../components/Spinner";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // 이미지 import
 const step1Image = require('../../../assets/images/step-1.webp');
@@ -26,6 +27,8 @@ const LinkKakaopayPage = () => {
   const [isError, setIsError] = useState(false);
   const [initialValue, setInitialValue] = useState('');
   const [isInfo, setIsInfo] = useState(false);
+
+  const insets = useSafeAreaInsets();
 
   // 사용자 정보가 로드되면 기본값 설정
   useEffect(() => {
@@ -214,7 +217,9 @@ const LinkKakaopayPage = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" style={{
+      paddingTop: insets.top,
+    }}>
       <Header 
         title="카카오페이 연동" 
         showBackButton={true} 

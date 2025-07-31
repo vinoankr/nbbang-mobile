@@ -19,10 +19,9 @@ export const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
 }) => {
   const [show, setShow] = useState(false);
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    const currentDate = selectedDate || value;
+  const handleDateChange = (date: Date) => {
     setShow(false);
-    onChange(currentDate);
+    onChange(date);
   };
 
   const showDatePicker = () => {

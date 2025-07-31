@@ -58,7 +58,7 @@ const TransferConfirmModal: React.FC<TransferConfirmModalProps> = ({
         </MediumText>
       </View>
       
-      <View className="w-full flex justify-center items-center">
+      <View className="w-full flex-row justify-center items-center">
         <SecondaryButton 
           title={getButtonText()}
           onPress={onConfirm}

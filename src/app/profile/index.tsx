@@ -7,6 +7,7 @@ import Toast from "react-native-toast-message";
 import Header from "../../components/Header";
 import { ProfileForm } from "../../components/auth/ProfileForm";
 import Spinner from "../../components/Spinner";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ProfilePage = () => {
   const { data: user, isLoading } = useProfile();
@@ -28,8 +29,12 @@ const ProfilePage = () => {
     });
   };
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" style={{
+      paddingTop: insets.top,
+    }}>
       <Header 
         title="내 정보 수정" 
         showBackButton={true} 

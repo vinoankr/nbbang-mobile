@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform, Alert, TouchableOpacity, Pressable } from 'react-native';
 import { MenuView } from '@react-native-menu/menu';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -51,7 +51,7 @@ export default function EditExpense() {
   const { mutateAsync: editExpense } = useEditExpense();
   const { mutateAsync: deleteExpense } = useDeleteExpense();
   const defaultCurrency = group?.default_currency as CurrencyCode;
-  
+  const insets = useSafeAreaInsets();
   const isLoading = groupLoading || membersLoading || currenciesLoading || expenseLoading || participantsLoading;
   const isError = groupError || membersError || currenciesError || expenseError || participantsError;
   
@@ -316,7 +316,7 @@ export default function EditExpense() {
     );
   }
 
-  if (isLoading || !currency || !defaultCurrency) {
+  if (isLoading || !currency || !defaultCurrency || !isDataInitialized) {
     return (
       <SafeAreaView className="flex-1 bg-white">
         <Header title="지출 수정" showBackButton onBackClick={() => router.back()} />
@@ -338,7 +338,7 @@ export default function EditExpense() {
           title={group?.name || '지출 수정'} 
           showBackButton={true}
           onBackClick={() => router.back()} 
-          applyInsets={Platform.OS === 'android'}
+          applyInsets={false}
         />
         <ScrollView
           style={{ flex: 1 }}
@@ -348,6 +348,7 @@ export default function EditExpense() {
           alwaysBounceVertical={false}
           overScrollMode="never"
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom + 32 }}
         >
           {/* 지출 유형 (수정 불가) */}
           <View className="rounded-xl p-1 w-full flex-row justify-around items-center bg-gray-50 mb-4">
@@ -359,7 +360,7 @@ export default function EditExpense() {
               disabled={true}
             >
               <BoldText 
-                className={`text-center text-[14px] ${
+                className={`text-center text-sm ${
                   expenseType === '지출기록' ? 'text-white' : 'text-gray-800 opacity-70'
                 }`}
               >
@@ -374,7 +375,7 @@ export default function EditExpense() {
               disabled={true}
             >
               <BoldText 
-                className={`text-center text-[14px] ${
+                className={`text-center text-sm ${
                   expenseType === '송금기록' ? 'text-white' : 'text-gray-800 opacity-70'
                 }`}
               >
@@ -614,7 +615,7 @@ export default function EditExpense() {
                             onChangeText={(value) => handleManualAmountInputChange(member.id, value)}
                             onBlur={() => handleManualAmountBlur(member.id)}
                             keyboardType="numeric"
-                            style={{ fontFamily: "Pretendard-500", textAlign: 'right', fontSize: 16, width: 100, height: 30, color: '#30333D', fontWeight: "500", }}
+                            style={{ fontFamily: "Pretendard-500", textAlign: 'right', fontSize: 16, width: 100, lineHeight: 16, paddingVertical: 0, backgroundColor: 'red', borderWidth: 1, borderColor: 'blue', color: '#30333D', fontWeight: "500", }}
                             placeholder={`${currencies[currency].symbol}0`}
                             onSubmitEditing={(e) => e.target.blur()}
                           />

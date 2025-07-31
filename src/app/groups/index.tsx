@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TouchableOpacity, View, ScrollView, Image } from 'react-native';
 import { MediumText, SemiBoldText } from '@/src/components/Texts';
 import { useModal } from '@/src/hooks/useModal';
@@ -19,6 +19,10 @@ export default function Groups() {
   const router = useRouter();
   const { showModal } = useModal();
   const { goto } = useLocalSearchParams<{ goto?: string }>();
+
+
+  const insets = useSafeAreaInsets();
+
   // 실제 hooks 사용
   const { mutate: updatePrimaryGroup, isPending: isUpdatingPrimaryGroup } = useUpdatePrimaryGroup();
   useProfile();
@@ -155,7 +159,7 @@ export default function Groups() {
         )}
       </ScrollView>
       {/* 하단 고정 버튼 */}
-      <View className="absolute bottom-8 left-0 right-0 p-4 bg-white">
+      <View className="absolute left-0 right-0 p-4 bg-white" style={{ bottom: insets.bottom }}>
         <TouchableOpacity
           onPress={handleCreateGroup}
           className="w-full py-5 bg-blue-500 rounded-xl flex-row items-center justify-center"

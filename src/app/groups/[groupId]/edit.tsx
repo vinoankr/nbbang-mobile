@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, TouchableOpacity, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { useGroupInfo } from '@/src/hooks/queries/useGroupInfo';
@@ -11,7 +11,7 @@ import { FormLabel } from '@/src/components/form/FormLabel';
 import { InputField } from '@/src/components/form/InputField';
 import { SelectField } from '@/src/components/form/SelectField';
 import { PrimaryButton } from '@/src/components/form/PrimaryButton';
-import { MediumText, SemiBoldText } from '@/src/components/Texts';
+import { MediumText } from '@/src/components/Texts';
 import Header from '@/src/components/Header';
 import { X } from 'lucide-react-native';
 
@@ -39,7 +39,7 @@ export default function EditGroup() {
   const { data: group, isLoading: groupLoading } = useGroupInfo(groupId as string);
   const { data: members, isLoading: membersLoading } = useGroupMembers(groupId as string);
   const editGroupMutation = useEditGroup();
-
+  const insets = useSafeAreaInsets();
   const [formData, setFormData] = useState<EditGroupForm>({
     groupName: '',
     currency: 'KRW',
@@ -146,7 +146,7 @@ export default function EditGroup() {
     const changes: {
       groupName?: string;
       password?: string;
-      membersToRename?: Array<{memberId: string, newName: string}>;
+      membersToRename?: {memberId: string, newName: string}[];
       membersToAdd?: string[];
     } = {};
 
@@ -219,6 +219,10 @@ export default function EditGroup() {
         ...changes
       });
 
+      Toast.show({
+        type: 'success',
+        text1: '그룹이 수정되었어요',
+      });
       router.back();
     } catch (error) {
       console.error('Error editing group:', error);
@@ -255,6 +259,7 @@ export default function EditGroup() {
         style={{ flex: 1 }}
       >
         <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom + 32 }}
           className="flex-1 px-4 pt-20"
           keyboardShouldPersistTaps="handled"
           bounces={false}

@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { View, TouchableOpacity, Keyboard, Platform } from "react-native";
+import { View, Keyboard, Platform, Pressable } from "react-native";
 import { MenuView, MenuAction, MenuComponentRef } from "@react-native-menu/menu";
 import ChevronDown from "../.././../assets/icons/chevron-down.svg";
 import { MediumText } from "../Texts";
@@ -67,10 +67,9 @@ export const SelectField = forwardRef<any, SelectFieldProps>(
         onBlur?.();
       }}
       onPressAction={handlePressAction}
-      shouldOpenOnLongPress={false}
       ref={menuRef}
     >
-      <TouchableOpacity 
+      <Pressable 
         className={`rounded-lg border min-h-[48px] px-4 py-[15px] flex-row items-center justify-between bg-white`}
         style={{
           borderColor: isPressed ? '#2C7FFF' : '#EEEFF3',
@@ -80,7 +79,7 @@ export const SelectField = forwardRef<any, SelectFieldProps>(
           {displayText}
         </MediumText>
         <ChevronDown width={16} height={16} color="#BCBDC3" />
-      </TouchableOpacity>
+      </Pressable>
     </MenuView>
   );
 })

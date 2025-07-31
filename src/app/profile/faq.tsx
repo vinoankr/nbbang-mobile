@@ -2,10 +2,16 @@ import { SafeAreaView, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import Header from '../../components/Header';
 import { BoldText, MediumText } from '../../components/Texts';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const FaqPage = () => {
+
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" style={{
+      paddingTop: insets.top,
+    }}>
       <Header title="FAQ" showBackButton onBackClick={() => router.back()} />
       <ScrollView
         keyboardShouldPersistTaps="handled"

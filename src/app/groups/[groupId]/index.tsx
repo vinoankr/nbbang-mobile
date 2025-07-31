@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BoldText, MediumText, SemiBoldText } from '@/src/components/Texts';
 import { useModal } from '@/src/hooks/useModal';
 import { useGroupInfo } from '@/src/hooks/queries/useGroupInfo';
@@ -20,7 +20,7 @@ import { Plus } from 'lucide-react-native';
 export default function GroupDetail() {
   const router = useRouter();
   const { groupId } = useLocalSearchParams();
-  
+  const insets = useSafeAreaInsets();
   const id = Array.isArray(groupId) ? groupId[0] : groupId;
   const token = getAuthToken();
   const isAuthenticated = !!token;
@@ -151,7 +151,7 @@ export default function GroupDetail() {
     );
   };
 
-  if (isError || !id) {
+  if (!isLoading && isError) {
     return (
       <SafeAreaView className="flex-1 bg-white">
         <View className="container mx-auto px-4 py-8">
@@ -169,7 +169,7 @@ export default function GroupDetail() {
   }
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white">
+    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="flex-1 bg-white">
       <Header 
         title="" 
         showBackButton 
@@ -236,9 +236,10 @@ export default function GroupDetail() {
             });
           }}
           activeOpacity={0.9}
-          className="absolute bottom-12 left-1/2 w-[72px] h-[72px] bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
+          className="absolute left-1/2 w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
           style={{ 
             transform: [{ translateX: -36 }],
+            bottom: insets.bottom + 12,
             shadowColor: '#000',
             shadowOffset: {
               width: 0,

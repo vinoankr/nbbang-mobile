@@ -38,7 +38,7 @@ export const  SecondaryButton: React.FC<SecondaryButtonProps> = ({
         <Spinner size={24} color="#fff" strokeWidth={2.5} />
       ) : (
         <View className="flex-row items-center gap-1.5 justify-center">
-          <SemiBoldText className="text-[18px] text-black">{title}</SemiBoldText>
+          <SemiBoldText className="text-lg text-black">{title}</SemiBoldText>
         </View>
       )}
     </TouchableOpacity>

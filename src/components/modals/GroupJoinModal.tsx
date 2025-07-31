@@ -188,7 +188,7 @@ export default function GroupJoinModal({
           </MediumText>
         </TouchableOpacity>
         
-        <View className="flex-1">
+        <View className="flex-row">
           <PrimaryButton
             title={isJoining ? '입장 중...' : '그룹 입장'}
             onPress={handleJoin}

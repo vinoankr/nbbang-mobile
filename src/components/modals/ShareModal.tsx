@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Share, ScrollView } from 'react-native';
+import { View, Share, ScrollView, Platform } from 'react-native';
 import { BoldText, MediumText } from '../Texts';
 import { PrimaryButton } from '../form/PrimaryButton';
 import { Check, LinkIcon } from 'lucide-react-native';
@@ -40,7 +40,7 @@ export default function ShareModal({
   };
 
   return (
-    <View className="max-w-md w-full">
+    <View className="max-w-md w-full" style={{ position: 'relative' }}>
       <BoldText className="w-full text-gray-800 text-[23px] mb-4">초대하기</BoldText>
       <MediumText className="text-gray-500 mb-4 text-base leading-5">
         구성원들이 그룹에 들어올 수 있도록{'\n'}초대링크를 공유해주세요!
@@ -48,7 +48,7 @@ export default function ShareModal({
       
       <View className="mb-4">
         <ScrollView 
-          className="max-h-[250px]"
+          className="max-h-60"
           showsVerticalScrollIndicator={false}
           overScrollMode="never"
           bounces={false}
@@ -87,16 +87,14 @@ export default function ShareModal({
         
       </View>
       
-      <View className="flex-row gap-3">
-        <View className="flex-1">
-          <PrimaryButton
-            title="초대 링크 공유하기"
-            icon={<LinkIcon size={18} color="#fff" strokeWidth={3} />}
-            onPress={handleShare}
+      <View className="flex-row">
+        <PrimaryButton
+          title="초대 링크 공유하기"
+          icon={<LinkIcon size={18} color="#fff" strokeWidth={3} />}
+          onPress={handleShare}
           />
-        </View>
-      </View>
-      <View className="absolute -bottom-[52px] left-0 right-0">
+          </View>
+      <View className="absolute left-0 right-0" style={{ bottom: Platform.OS === 'ios' ? -48 : -64 }}>
         <MediumText className="text-center text-gray-300 text-base">
           *링크가 외부에 유출되지 않도록 조심해주세요!
         </MediumText>

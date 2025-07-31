@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useRef } from "react";
-import { TextInput, StyleSheet, TextInputProps } from "react-native";
+import { TextInput, StyleSheet, TextInputProps, Platform } from "react-native";
 
 interface InputFieldProps extends TextInputProps {
   placeholder?: string;
@@ -25,6 +25,9 @@ export const InputField = forwardRef<TextInput, InputFieldProps>(
           styles.input,
           isFocused && { borderColor: "#2C7FFF" }
         ]}
+        multiline={false}
+        numberOfLines={1}
+        textAlignVertical="center"
         placeholder={placeholder}
         placeholderTextColor="#9C9DA4"
         value={value}
@@ -55,10 +58,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#EEEFF3",
     paddingHorizontal: 16,
-    paddingVertical: 15,
+    paddingVertical: Platform.OS === "android" ? 0 : 15,
+    height: 52,
     color: "#30333D",
     backgroundColor: "#FFF",
     fontSize: 16,
     fontWeight: "500",
+    textAlignVertical: 'center',
   },
 });

@@ -35,7 +35,7 @@ export const  DangerousButton: React.FC<DangerousButtonProps> = ({
         <Spinner size={24} color="#fff" strokeWidth={2.5} />
       ) : (
         <View className="flex-row items-center gap-1.5 justify-center">
-          <SemiBoldText className="text-[18px] text-red-500">{title}</SemiBoldText>
+          <SemiBoldText className="text-lg text-red-500">{title}</SemiBoldText>
         </View>
       )}
     </TouchableOpacity>

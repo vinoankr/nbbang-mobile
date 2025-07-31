@@ -21,7 +21,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.busitdol.nbbang"
+      "package": "com.busitdol.nbbang",
+      "softwareKeyboardLayoutMode": "resize"
     },
     "plugins": [
       "expo-router",
@@ -34,7 +35,52 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ]
+          }
+        }
+      ],
+      [
+        "@react-native-kakao/core",
+        {
+          "nativeAppKey": "93959bb8c9aa19c9ae9ad2ca73ffb3c5",
+          "android": {
+            "authCodeHandlerActivity": true
+          },
+          "ios": {
+            "handleKakaoOpenUrl": true
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "intentFilters": [
+              {
+                "action": "VIEW",
+                "data": [
+                  {
+                    "scheme": "https",
+                    "host": "nbbang.app",
+                    "pathPrefix": "/"
+                  }
+                ],
+                "category": ["BROWSABLE", "DEFAULT"]
+              }
+            ]
+          },
+          "ios": {
+            "associatedDomains": ["applinks:nbbang.app"]
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

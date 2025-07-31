@@ -177,7 +177,7 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
       >
         <View className="flex-row items-center justify-center gap-1.5">
           {getIcon()}
-          <BoldText className={`text-[20px] ${getColor()}`}>{getText()}</BoldText>
+          <BoldText className={`text-xl ${getColor()}`}>{getText()}</BoldText>
           <View className="h-5 w-5" />
         </View>
       </TouchableOpacity>

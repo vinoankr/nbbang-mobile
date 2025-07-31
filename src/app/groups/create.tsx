@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, ScrollView, TouchableOpacity, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { useCreateGroup } from '@/src/hooks/mutations/useCreateGroup';
@@ -25,6 +25,7 @@ interface CreateGroupForm {
 export default function CreateGroup() {
   const router = useRouter();
   const user = getUserData();
+  const insets = useSafeAreaInsets();
   const [formData, setFormData] = useState<CreateGroupForm>({
     groupName: '',
     currency: 'KRW',
@@ -158,6 +159,7 @@ export default function CreateGroup() {
         style={{ flex: 1 }}
       >
         <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom + 32 }}
           className="flex-1 px-4 pt-20"
           keyboardShouldPersistTaps="handled"
           bounces={false}
@@ -232,7 +234,7 @@ export default function CreateGroup() {
             )}
           </View>
 
-          <View className="mb-8">
+          <View className="mb-4">
             <FormLabel label="입장 비밀번호 (선택)" />
             <InputField
               ref={passwordInputRef}
@@ -248,7 +250,7 @@ export default function CreateGroup() {
               {errors.password || '링크 유출시 안전장치로 사용돼요'}
             </MediumText>
           </View>
-          <View className="pb-4">
+          <View className="flex-row py-4">
             <PrimaryButton
               title={isSubmitting ? '처리 중...' : '그룹 만들기'}
               onPress={handleSubmit}

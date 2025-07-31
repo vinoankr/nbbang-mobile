@@ -43,7 +43,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
         <Spinner size={24} color="#fff" strokeWidth={2.5} />
       ) : (
         <View className="flex-row items-center gap-1.5 justify-center">
-          <SemiBoldText className="text-[18px] text-white">{title}</SemiBoldText>
+          <SemiBoldText className="text-lg text-white">{title}</SemiBoldText>
           {icon ? icon : null}
         </View>
       )}
