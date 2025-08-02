@@ -38,7 +38,7 @@ export const useLeaveGroup = () => {
       if (router.canGoBack()) {
         router.dismissTo('/groups');
       } else {
-        router.push('/groups');
+        router.replace('/groups');
       }
     },
     onError: (error: any) => {

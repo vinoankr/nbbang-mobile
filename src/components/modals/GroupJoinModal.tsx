@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, TouchableOpacity, ScrollView } from 'react-native';
-import { BoldText, MediumText, SemiBoldText } from '../Texts';
-import { PrimaryButton } from '../form/PrimaryButton';
-import { InputField } from '../form/InputField';
+import { BoldText, MediumText } from '../Texts';
+import { ChevronRight } from 'lucide-react-native';
 import { useAcceptInvite } from '@/src/hooks/mutations/useAcceptInvite';
-import Toast from 'react-native-toast-message';
+import { PrimaryButton } from '../form/PrimaryButton';
+import { SecondaryButton } from '../form/SecondaryButton';
+import { InputField } from '../form/InputField';
+import { router } from 'expo-router';
 
 interface Member {
   id: string;
@@ -33,170 +35,130 @@ export default function GroupJoinModal({
   closeModal,
   hasPassword,
 }: GroupJoinModalProps) {
-  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [password, setPassword] = useState('');
-  const [showPasswordError, setShowPasswordError] = useState(false);
-  
-  const { mutate: acceptInvite, isPending: isJoining } = useAcceptInvite();
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const isLoadingRef = useRef(false);
+  const acceptInviteMutation = useAcceptInvite();
 
-  const matchingUnlinkedMember = unlinkedMembers.find(
-    member => member.user_name === currentUserName
-  );
-
-  const handleJoin = () => {
-    if (hasPassword && password.length !== 4) {
-      setShowPasswordError(true);
-      Toast.show({
-        type: 'error',
-        text1: '4자리 비밀번호를 입력해주세요.',
-      });
-      return;
-    }
-
-    const memberId = selectedMemberId || matchingUnlinkedMember?.id;
+  // 기존 멤버와 연결하는 함수
+  const handleLinkToExistingMember = async (memberId: string, password?: string) => {
+    if (!currentUserId || isLoadingRef.current) return;
     
-    if (!memberId) {
-      Toast.show({
-        type: 'error',
-        text1: '참여할 멤버를 선택해주세요.',
-      });
-      return;
+    try {
+      isLoadingRef.current = true;
+      await acceptInviteMutation.mutateAsync({ groupId, memberId, password });
+      closeModal();
+    } catch (error) {
+      // 에러는 mutation의 onError에서 처리됨
+      console.error('멤버 연결 실패:', error);
+    } finally {
+      isLoadingRef.current = false;
     }
-
-    acceptInvite({
-      memberId,
-      groupId,
-      password: hasPassword ? password : undefined,
-    }, {
-      onSuccess: () => {
-        closeModal();
-      }
-    });
   };
 
   return (
-    <View className="w-full max-h-96">
-      <BoldText className="text-[23px] text-center mb-2">
-        그룹 입장하기
+    <View
+      className="w-full max-w-md mx-auto"
+    >
+      <BoldText className="text-[22px] mb-4">
+        {groupName}에 입장하세요!
       </BoldText>
-      
-      <MediumText className="text-gray-600 text-base text-center mb-4">
-        {`'${groupName}' 그룹에 입장합니다.`}
+      <MediumText className="text-gray-800 mb-3 text-lg">
+        {
+          isPasswordModalOpen ? (
+            "비밀번호를 입력해주세요"
+          ) : (
+            unlinkedMembers.length > 0 ? '당신의 이름을 선택해 입장하세요' : '그룹 슬롯이 가득찼습니다.'
+          )
+        }
       </MediumText>
-
-      <ScrollView className="max-h-48" showsVerticalScrollIndicator={false}>
-        {matchingUnlinkedMember ? (
-          <View className="mb-4">
-            <MediumText className="text-base mb-2">
-              추천 멤버
-            </MediumText>
-            <TouchableOpacity
-              className={`p-3 rounded-lg border ${
-                selectedMemberId === matchingUnlinkedMember.id || selectedMemberId === null
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 bg-white'
-              }`}
-              onPress={() => setSelectedMemberId(
-                selectedMemberId === matchingUnlinkedMember.id ? null : matchingUnlinkedMember.id
-              )}
-            >
-              <SemiBoldText className="text-base">
-                {matchingUnlinkedMember.user_name} (추천)
-              </SemiBoldText>
-            </TouchableOpacity>
-          </View>
-        ) : null}
-
-        {unlinkedMembers.filter(m => m.id !== matchingUnlinkedMember?.id).length > 0 && (
-          <View className="mb-4">
-            <MediumText className="text-base mb-2">
-              다른 멤버들
-            </MediumText>
-            {unlinkedMembers
-              .filter(m => m.id !== matchingUnlinkedMember?.id)
-              .map((member) => (
+        {
+          isPasswordModalOpen ? (
+            <>
+              <InputField
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text.replace(/[^0-9]/g, ''));
+                }}
+                placeholder="4자리 숫자를 입력해주세요"
+                maxLength={4}
+                keyboardType="numeric"
+                returnKeyType="done"
+              />
+              <View className="w-full flex-row gap-2 mt-4">
+                <SecondaryButton
+                  title="뒤로가기"
+                  onPress={() => setIsPasswordModalOpen(false)}
+                  disabled={acceptInviteMutation.isPending}
+                />
+                <PrimaryButton
+                  title="입장하기"
+                  onPress={() => {
+                    if (password.length === 4 && password.match(/^\d{4}$/)) {
+                      handleLinkToExistingMember(selectedMember?.id!, password);
+                    }
+                  }}
+                  disabled={password.length !== 4 || !password.match(/^\d{4}$/) || acceptInviteMutation.isPending}
+                />
+              </View>
+            </>
+          ): (
+            <ScrollView className="max-h-72" bounces={false} alwaysBounceVertical={false} overScrollMode="never" showsVerticalScrollIndicator={false}>
+              <View className="flex flex-col gap-2">
+              {linkedMembers.map(member => (
                 <TouchableOpacity
                   key={member.id}
-                  className={`p-3 rounded-lg border mb-2 ${
-                    selectedMemberId === member.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 bg-white'
-                  }`}
-                  onPress={() => setSelectedMemberId(
-                    selectedMemberId === member.id ? null : member.id
-                  )}
+                  className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl flex-row items-center opacity-50"
+                  disabled={true}
                 >
-                  <SemiBoldText className="text-base">
+                  <MediumText className="flex-1 text-lg text-left">
                     {member.user_name}
-                  </SemiBoldText>
+                  </MediumText>
+                  <ChevronRight size={20} color="#9CA3AF" />
                 </TouchableOpacity>
-              ))
-            }
-          </View>
-        )}
-
-        {linkedMembers.length > 0 && (
-          <View className="mb-4">
-            <MediumText className="text-gray-600 text-base mb-2">
-              이미 입장한 멤버들
-            </MediumText>
-            {linkedMembers.map((member) => (
-              <View
-                key={member.id}
-                className="p-3 rounded-lg bg-gray-100 mb-2"
-              >
-                <SemiBoldText className="text-gray-600 text-base">
-                  {member.user_name} ✓
-                </SemiBoldText>
+              ))}
+              {unlinkedMembers.map(member => (
+                <TouchableOpacity
+                  key={member.id}
+                  className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl flex-row items-center"
+                  onPress={() => {
+                    if (hasPassword) {
+                      setSelectedMember(member);
+                      setIsPasswordModalOpen(true);
+                    } else {
+                      handleLinkToExistingMember(member.id);
+                    }
+                  }}
+                  disabled={acceptInviteMutation.isPending}
+                >
+                  <MediumText className="flex-1 text-lg text-left">
+                    {member.user_name}
+                  </MediumText>
+                  <ChevronRight size={20} color="#9CA3AF" />
+                </TouchableOpacity>
+              ))}
               </View>
-            ))}
-          </View>
-        )}
-      </ScrollView>
-
-      {hasPassword && (
-        <View className="mb-4">
-          <MediumText className="text-base mb-2">
-            입장 비밀번호
-          </MediumText>
-          <InputField
-            placeholder="4자리 숫자 입력"
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              setShowPasswordError(false);
-            }}
-            keyboardType="numeric"
-            maxLength={4}
-          />
-          {showPasswordError && (
-            <MediumText className="text-red-500 text-sm mt-1">
-              4자리 비밀번호를 입력해주세요.
-            </MediumText>
-          )}
-        </View>
-      )}
-
-      <View className="flex-row gap-3">
-        <TouchableOpacity 
-          className="flex-1 p-3 rounded-lg border border-gray-300"
-          onPress={closeModal}
-          disabled={isJoining}
-        >
-          <MediumText className="text-center text-base">
-            취소
-          </MediumText>
-        </TouchableOpacity>
-        
-        <View className="flex-row">
-          <PrimaryButton
-            title={isJoining ? '입장 중...' : '그룹 입장'}
-            onPress={handleJoin}
-            disabled={isJoining}
-            loading={isJoining}
-          />
-        </View>
-      </View>
+            </ScrollView>
+          )
+        }
+        {
+          unlinkedMembers.length === 0 && (
+            <View className="w-full flex-row gap-2 mt-4"> 
+              <SecondaryButton
+                title="뒤로가기"
+                onPress={()=>{
+                  if (router.canGoBack()) {
+                    router.back();
+                  } else {
+                    router.replace('/groups');
+                  }
+                  closeModal();
+                }}
+              />
+            </View>
+          )
+        }
     </View>
   );
 } 

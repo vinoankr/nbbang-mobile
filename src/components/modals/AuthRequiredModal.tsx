@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { BoldText, MediumText } from '../Texts';
 import { PrimaryButton } from '../form/PrimaryButton';
@@ -17,33 +17,29 @@ export default function AuthRequiredModal({
 }: AuthRequiredModalProps) {
   const router = useRouter();
 
-  const handleLogin = () => {
+  const handleJoin = () => {
+    router.dismissAll();
+    router.replace(`/auth?redirectGroupId=${groupId}`);
     closeModal();
-    router.push('/auth');
   };
 
   return (
-    <View className="w-full flex flex-col gap-4">
-      <BoldText className="text-[23px] text-center mb-2">
-        로그인이 필요해요
+    <View className="w-full flex flex-col gap-1">
+      <BoldText className="text-[22px] mb-4">
+        {groupName}에 초대되었습니다.
       </BoldText>
       
-      <MediumText className="text-gray-600 text-base text-center mb-4">
-        {`'${groupName}' 그룹에 입장하려면\n로그인이 필요합니다.`}
+      <MediumText className="text-gray-800 mb-4 text-base leading-6">
+        간단한 회원가입 후 그룹에 참여하세요!{'\n'}
+        착오송금 방지를 위한 절차입니다 🥺
       </MediumText>
       
-      <View className="flex-row">
+      <View className="w-full flex-row">
         <PrimaryButton
-          title="로그인하기"
-          onPress={handleLogin}
+          title="가입하러 가기"
+          onPress={handleJoin}
         />
       </View>
-      
-      <TouchableOpacity onPress={closeModal}>
-        <MediumText className="text-gray-500 text-center text-base">
-          나중에 하기
-        </MediumText>
-      </TouchableOpacity>
     </View>
   );
 } 

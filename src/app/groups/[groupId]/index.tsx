@@ -77,7 +77,8 @@ export default function GroupDetail() {
           groupId={id}
           groupName={group.name}
           closeModal={closeModal}
-        />
+        />,
+        false
       );
     } else if (!isMemberOfGroup) {
       setModalShown(true);
@@ -91,19 +92,11 @@ export default function GroupDetail() {
           currentUserName={currentUser?.name}
           closeModal={closeModal}
           hasPassword={group.hasPassword}
-        />
+        />,
+        false
       );
     }
   }, [isAuthenticated, isMemberOfGroup, isLoading, group, unlinkedMembers, id, currentUser, modalShown]);
-
-  // useEffect(() => {
-  //   if (isAuthenticated && isMemberOfGroup && !isLoading && !modalShown) {
-  //     setTimeout(() => {
-  //       setModalShown(true);
-  //       router.push(`/groups/${id}/add-expense` as any);
-  //     }, 0);
-  //   }
-  // }, [isAuthenticated, isMemberOfGroup, isLoading, modalShown]);
 
   if (!id) {
     router.replace('/');

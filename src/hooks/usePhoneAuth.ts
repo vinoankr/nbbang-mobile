@@ -53,7 +53,7 @@ interface UsePhoneAuthReturn {
   handleUpdateProfile: (data: { name: string, bank: BankName, accountNumber: string }) => Promise<void>;
 }
 
-export const usePhoneAuth = (): UsePhoneAuthReturn => {
+export const usePhoneAuth = (redirectGroupId: string | null): UsePhoneAuthReturn => {
   const router = useRouter();
   const [step, setStep] = useState<AuthStep>('phone');
   const [phoneNumber, setPhoneNumber] = useState<string>('010-');
@@ -134,11 +134,12 @@ export const usePhoneAuth = (): UsePhoneAuthReturn => {
         // 기존 유저 - 로그인 완료
         setAuthToken(data.token);
         setUserData(data.user);
-        // TODO: 로그인 후 리다이렉트 처리
-        // if (redirectUrl) {
-        //   router.dismissTo();
-        // }
-        router.dismissTo('/');
+        if (redirectGroupId) {
+          router.dismissTo('/');
+          router.replace(`/groups/${redirectGroupId}` as any);
+        } else {
+          router.dismissTo('/');
+        }
       }
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -194,11 +195,12 @@ export const usePhoneAuth = (): UsePhoneAuthReturn => {
       // 로그인 토큰 저장
       setAuthToken(responseData.token);
       setUserData(responseData.user);
-        // TODO:  회원가입 후 리다이렉트 처리
-        // if (redirectUrl) {
-        //   router.dismissTo();
-        // }
+      if (redirectGroupId) {
         router.dismissTo('/');
+        router.replace(`/groups/${redirectGroupId}` as any);
+      } else {
+        router.dismissTo('/');
+      }
 
     } catch {
       setError('회원가입에 실패했습니다.');

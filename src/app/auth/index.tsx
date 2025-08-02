@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { BoldText, MediumText, SemiBoldText } from '@/src/components/Texts';
 import { login, me } from '@react-native-kakao/user';
 import { client, setAuthToken, setUserData } from '@/src/utils/client';
@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message';
 export default function Auth() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { redirectGroupId } = useLocalSearchParams() as { redirectGroupId: string | null };
 
   const handleKakaoLogin = async () => {
     if (isLoading) return;
@@ -37,8 +38,11 @@ export default function Auth() {
           visibilityTime: 1500,
         });
         
-        // TODO: 회원가입 후 리다이렉트 처리
-        router.dismissTo('/');
+        if (redirectGroupId) {
+          router.dismissTo(`/groups/${redirectGroupId}` as any);
+        } else {
+          router.dismissTo('/');
+        }
       } else {
         throw new Error(data.error);
       }
@@ -97,7 +101,7 @@ export default function Auth() {
               카카오 계정이 없으신가요?
             </MediumText>
             <TouchableOpacity 
-              onPress={() => !isLoading && router.push('/auth/phone')}
+              onPress={() => !isLoading && router.push(`/auth/phone${redirectGroupId ? `?redirectGroupId=${redirectGroupId}` : ''}` as any)}
               disabled={isLoading}
               className="mt-1"
             >

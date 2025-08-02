@@ -71,8 +71,6 @@ const TransferModal: React.FC<TransferModalProps> = ({
     }, 2000);
   };
 
-  console.log(memberAccountInfo)
-
   return (
     <View>
       <BoldText className="text-[23px] mb-4 text-gray-800">송금하기</BoldText>

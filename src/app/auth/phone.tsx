@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { View, TouchableOpacity, Image, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePhoneAuth } from '@/src/hooks/usePhoneAuth';
 import { PhoneForm, VerifyForm, ProfileForm } from '@/src/components/auth';
 
 export default function PhoneAuthPage() {
   const router = useRouter();
+  const { redirectGroupId } = useLocalSearchParams() as { redirectGroupId: string | null };
   const {
     step,
     phoneNumber,
@@ -17,7 +18,9 @@ export default function PhoneAuthPage() {
     handleSendOtp,
     handleVerifyOtp,
     handleUpdateProfile,
-  } = usePhoneAuth();
+  } = usePhoneAuth(
+    redirectGroupId
+  );
 
   // 현재 단계에 따른 폼 렌더링
   const renderForm = () => {

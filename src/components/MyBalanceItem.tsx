@@ -10,7 +10,7 @@ import TransferModal from './modals/TransferModal';
 import RegisterBankModal from './modals/RegisterBankModal';
 import Toast from 'react-native-toast-message';
 import { useProfile } from '../hooks/queries/useMe';
-import { Banknote, Check, HandCoins, UserPlus2 } from 'lucide-react-native';
+import { Banknote, HandCoins, UserPlus2 } from 'lucide-react-native';
 import { josa } from 'es-hangul';
 
 interface Member {
@@ -68,10 +68,10 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
   }
 
   const getIcon = () => {
-    if (shouldRegisterBank) return <HandCoins width={20} height={20} color={'#2C7FFF'} strokeWidth={2.5} />;
-    if (shouldInvite) return <UserPlus2 width={20} height={20} color={isToMe ? '#2C7FFF' : '#FF4665'} strokeWidth={2.5} />;
-    if (isToMe) return <HandCoins width={20} height={20} color={'#2C7FFF'} strokeWidth={2.5} />;
-    return <Banknote width={20} height={20} color={'#FF4665'} strokeWidth={2.5} />;
+    if (shouldRegisterBank) return <HandCoins width={18} height={18} color={'#2C7FFF'} strokeWidth={2.5} />;
+    if (shouldInvite) return <UserPlus2 width={18} height={18} color={isToMe ? '#2C7FFF' : '#FF4665'} strokeWidth={2.5} />;
+    if (isToMe) return <HandCoins width={18} height={18} color={'#2C7FFF'} strokeWidth={2.5} />;
+    return <Banknote width={18} height={18} color={'#FF4665'} strokeWidth={2.5} />;
   }
 
   const handleConfirmTransfer = async () => {
@@ -176,7 +176,7 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
   }
 
   return (
-    <View className="w-full bg-gray-50 border border-gray-100 rounded-lg p-4 flex flex-col items-center justify-center gap-2.5">
+    <View className="w-full bg-gray-50 border border-gray-100 rounded-lg p-4 flex flex-col items-center justify-center gap-3">
       <View className="self-start">
         <BoldText className="text-lg text-gray-800">
           {isToMe ? fromName : toName}{isToMe ? josa.pick(fromName || '()', '으로부터/로부터') : '에게'} <BoldText className={`${getColor()}`}>{formatCurrency(Math.abs(amount), currency)}</BoldText> {isToMe ? '받기' : '보내기'}
@@ -189,14 +189,14 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
       )}
       <View className='w-full flex-row gap-2'>
         {isToMe && <TouchableOpacity 
-          className='flex-1 items-center justify-center gap-2 py-2 bg-white rounded-lg'
+          className='flex-1 items-center justify-center gap-2 py-2.5 bg-white rounded-lg'
           onPress={() => openTransferConfirmModal(null)}
           activeOpacity={0.9}
         >
           <BoldText className='w-full text-center text-lg text-gray-700'>정산완료</BoldText>
         </TouchableOpacity>}
         <TouchableOpacity 
-          className='flex-2 items-center justify-center gap-2 py-2 bg-white rounded-lg'
+          className={`${isToMe ? 'flex-2' : 'flex-1'} items-center justify-center gap-2 py-2.5 bg-white rounded-lg`}
           onPress={shouldRegisterBank ? openRegisterBankModal : shouldInvite ? () => openInviteModal() : isToMe ? () => handleHurryUp() : openTransferModal}
           activeOpacity={0.9}
         >

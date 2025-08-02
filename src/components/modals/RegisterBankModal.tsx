@@ -17,14 +17,12 @@ const RegisterBankModal: React.FC<RegisterBankModalProps> = ({
 
   const handleAccountRegister = () => {
     closeModal();
-    // TODO: profile 페이지 구현 후 네비게이션 추가
-    // router.push('/profile');
+    router.push('/profile');
   };
 
   const handleKakaopayRegister = () => {
     closeModal();
-    // TODO: link-kakaopay 페이지 구현 후 네비게이션 추가
-    // router.push('/profile/link-kakaopay');
+    router.push('/profile/kakaopay');
   };
 
   const handleAlreadyReceived = () => {
