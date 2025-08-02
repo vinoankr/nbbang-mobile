@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Share } from 'react-native';
 import { BoldText, MediumText } from './Texts';
 import { ParticipantWithAmount, useAddExpense } from '../hooks/mutations/useAddExpense';
 import { useModal } from '../hooks/useModal';
@@ -63,14 +63,14 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
   const getText = () => {
     if (shouldRegisterBank) return '송금받기';
     if (shouldInvite) return '초대하기';
-    if (isToMe) return '받았어요';
+    if (isToMe) return '재촉하기';
     return '송금하기';
   }
 
   const getIcon = () => {
     if (shouldRegisterBank) return <HandCoins width={20} height={20} color={'#2C7FFF'} strokeWidth={2.5} />;
     if (shouldInvite) return <UserPlus2 width={20} height={20} color={isToMe ? '#2C7FFF' : '#FF4665'} strokeWidth={2.5} />;
-    if (isToMe) return <Check width={20} height={20} color={'#2C7FFF'} strokeWidth={2.5} />;
+    if (isToMe) return <HandCoins width={20} height={20} color={'#2C7FFF'} strokeWidth={2.5} />;
     return <Banknote width={20} height={20} color={'#FF4665'} strokeWidth={2.5} />;
   }
 
@@ -158,6 +158,23 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
     );
   };
 
+  const handleHurryUp = async () => {
+    const url = `https://nbbang.app/groups/${groupId}?activeTab=settlement`;
+    try {
+      await Share.share({
+        url: url,
+        title: '정산금을 보내주세요!',
+        message: `${fromName}님, ${toName}님께 보내야 할 정산금이 있어요!`,
+      });
+    } catch (error) {
+      console.error('공유 실패:', error);
+      Toast.show({
+        type: 'error',
+        text1: '공유에 실패했어요.',
+      });
+    }
+  }
+
   return (
     <View className="w-full bg-gray-50 border border-gray-100 rounded-lg p-4 flex flex-col items-center justify-center gap-2.5">
       <View className="self-start">
@@ -166,21 +183,29 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
         </BoldText>
       </View>
       {shouldInvite && !shouldRegisterBank && (
-        <View className="self-start">
+        <View className="self-start -mt-1">
           <MediumText className="text-gray-500 text-base">아직 그룹에 들어오지 않았어요!</MediumText>
         </View>
       )}
-      <TouchableOpacity 
-        className='w-full flex items-center justify-center gap-2 py-2 bg-white rounded-lg'
-        onPress={shouldRegisterBank ? openRegisterBankModal : shouldInvite ? openInviteModal : isToMe ? () => openTransferConfirmModal(null) : openTransferModal}
-        activeOpacity={0.9}
-      >
-        <View className="flex-row items-center justify-center gap-1.5">
-          {getIcon()}
-          <BoldText className={`text-xl ${getColor()}`}>{getText()}</BoldText>
-          <View className="h-5 w-5" />
-        </View>
-      </TouchableOpacity>
+      <View className='w-full flex-row gap-2'>
+        {isToMe && <TouchableOpacity 
+          className='flex-1 items-center justify-center gap-2 py-2 bg-white rounded-lg'
+          onPress={() => openTransferConfirmModal(null)}
+          activeOpacity={0.9}
+        >
+          <BoldText className='w-full text-center text-lg text-gray-700'>정산완료</BoldText>
+        </TouchableOpacity>}
+        <TouchableOpacity 
+          className='flex-2 items-center justify-center gap-2 py-2 bg-white rounded-lg'
+          onPress={shouldRegisterBank ? openRegisterBankModal : shouldInvite ? () => openInviteModal() : isToMe ? () => handleHurryUp() : openTransferModal}
+          activeOpacity={0.9}
+        >
+          <View className="w-full flex-row items-center justify-center gap-1.5">
+            {getIcon()}
+            <BoldText className={`text-lg ${getColor()}`}>{getText()}</BoldText>
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 };

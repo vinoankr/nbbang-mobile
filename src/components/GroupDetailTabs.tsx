@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { BoldText, MediumText } from './Texts';
-import { useGroupExpenses } from '@/src/hooks/queries/useGroupExpenses';
+import { BoldText } from './Texts';
 import ExpensesList from './ExpensesList';
 import SettlementResults from './SettlementResults';
 import Spinner from './Spinner';
@@ -36,20 +35,6 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
   isLoading = false,
 }) => {
   const [activeTab, setActiveTab] = useState<'expenses' | 'settlement'>('expenses');
-  const { data: expenses, isLoading: expensesLoading, isError: expensesError } = useGroupExpenses(groupId, currentUser, isMemberOfGroup);
-
-  if (expensesError) {
-    return (
-      <View className="flex-1 justify-center items-center py-8">
-        <MediumText className="text-red-500 text-xl text-center">
-          지출 내역을 불러오는데 실패했습니다.
-        </MediumText>
-        <MediumText className="text-red-500 text-xl text-center">
-          네트워크 연결 상태를 확인해주세요.
-        </MediumText>
-      </View>
-    );
-  }
 
   return (
     <View className="flex-1">
@@ -88,7 +73,7 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
       </View>
 
       {
-        (isLoading || expensesLoading || !expenses) ? (
+        isLoading ? (
           <View className="flex-1 justify-center items-center py-16">
             <Spinner size={24} color="#30333D" strokeWidth={2.5} />
           </View>
@@ -96,10 +81,12 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
           <>
             {activeTab === 'expenses' ? (
               <ExpensesList 
-                expenses={expenses as any} 
+                groupId={groupId}
                 groupCurrency={currency as any} 
                 memberNameMap={memberNameMap} 
-                currentUserMemberId={currentUserMemberId} 
+                currentUserMemberId={currentUserMemberId}
+                currentUser={currentUser}
+                isMemberOfGroup={isMemberOfGroup}
               />
             ) : (
               <SettlementResults 

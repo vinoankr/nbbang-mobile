@@ -29,6 +29,7 @@ export default function Auth() {
         // 로그인 처리
         setAuthToken(data.token);
         setUserData(data.user);
+        console.log(data.user)
         
         Toast.show({
           type: 'success',

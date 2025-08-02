@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { BoldText, MediumText, SemiBoldText } from './Texts';
+import { BoldText, MediumText } from './Texts';
 import { useExpenseParticipants } from '@/src/hooks/queries/useExpenseParticipants';
+import { useGroupExpenses } from '@/src/hooks/queries/useGroupExpenses';
 import { formatCurrency } from '@/src/utils/formatter';
-import ChevronDown from '../../assets/icons/chevron-down.svg';
-import ChevronUp from '../../assets/icons/chevron-up.svg';
 import Pencil from '../../assets/icons/pencil.svg';
 import { ArrowRightIcon } from 'lucide-react-native';
 import Spinner from './Spinner';
@@ -16,10 +15,12 @@ interface CurrencyCode {
 }
 
 interface ExpensesListProps {
-  expenses: any[];
+  groupId: string;
   groupCurrency: CurrencyCode | string;
   memberNameMap: Map<string, string>;
   currentUserMemberId: string;
+  currentUser: any;
+  isMemberOfGroup: boolean;
 }
 
 interface ExpenseCardProps {
@@ -128,11 +129,36 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
 };
 
 const ExpensesList: React.FC<ExpensesListProps> = ({ 
-  expenses, 
+  groupId,
   groupCurrency, 
   memberNameMap, 
-  currentUserMemberId 
+  currentUserMemberId,
+  currentUser,
+  isMemberOfGroup
 }) => {
+  const { data: expenses, isLoading: expensesLoading, isError: expensesError } = useGroupExpenses(groupId, currentUser, isMemberOfGroup);
+
+  if (expensesLoading || !expenses) {
+    return (
+      <View className="flex-1 justify-center items-center py-16">
+        <Spinner size={24} color="#30333D" strokeWidth={2.5} />
+      </View>
+    );
+  }
+
+  if (expensesError) {
+    return (
+      <View className="flex-1 justify-center items-center py-8">
+        <MediumText className="text-red-500 text-xl text-center">
+          지출 내역을 불러오는데 실패했습니다.
+        </MediumText>
+        <MediumText className="text-red-500 text-xl text-center">
+          네트워크 연결 상태를 확인해주세요.
+        </MediumText>
+      </View>
+    );
+  }
+
   if (expenses.length === 0) {
     return (
       <View className="flex justify-center items-center my-8">
@@ -148,7 +174,7 @@ const ExpensesList: React.FC<ExpensesListProps> = ({
 
   return (
     <View className="flex flex-col gap-6">
-      {expenses.map((expense) => (
+      {expenses.map((expense: any) => (
         <View key={expense.date} className="flex flex-col gap-2.5">
           <BoldText className="text-gray-800 text-lg">
             {expense.date}

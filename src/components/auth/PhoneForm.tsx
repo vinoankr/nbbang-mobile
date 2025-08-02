@@ -30,6 +30,7 @@ export const PhoneForm: React.FC<PhoneFormProps> = ({
           value={phoneNumber}
           onChangeText={handlePhoneChange}
           keyboardType="phone-pad"
+          textContentType="telephoneNumber"
           inputMode='tel'
           autoComplete="tel"
           importantForAutofill="yes"

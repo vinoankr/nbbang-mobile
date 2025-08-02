@@ -54,7 +54,10 @@ export const removeAuthToken = () => {
 export const getUserData = () => {
   const userData = mmkvStorage.getItem('userData');
   if (userData) {
-    return JSON.parse(userData);
+    const parsed = JSON.parse(userData);
+    if (typeof parsed === 'object') {
+      return parsed;
+    }
   }
   return null;
 }

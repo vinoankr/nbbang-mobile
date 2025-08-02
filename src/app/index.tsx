@@ -4,10 +4,17 @@ import { getAuthToken, getUserData } from '../utils/client';
 
 export default function App() {
   const isAuthenticated = getAuthToken();
-  const primaryGroupId = getUserData()?.primary_group_id;
+  const userData = getUserData();
+  const primaryGroupId = (typeof userData?.primary_group_id === 'string')
+    ? userData.primary_group_id
+    : null;
+  
 
   if (isAuthenticated) {
-    return <Redirect href={`/groups?goto=${primaryGroupId}`}  />;
+    if (primaryGroupId) {
+      return <Redirect href={`/groups?goto=${primaryGroupId}`}  />;
+    }
+    return <Redirect href="/groups"  />;
   }
   return <Redirect href="/auth" />;
 }

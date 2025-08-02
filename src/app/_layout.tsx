@@ -11,6 +11,7 @@ import Modal from '../components/modals/Modal';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { toastConfig } from '../utils/toastConfig';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
+import LinkHandler from '../components/LinkHandler';
 
 initializeKakaoSDK('93959bb8c9aa19c9ae9ad2ca73ffb3c5');
 // 스플래시 스크린 자동 숨김 방지
@@ -18,8 +19,6 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    'Pretendard-300': require('../../assets/fonts/Pretendard-Light.otf'),
-    'Pretendard-400': require('../../assets/fonts/Pretendard-Regular.otf'),
     'Pretendard-500': require('../../assets/fonts/Pretendard-Medium.otf'),
     'Pretendard-600': require('../../assets/fonts/Pretendard-SemiBold.otf'),
     'Pretendard-700': require('../../assets/fonts/Pretendard-Bold.otf'),
@@ -50,6 +49,7 @@ export default function RootLayout() {
     >
       <NetworkProvider>
         <SafeAreaProvider>  
+          <LinkHandler />
           <Stack screenOptions={{ headerShown: false, animation: 'none' }}/>
           <Modal />
           <Toast config={toastConfig} />

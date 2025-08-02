@@ -65,6 +65,7 @@
             "intentFilters": [
               {
                 "action": "VIEW",
+                "autoVerify": true,
                 "data": [
                   {
                     "scheme": "https",
@@ -77,7 +78,7 @@
             ]
           },
           "ios": {
-            "associatedDomains": ["applinks:nbbang.app"]
+            "associatedDomains": ["applinks:nbbang.app", "webcredentials:nbbang.app"]
           }
         }
       ]

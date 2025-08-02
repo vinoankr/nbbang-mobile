@@ -67,7 +67,12 @@ export default function Groups() {
   };
 
   const handleCreateGroup = () => {
+    if (isNavigating.current) return;
+    isNavigating.current = true;
     router.push('/groups/create' as any);
+    setTimeout(() => {
+      isNavigating.current = false;
+    }, 300);
   };
 
   const navigateToGroup = (groupId: string) => {
