@@ -13,7 +13,8 @@
       "bundleIdentifier": "com.busitdol.nbbang",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "associatedDomains": ["applinks:nbbang.app", "webcredentials:nbbang.app"]
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +23,21 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.busitdol.nbbang",
-      "softwareKeyboardLayoutMode": "resize"
+      "softwareKeyboardLayoutMode": "resize",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "nbbang.app",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "plugins": [
       "expo-router",
@@ -55,30 +70,6 @@
           },
           "ios": {
             "handleKakaoOpenUrl": true
-          }
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "intentFilters": [
-              {
-                "action": "VIEW",
-                "autoVerify": true,
-                "data": [
-                  {
-                    "scheme": "https",
-                    "host": "nbbang.app",
-                    "pathPrefix": "/"
-                  }
-                ],
-                "category": ["BROWSABLE", "DEFAULT"]
-              }
-            ]
-          },
-          "ios": {
-            "associatedDomains": ["applinks:nbbang.app", "webcredentials:nbbang.app"]
           }
         }
       ]
