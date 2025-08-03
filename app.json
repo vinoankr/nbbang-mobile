@@ -11,8 +11,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.busitdol.nbbang",
+      "appName": "nbbang",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDisplayName": "엔빵"
       },
       "associatedDomains": ["applinks:nbbang.app", "webcredentials:nbbang.app"]
     },
