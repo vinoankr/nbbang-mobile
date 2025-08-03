@@ -21,6 +21,7 @@ interface SettlementResultsProps {
   groupId: string;
   groupCurrency: string;
   openInviteModal: () => void;
+  isMemberOfGroup: boolean;
 }
 
 const SettlementResults: React.FC<SettlementResultsProps> = ({
@@ -29,10 +30,11 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
   memberNameMap,
   groupId,
   groupCurrency,
-  openInviteModal
+  openInviteModal,
+  isMemberOfGroup
 }) => {
   const [isOthersTransactionsOpen, setIsOthersTransactionsOpen] = useState(false);
-  const { data: allExpenseParticipations, isLoading, isError } = useAllExpenseParticipations(groupId);
+  const { data: allExpenseParticipations, isLoading, isError } = useAllExpenseParticipations(groupId, isMemberOfGroup);
   
   const { myTransactions, othersTransactions } = calculateSettlement(
     allExpenseParticipations || [],
@@ -40,7 +42,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
     members
   );
 
-  if (isLoading) {
+  if (isLoading || !allExpenseParticipations) {
     return (
       <View className="flex justify-center items-center py-16">
         <Spinner size={24} color="#30333D" strokeWidth={2.5} />

@@ -7,11 +7,11 @@ const getAllExpenseParticipations = async (groupId: string) => {
   return response.data.data;
 };
 
-export const useAllExpenseParticipations = (groupId: string | undefined) => {
+export const useAllExpenseParticipations = (groupId: string | undefined, enabled: boolean) => {
   return useQuery({
     queryKey: ['allExpenseParticipations', groupId],
     queryFn: () => getAllExpenseParticipations(groupId!),
-    enabled: !!groupId,
+    enabled: !!groupId && enabled,
     staleTime: 3 * 60 * 1000, // 3분
   });
 }; 

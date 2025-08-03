@@ -8,18 +8,22 @@ interface AuthRequiredModalProps {
   groupId: string;
   groupName: string;
   closeModal: () => void;
+  activeTab: string;
 }
 
 export default function AuthRequiredModal({ 
   groupId, 
   groupName, 
+  activeTab,
   closeModal 
 }: AuthRequiredModalProps) {
   const router = useRouter();
 
   const handleJoin = () => {
-    router.dismissAll();
-    router.replace(`/auth?redirectGroupId=${groupId}`);
+    if (router.canGoBack()) {
+      router.dismissAll();
+    }
+    router.replace(`/auth?redirectGroupId=${groupId}&activeTab=${activeTab}` as any);
     closeModal();
   };
 

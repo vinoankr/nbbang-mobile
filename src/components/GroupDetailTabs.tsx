@@ -100,6 +100,7 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
                 members={members}
                 memberNameMap={memberNameMap}
                 openInviteModal={openInviteModal}
+                isMemberOfGroup={isMemberOfGroup}
               />
             )}
           </>

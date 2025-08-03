@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useModal } from '../../hooks/useModal';
 import { BoldText, SemiBoldText } from '../Texts';
 import { removeAuthToken, removeUserData } from '@/src/utils/client';
+import { queryClient } from '@/src/utils/queryClient';
 
 export default function SettingsModal() {
   const router = useRouter();
@@ -18,6 +19,8 @@ export default function SettingsModal() {
     removeAuthToken();
     removeUserData();
     router.dismissTo('/');
+    queryClient.clear();
+    queryClient.removeQueries();
     closeModal();
   };
 

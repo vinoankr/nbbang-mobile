@@ -25,6 +25,7 @@ export default function GroupDetail() {
   const token = getAuthToken();
   const isAuthenticated = !!token;
   const currentUser = getUserData();
+  const { activeTab } = useLocalSearchParams() as { activeTab: string | null };
   
   const { data: group, isLoading: groupLoading, isError: groupError } = useGroupInfo(id);
   const { data: members, isLoading: membersLoading, isError: membersError } = useGroupMembers(id);
@@ -43,6 +44,15 @@ export default function GroupDetail() {
       router.replace('/groups');
     }
   };
+
+  useEffect(() => {
+    if (isAuthenticated && !router.canGoBack()) {
+      router.replace('/groups');
+      setTimeout(() => {
+        router.push(`/groups/${id}?activeTab=${activeTab || 'expenses'}` as any);
+      }, 0);
+    }
+  }, []);
 
   const unlinkedMembers = useMemo(() => {
     return members?.filter((member: any) => member.user_id === null) || [];
@@ -76,6 +86,7 @@ export default function GroupDetail() {
         <AuthRequiredModal 
           groupId={id}
           groupName={group.name}
+          activeTab={activeTab || 'expenses'}
           closeModal={closeModal}
         />,
         false

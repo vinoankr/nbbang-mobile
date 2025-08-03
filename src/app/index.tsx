@@ -8,7 +8,6 @@ export default function App() {
   const primaryGroupId = (typeof userData?.primary_group_id === 'string')
     ? userData.primary_group_id
     : null;
-  
 
   if (isAuthenticated) {
     if (primaryGroupId) {
