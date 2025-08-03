@@ -106,6 +106,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
             <TouchableOpacity
               className="py-3.5 px-4 border border-gray-100 rounded-lg flex flex-col"
               onPress={() => setIsOthersTransactionsOpen(!isOthersTransactionsOpen)}
+              activeOpacity={0.9}
             >
               <View className="flex-row justify-between items-center">
                 <BoldText className="text-gray-800 text-base">
