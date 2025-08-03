@@ -8,10 +8,12 @@
     "android": "eas build --platform android --profile development",
     "android-preview": "eas build --platform android --profile preview",
     "android-production": "eas build --platform android --profile production",
+    "android-submit": "eas submit --platform android",
     "ios": "eas build --platform ios --profile development",
     "ios-simulator": "eas build --platform ios --profile ios-simulator",
     "ios-preview": "eas build --platform ios --profile preview",
-    "ios-production": "eas build --platform ios --profile production"
+    "ios-production": "eas build --platform ios --profile production",
+    "ios-submit": "eas submit --platform ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

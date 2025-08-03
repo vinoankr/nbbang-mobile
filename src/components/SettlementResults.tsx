@@ -104,7 +104,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
           
           {othersTransactions.length > 0 && (
             <TouchableOpacity
-              className="py-3 px-4 border border-gray-100 rounded-lg flex flex-col"
+              className="py-3.5 px-4 border border-gray-100 rounded-lg flex flex-col"
               onPress={() => setIsOthersTransactionsOpen(!isOthersTransactionsOpen)}
             >
               <View className="flex-row justify-between items-center">
@@ -118,7 +118,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
                 <View className="flex flex-col mt-1.5">
                   {othersTransactions.map((transaction: any, index: number) => (
                     <View key={transaction.to + transaction.from + transaction.amount}>
-                      {index > 0 && <View className="h-px bg-gray-100 my-2" />}
+                      {index > 0 && <View className="h-px bg-gray-100 my-1" />}
                       <OthersBalanceItem
                         groupId={groupId}
                         myMemberId={currentMemberId}

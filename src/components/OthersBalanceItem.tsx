@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { MediumText } from './Texts';
+import { MediumText, SemiBoldText } from './Texts';
 import { useModal } from '../hooks/useModal';
 import { ParticipantWithAmount, useAddExpense } from '../hooks/mutations/useAddExpense';
 import TransferConfirmModal from './modals/TransferConfirmModal';
 import { CurrencyCode } from '../constants/currencies';
 import { formatCurrency } from '../utils/formatter';
 import Toast from 'react-native-toast-message';
-import ChevronLeft from '../../assets/icons/chevron-left.svg';
+import { ChevronLeft } from 'lucide-react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
 
 interface Member {
@@ -107,24 +107,24 @@ const   OthersBalanceItem: React.FC<OthersBalanceItemProps> = ({
 
   return (
     <View className="flex flex-row items-center justify-between pt-2">
-      <View className="flex flex-col">
+      <View className="flex flex-col gap-0.5">
         <View className="flex flex-row items-center gap-1">
           <MediumText className="text-gray-800 text-base font-semibold">{fromName || "홍길동"}</MediumText>
           <View style={{ transform: [{ rotate: '180deg' }] }}>
-            <ChevronLeft width={16} height={16} />
+            <ChevronLeft size={16} strokeWidth={2.5} />
           </View>
           <MediumText className="text-gray-800 text-base font-semibold">{toName || "이순신"}</MediumText>
         </View>
-        <MediumText className="text-sm text-gray-800 font-mono">{formatCurrency(Math.abs(amount), currency)}</MediumText>
+        <MediumText className="text-base text-gray-800">{formatCurrency(Math.abs(amount), currency)}</MediumText>
       </View>
       <View className="flex flex-row items-center gap-2">
         <TouchableOpacity 
-          className="flex items-center justify-center px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-100"
+          className="flex items-center justify-center px-3 py-2 rounded-lg bg-gray-50 border border-gray-100"
           onPress={(e) => {
             openTransferModal();
           }}
         >
-          <MediumText className="text-gray-500 text-base font-bold">완료처리</MediumText>
+          <SemiBoldText className="text-gray-800 text-base">완료처리</SemiBoldText>
         </TouchableOpacity>
       </View>
     </View>
