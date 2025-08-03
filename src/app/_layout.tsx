@@ -11,7 +11,6 @@ import Modal from '../components/modals/Modal';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { toastConfig } from '../utils/toastConfig';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
-import LinkHandler from '../components/LinkHandler';
 
 initializeKakaoSDK('93959bb8c9aa19c9ae9ad2ca73ffb3c5');
 // 스플래시 스크린 자동 숨김 방지
@@ -49,7 +48,6 @@ export default function RootLayout() {
     >
       <NetworkProvider>
         <SafeAreaProvider>  
-          <LinkHandler />
           <Stack screenOptions={{ headerShown: false, animation: 'none' }}/>
           <Modal />
           <Toast config={toastConfig} />

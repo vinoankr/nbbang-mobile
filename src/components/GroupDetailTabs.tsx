@@ -4,6 +4,7 @@ import { BoldText } from './Texts';
 import ExpensesList from './ExpensesList';
 import SettlementResults from './SettlementResults';
 import Spinner from './Spinner';
+import { useLocalSearchParams } from 'expo-router';
 
 interface Member {
   id: string;
@@ -34,7 +35,10 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
   openInviteModal,
   isLoading = false,
 }) => {
-  const [activeTab, setActiveTab] = useState<'expenses' | 'settlement'>('expenses');
+  
+  const { activeTab: activeTabParam } = useLocalSearchParams() as { activeTab: 'expenses' | 'settlement' | null };
+
+  const [activeTab, setActiveTab] = useState<'expenses' | 'settlement'>(activeTabParam || 'expenses');
 
   return (
     <View className="flex-1">

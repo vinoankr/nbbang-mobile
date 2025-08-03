@@ -32,7 +32,7 @@
             {
               "scheme": "https",
               "host": "nbbang.app",
-              "pathPrefix": "/"
+              "pathPrefix": "/groups"
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]

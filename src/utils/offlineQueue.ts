@@ -29,7 +29,7 @@ export const retryOfflineMutations = async () => {
   const mutations = getOfflineMutations();
   
   if (mutations.length === 0) {
-    console.log('No offline mutations to retry');
+    // console.log('No offline mutations to retry');
     return;
   }
 
