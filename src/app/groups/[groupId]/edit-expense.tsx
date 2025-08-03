@@ -34,7 +34,7 @@ export default function EditExpense() {
   const { groupId, expenseId } = useLocalSearchParams<{ groupId: string; expenseId: string }>();
   const router = useRouter();
   const currentUser = getUserData();
-  const { isConnected } = useNetInfo();
+  const { isInternetReachable } = useNetInfo();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -164,6 +164,14 @@ export default function EditExpense() {
 
   const handleDelete = async () => {
     if (!expenseId) return;
+
+    if (!isInternetReachable) {
+      Toast.show({
+        type: 'error',
+        text1: '네트워크 연결이 필요해요',
+      });
+      return;
+    }
     
     Alert.alert(
       `지출 삭제`,
@@ -200,7 +208,7 @@ export default function EditExpense() {
     
     if (!validateForm()) return;
     
-    if (!isConnected) {
+    if (!isInternetReachable) {
       Toast.show({
         type: 'error',
         text1: '네트워크 연결이 필요해요',

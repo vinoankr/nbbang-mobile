@@ -8,6 +8,7 @@ import { CurrencyCode } from '../constants/currencies';
 import { formatCurrency } from '../utils/formatter';
 import Toast from 'react-native-toast-message';
 import ChevronLeft from '../../assets/icons/chevron-left.svg';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 interface Member {
   id: string;
@@ -37,12 +38,20 @@ const   OthersBalanceItem: React.FC<OthersBalanceItemProps> = ({
   const isSubmittingRef = useRef(false);
   const { showModal, closeModal } = useModal();
   const { mutateAsync: addExpense } = useAddExpense();
-
+  const { isInternetReachable } = useNetInfo();
   const toName = memberNameMap.get(to);
   const fromName = memberNameMap.get(from);
 
   const handleConfirmTransfer = async () => {
     if (!groupId || isSubmittingRef.current) return;
+
+    if (!isInternetReachable) {
+      Toast.show({
+        type: 'error',
+        text1: '네트워크 연결이 필요해요',
+      });
+      return;
+    }
     
     try {
       isSubmittingRef.current = true;

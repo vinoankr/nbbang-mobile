@@ -12,7 +12,7 @@ export const queryClient = new QueryClient({
     },
     mutations: {
       networkMode: 'online',
-      retry: 0,
+      retry: 0
     },
   },
 });

@@ -33,7 +33,7 @@ export default function CreateGroup() {
     participants: []
   });
 
-  const { isConnected } = useNetInfo();
+  const { isInternetReachable } = useNetInfo();
   
   const [participants, setParticipants] = useState<string[]>([]);
   const [newParticipant, setNewParticipant] = useState('');
@@ -105,7 +105,7 @@ export default function CreateGroup() {
     
     if (!validateForm()) return;
     
-    if (!isConnected) {
+    if (!isInternetReachable) {
       Toast.show({
         type: 'error',
         text1: '네트워크 연결이 필요해요 🥺',

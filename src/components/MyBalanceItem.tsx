@@ -12,6 +12,7 @@ import Toast from 'react-native-toast-message';
 import { useProfile } from '../hooks/queries/useMe';
 import { Banknote, HandCoins, UserPlus2 } from 'lucide-react-native';
 import { josa } from 'es-hangul';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 interface Member {
   id: string;
@@ -47,7 +48,7 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
   const { mutateAsync: addExpense } = useAddExpense();
   const { showModal, closeModal } = useModal();
   const { data: userProfile } = useProfile();
-
+  const { isInternetReachable } = useNetInfo();
   const isToMe = to === myMemberId;
   const shouldInvite = isToMe ? !members.find(member => member.id === from)?.user_id : !members.find(member => member.id === to)?.user_id;
   const shouldRegisterBank = isToMe && !userProfile?.kakaopay_id && !userProfile?.bank;
@@ -76,6 +77,14 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
 
   const handleConfirmTransfer = async () => {
     if (!groupId || isSubmittingRef.current) return;
+
+    if (!isInternetReachable) {
+      Toast.show({
+        type: 'error',
+        text1: '네트워크 연결이 필요해요',
+      });
+      return;
+    }
 
     isSubmittingRef.current = true;
     try {

@@ -30,7 +30,7 @@ export default function AddExpense() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const router = useRouter();
   const currentUser = getUserData();
-  const { isConnected } = useNetInfo();
+  const { isInternetReachable } = useNetInfo();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
   // 데이터 로딩
@@ -128,7 +128,7 @@ export default function AddExpense() {
     
     if (!validateForm()) return;
     
-    if (!isConnected) {
+    if (!isInternetReachable) {
       Toast.show({
         type: 'error',
         text1: '네트워크 연결이 필요해요',

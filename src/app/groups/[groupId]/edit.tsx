@@ -14,6 +14,7 @@ import { PrimaryButton } from '@/src/components/form/PrimaryButton';
 import { MediumText } from '@/src/components/Texts';
 import Header from '@/src/components/Header';
 import { X } from 'lucide-react-native';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 interface EditGroupForm {
   groupName: string;
@@ -40,6 +41,7 @@ export default function EditGroup() {
   const { data: members, isLoading: membersLoading } = useGroupMembers(groupId as string);
   const editGroupMutation = useEditGroup();
   const insets = useSafeAreaInsets();
+  const { isInternetReachable } = useNetInfo();
   const [formData, setFormData] = useState<EditGroupForm>({
     groupName: '',
     currency: 'KRW',
@@ -207,6 +209,14 @@ export default function EditGroup() {
     if (isLoadingRef.current) return;
     
     if (!validateForm()) return;
+    
+    if (!isInternetReachable) {
+      Toast.show({
+        type: 'error',
+        text1: '네트워크 연결이 필요해요',
+      });
+      return;
+    }
     
     try {
       setIsSubmitting(true);

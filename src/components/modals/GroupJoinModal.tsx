@@ -7,6 +7,8 @@ import { PrimaryButton } from '../form/PrimaryButton';
 import { SecondaryButton } from '../form/SecondaryButton';
 import { InputField } from '../form/InputField';
 import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 interface Member {
   id: string;
@@ -40,11 +42,19 @@ export default function GroupJoinModal({
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const isLoadingRef = useRef(false);
   const acceptInviteMutation = useAcceptInvite();
-
+  const { isInternetReachable } = useNetInfo();
   // 기존 멤버와 연결하는 함수
   const handleLinkToExistingMember = async (memberId: string, password?: string) => {
     if (!currentUserId || isLoadingRef.current) return;
     
+    if (!isInternetReachable) {
+      Toast.show({
+        type: 'error',
+        text1: '네트워크 연결이 필요해요',
+      });
+      return;
+    }
+
     try {
       isLoadingRef.current = true;
       await acceptInviteMutation.mutateAsync({ groupId, memberId, password });
