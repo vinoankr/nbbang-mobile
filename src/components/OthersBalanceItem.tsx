@@ -7,7 +7,7 @@ import TransferConfirmModal from './modals/TransferConfirmModal';
 import { CurrencyCode } from '../constants/currencies';
 import { formatCurrency } from '../utils/formatter';
 import Toast from 'react-native-toast-message';
-import { ChevronLeft } from 'lucide-react-native';
+import { ArrowRight } from 'lucide-react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
 
 interface Member {
@@ -110,9 +110,7 @@ const   OthersBalanceItem: React.FC<OthersBalanceItemProps> = ({
       <View className="flex flex-col gap-0.5">
         <View className="flex flex-row items-center gap-1">
           <MediumText className="text-gray-800 text-base font-semibold">{fromName || "홍길동"}</MediumText>
-          <View style={{ transform: [{ rotate: '180deg' }] }}>
-            <ChevronLeft size={16} strokeWidth={2.5} />
-          </View>
+          <ArrowRight size={16} strokeWidth={2.5} />
           <MediumText className="text-gray-800 text-base font-semibold">{toName || "이순신"}</MediumText>
         </View>
         <MediumText className="text-base text-gray-800">{formatCurrency(Math.abs(amount), currency)}</MediumText>

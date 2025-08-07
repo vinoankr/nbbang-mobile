@@ -69,3 +69,26 @@ export const setUserData = (userData: any) => {
 export const removeUserData = () => {
   mmkvStorage.removeItem('userData');
 }
+
+// Apple 로그인 API 호출
+export const signInWithApple = async (user: string, fullName: string | null, email: string | null) => {
+  try {
+    const response = await client.post('/auth/apple', {
+      user,
+      fullName,
+      email,
+    });
+    
+    if (response.data.success) {
+      const { token, user } = response.data;
+      setAuthToken(token);
+      setUserData(user);
+      return { success: true, user };
+    } else {
+      throw new Error(response.data.error || 'Apple 로그인에 실패했습니다.');
+    }
+  } catch (error: any) {
+    console.error('Apple 로그인 오류:', error);
+    throw new Error(error.response?.data?.error || 'Apple 로그인에 실패했습니다.');
+  }
+};

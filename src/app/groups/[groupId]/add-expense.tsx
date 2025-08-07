@@ -25,6 +25,7 @@ import { PrimaryButton } from '@/src/components/form/PrimaryButton';
 import { MediumText, BoldText, SemiBoldText } from '@/src/components/Texts';
 import Spinner from '@/src/components/Spinner';
 import { X } from 'lucide-react-native';
+import { mmkvStorage } from '@/src/utils/storage';
 
 export default function AddExpense() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
@@ -40,6 +41,7 @@ export default function AddExpense() {
 
   const { mutateAsync: addExpense } = useAddExpense();
   const defaultCurrency = group?.default_currency as CurrencyCode;
+  const lastCurrency = mmkvStorage.getItem(groupId+'currency') as CurrencyCode;
   const insets = useSafeAreaInsets();
   const isLoading = groupLoading || membersLoading || currenciesLoading;
   const isError = groupError || membersError || currenciesError;
@@ -85,6 +87,7 @@ export default function AddExpense() {
     members: members ?? [],
     currentUser,
     defaultCurrency,
+    lastCurrency,
     currencyMap,
   });
 
@@ -209,7 +212,9 @@ export default function AddExpense() {
           spentAt
         });
       }
-      
+      if (lastCurrency !== currency) {
+        mmkvStorage.setItem(groupId+'currency', currency);
+      }
       router.back();
     } catch (error: any) {
       Toast.show({
@@ -306,7 +311,7 @@ export default function AddExpense() {
           {/* 금액 */}
           <FormLabel label="금액" />
           <View className="mb-4 flex-row items-start gap-2">
-            <View className="w-[88px]">
+            <View className="w-[92px]">
               <SelectField
                 value={currency}
                 onChangeValue={(value) => setCurrency(value as CurrencyCode)}

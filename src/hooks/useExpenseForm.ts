@@ -16,6 +16,7 @@ interface UseExpenseFormProps {
   currentUser: any;
   defaultCurrency: CurrencyCode;
   currencyMap: Map<CurrencyCode, number>;
+  lastCurrency: CurrencyCode | undefined;
 }
 
 interface ExpenseEditData {
@@ -38,7 +39,7 @@ interface FormErrors {
   exchangeRate?: string;
 }
 
-export const useExpenseForm = ({ members, currentUser, defaultCurrency, currencyMap }: UseExpenseFormProps) => {
+export const useExpenseForm = ({ members, currentUser, defaultCurrency, currencyMap, lastCurrency }: UseExpenseFormProps) => {
   // 기본 폼 상태
   const [title, setTitle] = useState<string>('');
   const [amount, setAmount] = useState<number>(0);
@@ -46,7 +47,7 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
   const [paidBy, setPaidBy] = useState<string>('');
   const [receiverId, setReceiverId] = useState<string>('');
   const [spentAt, setSpentAt] = useState<Date>(new Date());
-  const [currency, setCurrency] = useState<CurrencyCode>(defaultCurrency);
+  const [currency, setCurrency] = useState<CurrencyCode>(lastCurrency || defaultCurrency);
   const [exchangeRate, setExchangeRate] = useState<number>(1);
   const [exchangeRateInput, setExchangeRateInput] = useState<string>('1');
   
@@ -104,7 +105,7 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
       
       // currency 1단위당 defaultCurrency 단위 계산
       newExchangeRate = currencyRate / defaultCurrencyRate;
-      newExchangeRate = Number(newExchangeRate.toPrecision(5));
+      newExchangeRate = Number(parseFloat(newExchangeRate.toPrecision(5)));
     }
     
     // 현재 값과 다를 때만 업데이트
@@ -117,11 +118,9 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
   // 통화 변경 시 금액 초기화 (수정모드가 아닐 때)
   useEffect(() => {
     if (isEditMode && currency === editInitialCurrency) return;
-    
-    if (!isEditMode) {
-      setAmountForDisplay('');
-      setAmount(0);
-    }
+  
+    setAmountForDisplay('');
+    setAmount(0);
   }, [currency, isEditMode, editInitialCurrency]);
 
   // 지출 유형 변경 시 제목 처리
@@ -275,7 +274,7 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
       setExchangeRateInput(currencyMap.get(currency)?.toString() || '1');
     } else {
       setExchangeRate(precisionValue);
-      setExchangeRateInput(precisionValue.toPrecision(5));
+      setExchangeRateInput(precisionValue.toString());
     }
   };
 
@@ -437,7 +436,7 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
     if (currency !== defaultCurrency && (!exchangeRate || exchangeRate <= 0)) {
       newErrors.exchangeRate = '환율을 입력해주세요';
     }
-    
+        
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

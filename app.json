@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "com.busitdol.nbbang",
       "appName": "nbbang",
@@ -43,13 +44,20 @@
     },
     "plugins": [
       "expo-router",
+      "expo-apple-authentication",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "native",
-          "backgroundColor": "#ffffff"
+          "ios": {
+            "image": "./assets/images/splash-icon.png",
+            "imageWidth": 200,
+            "backgroundColor": "#ffffff"
+          },
+          "android": {
+            "backgroundColor": "#ffffff",
+            "image": "./assets/images/splash-android-icon.png",
+            "imageWidth": 225
+          }
         }
       ],
       "expo-font",

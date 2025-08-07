@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { client } from '@/src/utils/client';
 import { CurrencyCode } from '@/src/constants/currencies';
+import { convertToLocalMidnightUTC } from '@/src/utils/dateUtils';
 import Toast from 'react-native-toast-message';
 
 // 참가자와 금액이 포함된 인터페이스
@@ -47,9 +48,16 @@ interface AddExpenseResponse {
 }
 
 const addExpense = async (data: AddExpenseData): Promise<AddExpenseResponse> => {
+  // spentAt을 기기 시간대의 0시 0분 0초로 변환하여 UTC로 전송
+  let processedSpentAt = null;
+  if (data.spentAt) {
+    const localMidnightUTC = convertToLocalMidnightUTC(data.spentAt);
+    processedSpentAt = localMidnightUTC.toISOString();
+  }
+
   const response = await client.post('/expenses/add', {
     ...data,
-    spentAt: data.spentAt?.toISOString() || null,
+    spentAt: processedSpentAt,
     createdAt: typeof data.createdAt === 'string' ? data.createdAt : data.createdAt?.toISOString() || null
   });
   return response.data;

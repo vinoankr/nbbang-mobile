@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useModal } from '../../hooks/useModal';
 import { BoldText, SemiBoldText } from '../Texts';
@@ -22,6 +22,11 @@ export default function SettingsModal() {
     queryClient.clear();
     queryClient.removeQueries();
     closeModal();
+  };
+
+  const handleWithdrawal = async () => {
+    closeModal();
+    await Linking.openURL('https://nbbang.app/delete-info');
   };
 
   return (
@@ -58,6 +63,13 @@ export default function SettingsModal() {
         onPress={handleLogout}
       >
         <SemiBoldText className="text-center text-red-500 text-base">로그아웃</SemiBoldText>
+      </TouchableOpacity>
+      <TouchableOpacity 
+        className="w-full p-2.5 bg-red-100 rounded-lg"
+        activeOpacity={0.9}
+        onPress={handleWithdrawal}
+      >
+        <SemiBoldText className="text-center text-red-500 text-base">회원탈퇴</SemiBoldText>
       </TouchableOpacity>
     </View>
   );

@@ -47,7 +47,11 @@ export const SelectField = forwardRef<any, SelectFieldProps>(
   if (disabled) {
     return (
       <View className="rounded-lg border border-gray-100 bg-gray-50 min-h-[48px] px-4 py-3.5 flex-row items-center justify-between">
-        <MediumText className="text-base text-gray-400 flex-1">
+        <MediumText 
+          className="text-base text-gray-400 flex-1"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {displayText}
         </MediumText>
         <ChevronDown width={16} height={16} color="#BCBDC3" />
@@ -75,7 +79,11 @@ export const SelectField = forwardRef<any, SelectFieldProps>(
           borderColor: isPressed ? '#2C7FFF' : '#EEEFF3',
         }}
       >
-        <MediumText className={`text-base flex-1 ${!selectedItem ? 'text-gray-400' : 'text-black'}`}>
+        <MediumText 
+          className={`text-base flex-1 ${!selectedItem ? 'text-gray-400' : 'text-black'}`}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {displayText}
         </MediumText>
         <ChevronDown width={16} height={16} color="#BCBDC3" />

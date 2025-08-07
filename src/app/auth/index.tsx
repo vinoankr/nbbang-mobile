@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Image } from 'react-native';
+import { View, TouchableOpacity, Image, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { BoldText, MediumText, SemiBoldText } from '@/src/components/Texts';
 import { login, me } from '@react-native-kakao/user';
-import { client, setAuthToken, setUserData } from '@/src/utils/client';
+import { client, setAuthToken, setUserData, signInWithApple } from '@/src/utils/client';
 import Toast from 'react-native-toast-message';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 export default function Auth() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { redirectGroupId } = useLocalSearchParams() as { redirectGroupId: string | null };
+
+  const isAppleLoginAvailable = Platform.OS === 'ios';
 
   const handleKakaoLogin = async () => {
     if (isLoading) return;
@@ -58,11 +61,44 @@ export default function Auth() {
     }
   };
 
+  const handleAppleLogin = async () => {
+    if (isLoading) return;
+    try {
+      setIsLoading(true);
+      const { user, fullName, email, realUserStatus } = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      if (realUserStatus !== 2) {
+        // TODO?
+      }
+
+      // Apple 로그인 API 호출
+      const fullNameString = fullName?.givenName && fullName?.familyName 
+        ? `${fullName.familyName}${fullName.givenName}`
+        : null;
+      
+      await signInWithApple(user, fullNameString, email);
+      router.replace('/groups');
+      
+    } catch (error) {
+      console.log('Apple 로그인 실패', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Apple 로그인 실패',
+        visibilityTime: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
   return (
     <View className="flex-1 bg-white">
       <View className='flex-1 bg-blue-500'>
       <View className="flex-1 px-4 justify-center items-center">
-        <View className="max-w-md w-full rounded-2xl px-4 py-12 items-center bg-white">
+        <View className="max-w-md w-full rounded-2xl px-4 py-12 pb-8 items-center bg-white">
           {/* 로고 이미지 */}
           <Image 
             source={require('../../../assets/images/logo.webp')} 
@@ -79,26 +115,39 @@ export default function Auth() {
               나중에 원클릭 송금으로 정산 가능해요
             </MediumText>
           </View>
-
+          
           {/* 카카오 로그인 버튼 */}
           <TouchableOpacity 
             onPress={handleKakaoLogin}
             disabled={isLoading}
             className={`w-full h-14 rounded-xl flex-row items-center justify-center gap-2 bg-[#FEE500] ${isLoading ? 'opacity-50' : ''}`}
-          >
+            >
             <Image 
               source={require('../../../assets/images/kakao.webp')} 
               className="w-5 h-5"
-            />
+              />
             <SemiBoldText className="text-base text-[#333333]">
               카카오로 시작하기
             </SemiBoldText>
           </TouchableOpacity>
+          {
+            isAppleLoginAvailable && (
+              <TouchableOpacity className='w-full bg-black rounded-xl flex items-center justify-center py-1.5 mt-2' disabled={isLoading} activeOpacity={0.9} onPress={handleAppleLogin}>
+                <AppleAuthentication.AppleAuthenticationButton
+                  buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+                  buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                  style={{width: '100%', height: 44}}
+                  onPress={() => {}}
+                />
+              </TouchableOpacity>
+            )
+          }
+
 
           {/* 전화번호로 시작하기 */}
-          <View className="mt-8 flex-col items-center gap-1">
+          <View className="mt-6 flex-col items-center gap-1">
             <MediumText className="text-gray-600 text-center text-sm">
-              카카오 계정이 없으신가요?
+              {isAppleLoginAvailable ? '소셜 계정이 없으신가요?' : '카카오 계정이 없으신가요?'}
             </MediumText>
             <TouchableOpacity 
               onPress={() => !isLoading && router.push(`/auth/phone${redirectGroupId ? `?redirectGroupId=${redirectGroupId}` : ''}` as any)}

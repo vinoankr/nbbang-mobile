@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { BoldText, MediumText } from './Texts';
 import { useExpenseParticipants } from '@/src/hooks/queries/useExpenseParticipants';
 import { useGroupExpenses } from '@/src/hooks/queries/useGroupExpenses';
+import { useGroupedExpenses } from '@/src/hooks/useGroupedExpenses';
 import { formatCurrency } from '@/src/utils/formatter';
 import Pencil from '../../assets/icons/pencil.svg';
 import { ArrowRightIcon } from 'lucide-react-native';
@@ -53,7 +54,7 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
     >
       <View className="flex-row justify-between mb-1.5">
         <BoldText className="text-gray-800 text-base flex-1">
-          {expense.title}
+          {expense.title || '지출'}
         </BoldText>
         {expense.currency !== (typeof groupCurrency === 'string' ? groupCurrency : groupCurrency.code) && (
           <MediumText className="text-gray-400 text-base">
@@ -112,9 +113,9 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
                           {memberNameMap.get(participant.member_id) || '-'}
                           {participant.member_id === currentUserMemberId ? '(나)' : ''}
                         </BoldText>
-                                                 <MediumText className="text-gray-400 text-sm">
-                           {formatCurrency(participant.amount, (typeof groupCurrency === 'string' ? groupCurrency : groupCurrency.code) as any)}
-                         </MediumText>
+                        <MediumText className="text-gray-400 text-sm">
+                          {formatCurrency(participant.amount, (typeof groupCurrency === 'string' ? groupCurrency : groupCurrency.code) as any)}
+                        </MediumText>
                       </View>
                     ))
                   }
@@ -136,9 +137,10 @@ const ExpensesList: React.FC<ExpensesListProps> = ({
   currentUser,
   isMemberOfGroup
 }) => {
-  const { data: expenses, isLoading: expensesLoading, isError: expensesError } = useGroupExpenses(groupId, currentUser, isMemberOfGroup);
+  const { data: rawExpenses, isLoading: expensesLoading, isError: expensesError } = useGroupExpenses(groupId, currentUser, isMemberOfGroup);
+  const groupedExpenses = useGroupedExpenses(rawExpenses);
 
-  if (expensesLoading || !expenses) {
+  if (expensesLoading || !rawExpenses) {
     return (
       <View className="flex-1 justify-center items-center py-16">
         <Spinner size={24} color="#30333D" strokeWidth={2.5} />
@@ -159,7 +161,7 @@ const ExpensesList: React.FC<ExpensesListProps> = ({
     );
   }
 
-  if (expenses.length === 0) {
+  if (groupedExpenses.length === 0) {
     return (
       <View className="flex justify-center items-center my-8">
         <MediumText className="text-gray-600 text-base text-center mb-2">
@@ -174,12 +176,12 @@ const ExpensesList: React.FC<ExpensesListProps> = ({
 
   return (
     <View className="flex flex-col gap-6">
-      {expenses.map((expense: any) => (
-        <View key={expense.date} className="flex flex-col gap-2.5">
+      {groupedExpenses.map((expenseGroup) => (
+        <View key={expenseGroup.date} className="flex flex-col gap-2.5">
           <BoldText className="text-gray-800 text-lg">
-            {expense.date}
+            {expenseGroup.date}
           </BoldText>
-          {expense.expenses.map((expenseItem: any) => (
+          {expenseGroup.expenses.map((expenseItem: any) => (
             <ExpenseCard
               key={expenseItem.id}
               expense={expenseItem}

@@ -1,24 +1,29 @@
-import { Text } from "react-native";
+import { Text, TextProps } from "react-native";
 
-export const BoldText = ({ children, className='' }: { children: React.ReactNode, className?: string }) => {
+interface CustomTextProps extends Omit<TextProps, 'style'> {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const BoldText = ({ children, className='', ...props }: CustomTextProps) => {
   return (
-    <Text style={{ fontFamily: 'Pretendard-700'}} className={className}>
+    <Text style={{ fontFamily: 'Pretendard-700'}} className={className} {...props}>
       {children}
     </Text> 
   )
 }
 
-export const SemiBoldText = ({ children, className='' }: { children: React.ReactNode, className?: string }) => {
+export const SemiBoldText = ({ children, className='', ...props }: CustomTextProps) => {
   return (
-    <Text style={{ fontFamily: 'Pretendard-600'}} className={className}>
+    <Text style={{ fontFamily: 'Pretendard-600'}} className={className} {...props}>
       {children}
     </Text>
   )
 }
 
-export const MediumText = ({ children, className='' }: { children: React.ReactNode, className?: string }) => {
+export const MediumText = ({ children, className='', ...props }: CustomTextProps) => {
   return (
-    <Text style={{ fontFamily: 'Pretendard-500'}} className={className}>
+    <Text style={{ fontFamily: 'Pretendard-500'}} className={className} {...props}>
       {children}
     </Text>
   )
