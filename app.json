@@ -17,7 +17,12 @@
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDisplayName": "엔빵"
       },
-      "associatedDomains": ["applinks:nbbang.app", "webcredentials:nbbang.app"]
+      "associatedDomains": [
+        "applinks:nbbang.app",
+        "webcredentials:nbbang.app",
+        "applinks:nbbang.app",
+        "webcredentials:nbbang.app"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -38,7 +43,25 @@
               "pathPrefix": "/groups"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "nbbang.app",
+              "pathPrefix": "/groups"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -93,6 +116,12 @@
         "projectId": "59dd5b05-0d7a-4339-8681-ef0f89017de4"
       }
     },
-    "owner": "vinoankr"
+    "owner": "vinoankr",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/59dd5b05-0d7a-4339-8681-ef0f89017de4"
+    }
   }
 }

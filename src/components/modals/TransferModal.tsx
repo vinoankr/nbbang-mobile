@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Image } from 'react-native';
+import { View, TouchableOpacity, Image, Linking } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { BoldText, MediumText } from '../Texts';
 import { CurrencyCode } from '../../constants/currencies';
@@ -7,6 +7,7 @@ import { formatCurrency } from '../../utils/formatter';
 import { useGroupMemberAccountInfo } from '../../hooks/queries/useGroupMemberAccountInfo';
 import { Landmark } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
+import { useParsedCurrencyRates } from '../../hooks/useParsedCurrencyRates';
 
 interface TransferModalProps {
   toId: string;
@@ -25,26 +26,61 @@ const TransferModal: React.FC<TransferModalProps> = ({
 }) => {
   const { data: memberAccountInfo, isLoading: isMemberAccountInfoLoading } = useGroupMemberAccountInfo(toId);
   const [isShowCopiedMessage, setIsShowCopiedMessage] = useState(false);
-  const onKakaoClick = () => {
-    // const newWindow = window.open(`https://qr.kakaopay.com/${memberAccountInfo?.kakaopay_id}${((KRWAmount * 524288).toString(16))}`, '_blank');
-    // setTimeout(()=>{
-    //   newWindow.close();
-    //   openConfirmModal('카카오')
-    // },3000)
+  const {currencyMap, isLoading, latestUpdatedAt} = useParsedCurrencyRates();
+
+  const KRWAmount = (currencyMap.get(currency) || 0) * amount;
+  const KRWAmountString = formatCurrency(KRWAmount, "KRW").replace('₩','')+'원';
+  const lastUpdatedAtString = new Date(latestUpdatedAt).toLocaleDateString('ko-KR', {month: '2-digit', day: '2-digit'}).replace(/\. /g, '/').replace('.', '');
+
+
+  const onKakaoClick = async () => {
+    if (!memberAccountInfo?.kakaopay_id) {
+      Toast.show({
+        type: 'error',
+        text1: '카카오페이 정보를 찾을 수 없습니다',
+      });
+      return;
+    }
+
+    const kakaoUrl = `https://qr.kakaopay.com/${memberAccountInfo.kakaopay_id}${((KRWAmount * 524288).toString(16))}`;
+    
+    try {
+      await Linking.openURL(kakaoUrl);
+    } catch (error) {
+      console.log(error)
+      Toast.show({
+        type: 'error',
+        text1: '카카오페이 앱을 열 수 없습니다',
+      });
+    }
   }
 
-  const onTossClick = () => {
-    // hasAppSwitched.current = false;
+  const onTossClick = async () => {
     
-    // setTimeout(() => {
-    //   if (!hasAppSwitched.current) {
-    //     toast.error('토스 앱을 열 수 없습니다');
-    //   } else {
-    //     openConfirmModal('토스')
-    //   }
-    // }, 3000);
+    const tossUrl = `supertoss://send?amount=${KRWAmount}&bank=${encodeURIComponent(memberAccountInfo?.bank || '')}&accountNo=${memberAccountInfo?.account_number}`;
     
-    // window.location.href = `supertoss://send?amount=${KRWAmount}&bank=${encodeURIComponent(memberAccountInfo?.bank || '')}&accountNo=${memberAccountInfo?.account_number}`;
+    try {
+      const canOpen = await Linking.canOpenURL(tossUrl);
+      if (canOpen) {
+        await Linking.openURL(tossUrl);
+        // 앱이 성공적으로 열렸다면 잠시 후 확인 모달 열기
+        setTimeout(() => {
+          openConfirmModal('토스');
+        }, 1000);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: '토스 앱이 설치되어 있지 않습니다',
+          text2: '앱스토어에서 토스를 설치해주세요',
+        });
+      }
+    } catch (error) {
+      console.log(error)
+      Toast.show({
+        type: 'error',
+        text1: '토스 앱을 열 수 없습니다',
+      });
+    }
   }
 
   const onCopyClick = async () => {
@@ -80,6 +116,15 @@ const TransferModal: React.FC<TransferModalProps> = ({
       <MediumText className="text-gray-500 text-base mb-6 leading-5">
         송금 완료후, 정산완료 버튼을 눌러주세요!
       </MediumText>
+      {
+        currency !== 'KRW' && (
+          <MediumText className="text-gray-500 text-base mb-6 leading-5">
+            {
+              isLoading ? '송금 환율 계산중...' : `(${KRWAmountString}, ${lastUpdatedAtString}기준)`
+            }
+          </MediumText>
+        )
+      }
       
       {isMemberAccountInfoLoading ? (
         <View className="w-full flex flex-col justify-center items-center gap-2 my-8">
