@@ -11,12 +11,26 @@ import Modal from '../components/modals/Modal';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { toastConfig } from '../utils/toastConfig';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
+import * as Sentry from '@sentry/react-native';
 
 initializeKakaoSDK('93959bb8c9aa19c9ae9ad2ca73ffb3c5');
 // 스플래시 스크린 자동 숨김 방지
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync(); 
 
-export default function RootLayout() {
+Sentry.init({
+  dsn: 'https://395ddb85ebce2db174caa415354c130c@o4509882054410240.ingest.us.sentry.io/4509882436026368',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+});
+
+function RootLayout() {
   const [fontsLoaded] = useFonts({
     'Pretendard-500': require('../../assets/fonts/Pretendard-Medium.otf'),
     'Pretendard-600': require('../../assets/fonts/Pretendard-SemiBold.otf'),
@@ -56,3 +70,5 @@ export default function RootLayout() {
     </PersistQueryClientProvider>
   )
 }
+
+export default Sentry.wrap(RootLayout);
