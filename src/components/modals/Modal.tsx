@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Pressable, TouchableOpacity, Platform, BackHandler, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { View, Pressable, TouchableOpacity, Platform, BackHandler, KeyboardAvoidingView } from 'react-native';
 import { useModal } from '../../hooks/useModal';
 import X from '../../../assets/icons/x.svg';
 
@@ -10,9 +10,8 @@ export default function Modal() {
     const handleBackPress = () => {
       if (isOpen && canClose) {
         closeModal();
-        return true;
       }
-      return false;
+      return true;
     };
 
     if (isOpen && Platform.OS === 'android') {
@@ -26,23 +25,21 @@ export default function Modal() {
   if (!isOpen) return null;
 
   return (
-      <KeyboardAvoidingView
-        behavior='padding'
-        className="absolute inset-0 z-5 items-center justify-center"
-        style={{
-          backgroundColor: 'rgba(0,0,0,0.7)',
-          paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-        }}
-        >
-            <Pressable
-              className="absolute -inset-20"
+    <KeyboardAvoidingView
+      behavior='padding'
+      className="absolute inset-0 z-5 items-center justify-center"
+      style={{
+        backgroundColor: 'rgba(0,0,0,0.7)',
+      }}
+      >
+        <Pressable
+          className="absolute -inset-20"
           onPress={() => {
             if (canClose) {
               closeModal();
             }
           }}
-            />
-        
+        />
         <View className="w-full max-w-md px-5"  
         >
           <View className="w-full max-w-md bg-white p-5 rounded-xl relative">

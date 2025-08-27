@@ -125,7 +125,7 @@ export default function CreateGroup() {
         password: formData.password
       });
       
-      router.replace(`/groups/${result.data.newGroup.id}`);
+      router.replace(`/groups/${result.data.newGroup.id}?initialEnter=true`);
     } catch (error) {
       console.error('Error creating group:', error);
     } finally {

@@ -28,6 +28,7 @@ export default function GroupDetail() {
   const isAuthenticated = !!token;
   const currentUser = getUserData();
   const { activeTab } = useLocalSearchParams() as { activeTab: string | null };
+  const { initialEnter } = useLocalSearchParams() as { initialEnter: string | null };
   
   const { data: group, isLoading: groupLoading, isError: groupError } = useGroupInfo(id);
   const { data: members, isLoading: membersLoading, isError: membersError } = useGroupMembers(id);
@@ -93,6 +94,9 @@ export default function GroupDetail() {
         />,
         false
       );
+    } else if (initialEnter) {
+      setModalShown(true);
+      handleOpenShareModal();
     } else if (!isMemberOfGroup) {
       setModalShown(true);
       showModal(
@@ -109,7 +113,7 @@ export default function GroupDetail() {
         false
       );
     }
-  }, [isAuthenticated, isMemberOfGroup, isLoading, group, unlinkedMembers, id, currentUser, modalShown]);
+  }, [isAuthenticated, isMemberOfGroup, isLoading, group, unlinkedMembers, id, currentUser, modalShown, initialEnter]);
 
   useEffect(() => {
     if (!isAuthenticated || !id) {

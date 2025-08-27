@@ -29,11 +29,18 @@ export default function ShareModal({
 }: ShareModalProps) {
   const handleShare = async () => {
     try {
-      await Share.share({
-        url: url,
-        title: `${groupName} 초대`,
-        message: `${currentUserName}님이 ${groupName} 그룹에 초대합니다!`,
-      });
+      if (Platform.OS === 'android') {
+        await Share.share({
+          title: `${groupName} 초대`,
+          message: `${currentUserName}님이 ${groupName} 그룹에 초대합니다!\n${url}`,
+        });
+      } else {
+        await Share.share({
+          url,
+          title: `${groupName} 초대`,
+          message: `${currentUserName}님이 ${groupName} 그룹에 초대합니다!`,
+        });
+      }
     } catch (error) {
       console.error('공유 실패:', error);
     }
@@ -94,7 +101,7 @@ export default function ShareModal({
           onPress={handleShare}
           />
           </View>
-      <View className="absolute left-0 right-0" style={{ bottom: Platform.OS === 'ios' ? -48 : -64 }}>
+      <View className="absolute left-0 right-0" style={{ bottom: Platform.OS === 'ios' ? -48 : -72 }}>
         <MediumText className="text-center text-gray-300 text-base">
           *링크가 외부에 유출되지 않도록 조심해주세요!
         </MediumText>
