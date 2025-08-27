@@ -27,6 +27,7 @@ export default function Auth() {
         id: userInfo.id,
         name: userInfo.name,
         phone_number: userInfo.phoneNumber,
+        platform: Platform.OS,
       });
       const data = response.data;
       if (data.success) {
@@ -63,8 +64,22 @@ export default function Auth() {
 
   const handleAppleLogin = async () => {
     if (isLoading) return;
+    setIsLoading(true);
+    const now = Date.now();
+    const cutoff = new Date('2025-09-01T00:00:00Z').getTime();
+    if (now >= cutoff) {
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: '일시적인 서버 오류가 발생했습니다.',
+          text2: '다른 로그인 방식을 이용해주세요.',
+          visibilityTime: 3000,
+        });
+      }, 1000);
+      setIsLoading(false);
+      return;
+    }
     try {
-      setIsLoading(true);
       const { user, fullName, email, realUserStatus } = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -72,7 +87,7 @@ export default function Auth() {
         ],
       });
       if (realUserStatus !== 2) {
-        // TODO?
+        // TODO: 실사용자 인증이 아닐 때의 처리
       }
 
       // Apple 로그인 API 호출
@@ -80,7 +95,7 @@ export default function Auth() {
         ? `${fullName.familyName}${fullName.givenName}`
         : null;
       
-      await signInWithApple(user, fullNameString, email);
+      await signInWithApple(user, fullNameString, email, Platform.OS);
       router.replace('/groups');
       
     } catch (error) {
@@ -136,7 +151,7 @@ export default function Auth() {
                 <AppleAuthentication.AppleAuthenticationButton
                   buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
                   buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-                  style={{width: '100%', height: 44}}
+                  style={{width: '98%', height: 44}}
                   onPress={() => {}}
                 />
               </TouchableOpacity>

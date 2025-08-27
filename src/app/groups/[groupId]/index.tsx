@@ -16,6 +16,8 @@ import ShareModal from '@/src/components/modals/ShareModal';
 import GroupSettingsModal from '@/src/components/modals/GroupSettingsModal';
 import Person from '../../../../assets/icons/person.svg';
 import { Plus } from 'lucide-react-native';
+import { logActiveUser } from '@/src/utils/loggers';
+import { mmkvStorage } from '@/src/utils/storage';
 
 export default function GroupDetail() {
   const router = useRouter();
@@ -108,6 +110,19 @@ export default function GroupDetail() {
       );
     }
   }, [isAuthenticated, isMemberOfGroup, isLoading, group, unlinkedMembers, id, currentUser, modalShown]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !id) {
+      return;
+    }
+    const YYYYMMDD = new Date().toISOString().split('T')[0];
+    const lastVisitDate = mmkvStorage.getItem(`lastVisitDate-${id}`); // 2025-08-27
+    if (lastVisitDate === YYYYMMDD) {
+      return;
+    }
+    logActiveUser(id, YYYYMMDD, Platform.OS);
+    mmkvStorage.setItem(`lastVisitDate-${id}`, YYYYMMDD);
+  }, [isAuthenticated, id]);
 
   if (!id) {
     router.replace('/');

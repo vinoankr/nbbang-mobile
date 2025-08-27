@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { client, setAuthToken, setUserData } from '../utils/client';
 import { AxiosError } from 'axios';
@@ -119,7 +119,8 @@ export const usePhoneAuth = (redirectGroupId: string | null): UsePhoneAuthReturn
     try {
       const { data } = await client.post<VerifyResponse>('/auth/verify', {
         phone_number: phoneNumber.replace(/-/g, ''),
-        auth_code: verificationCode
+        auth_code: verificationCode,
+        platform: Platform.OS
       });
 
       if (!data.success) {
@@ -180,7 +181,8 @@ export const usePhoneAuth = (redirectGroupId: string | null): UsePhoneAuthReturn
         signupToken,
         name: data.name,
         bank: data.bank,
-        account_number: data.accountNumber
+        account_number: data.accountNumber,
+        platform: Platform.OS
       });
 
       if (!responseData.success) {

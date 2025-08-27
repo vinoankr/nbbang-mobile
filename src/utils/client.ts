@@ -71,12 +71,13 @@ export const removeUserData = () => {
 }
 
 // Apple 로그인 API 호출
-export const signInWithApple = async (user: string, fullName: string | null, email: string | null) => {
+export const signInWithApple = async (user: string, fullName: string | null, email: string | null, platform: string) => {
   try {
     const response = await client.post('/auth/apple', {
       user,
       fullName,
       email,
+      platform,
     });
     
     if (response.data.success) {
