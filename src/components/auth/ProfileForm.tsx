@@ -55,6 +55,17 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
     return response.data;
   };
 
+
+  function isNameMatch(a: string, b: string) {
+    if (!a || !b) return false;
+    if (a.length < 2 || b.length < 2) return false;
+  
+    const shorter = a.length <= b.length ? a : b;
+    const longer = a.length > b.length ? a : b;
+  
+    return longer.includes(shorter);
+  }
+
   const onSubmit = async (data: ProfileFormData) => {
     if (isLoadingRef.current) return;
     
@@ -66,18 +77,29 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
       const bankNum = data.accountNumber;
       
       const bankHolder = await verifyBank(bankCode, bankNum);
-      const bankHolderName = bankHolder?.holderName;
       
-      if (!bankHolder.success || !bankHolderName.includes(data.name)) {
+      if (!bankHolder.success) {
         setError('name', { message: '이름 혹은 계좌정보를 다시 확인해주세요.' });
         return;
-      } else {
-        updateUserProfile({
-          name: data.name,
-          bank: data.bank,
-          accountNumber: data.accountNumber
-        });
       }
+
+      const bankHolderName = bankHolder?.holderName;
+      if ([2,3,4].includes(bankHolderName.length)) {
+        if (bankHolderName !== data.name) {
+          setError('name', { message: '이름 혹은 계좌정보를 다시 확인해주세요.' });
+          return;
+        }
+      } else {
+        if (!isNameMatch(bankHolderName, data.name)) {
+          setError('name', { message: '이름 혹은 계좌정보를 다시 확인해주세요.' });
+          return;
+        }
+      }
+      updateUserProfile({
+        name: data.name,
+        bank: data.bank,
+        accountNumber: data.accountNumber
+      });
     } catch {
       setError('name', { message: '이름 혹은 계좌정보를 다시 확인해주세요.' });
     } finally {
