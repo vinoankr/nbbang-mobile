@@ -450,6 +450,7 @@ export default function EditExpense() {
               onChangeText={setTitle}
               selectTextOnFocus={true}
               editable={expenseType !== '송금기록'}
+              maxLength={16}
             />
             {errors.title && (
               <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.title}</MediumText>

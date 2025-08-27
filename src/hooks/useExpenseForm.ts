@@ -16,7 +16,7 @@ interface UseExpenseFormProps {
   currentUser: any;
   defaultCurrency: CurrencyCode;
   currencyMap: Map<CurrencyCode, number>;
-  lastCurrency: CurrencyCode | undefined;
+  lastCurrency?: CurrencyCode;
 }
 
 interface ExpenseEditData {
