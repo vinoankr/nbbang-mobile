@@ -12,6 +12,8 @@ export interface User {
   birth_year: number | null;
   gender: string | null;
   primary_group_id: string | null;
+  ios_installed: boolean | null;
+  android_installed: boolean | null;
   created_at: string;
   updated_at: string;
 }
