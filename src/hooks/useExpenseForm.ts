@@ -153,38 +153,31 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
       });
       setMultipliers(initialMultipliers);
     }
+    else if (splitType === 'amounts') {
+      // 수동 입력 초기화 - 0으로 초기화
+      const newManualAmounts: Record<string, number> = {};
+      const newFormattedAmounts: Record<string, string> = {};
+      
+      members.forEach(member => {
+        newManualAmounts[member.id] = 0;
+        newFormattedAmounts[member.id] = formatCurrency(0, currency);
+      });
+      
+      setManualAmounts(newManualAmounts);
+      setFormattedManualAmounts(newFormattedAmounts);
+    }
   }, [splitType, isEditMode, members?.length]);
 
-  // 수동 입력 모드에서 금액 변경 시 재분배
   useEffect(() => {
     if (isEditMode || !members?.length || splitType !== 'amounts') return;
 
     const newManualAmounts: Record<string, number> = {};
     const newFormattedAmounts: Record<string, string> = {};
     
-    if (amount > 0) {
-      const decimalPlaces = currencies[currency].maximumFractionDigits;
-      const factor = Math.pow(10, decimalPlaces);
-      const perPerson = Math.round((amount / members.length) * factor) / factor;
-      let totalAllocated = 0;
-      
-      members.forEach((member, index) => {
-        if (index === members.length - 1) {
-          const remaining = Number((amount - totalAllocated).toFixed(decimalPlaces));
-          newManualAmounts[member.id] = remaining;
-          newFormattedAmounts[member.id] = formatCurrency(remaining, currency);
-        } else {
-          newManualAmounts[member.id] = perPerson;
-          newFormattedAmounts[member.id] = formatCurrency(perPerson, currency);
-          totalAllocated = Number((totalAllocated + perPerson).toFixed(decimalPlaces));
-        }
-      });
-    } else {
-      members.forEach(member => {
-        newManualAmounts[member.id] = 0;
-        newFormattedAmounts[member.id] = formatCurrency(0, currency);
-      });
-    }
+    members.forEach(member => {
+      newManualAmounts[member.id] = 0;
+      newFormattedAmounts[member.id] = formatCurrency(0, currency);
+    });
     
     setManualAmounts(newManualAmounts);
     setFormattedManualAmounts(newFormattedAmounts);
@@ -347,9 +340,29 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
   };
 
   const handleManualAmountBlur = (memberId: string) => {
-    const amount = manualAmounts[memberId] || 0;
-    const formatted = formatCurrency(amount, currency);
-    setFormattedManualAmounts(prev => ({ ...prev, [memberId]: formatted }));
+    const myamount = manualAmounts[memberId] || 0;
+    const formatted = formatCurrency(myamount, currency);
+
+    const newFormattedAmounts = { ...formattedManualAmounts };
+    newFormattedAmounts[memberId] = formatted;
+
+    // 0 인 값이 하나 남았을때
+    const zeroAmounts = Object.keys(manualAmounts).filter(id => manualAmounts[id] === 0);
+    if (zeroAmounts.length === 1) {
+      const onlyMemberId = zeroAmounts[0];
+      const otherSum = Object.keys(manualAmounts)
+        .filter(id => id !== onlyMemberId)
+        .reduce((sum, id) => sum + (manualAmounts[id] || 0), 0);
+
+      const remaining = amount - otherSum;
+      if (remaining > 0) {
+        const newManualAmounts = {...manualAmounts}
+        newManualAmounts[onlyMemberId] = remaining
+        setManualAmounts(newManualAmounts)
+        newFormattedAmounts[onlyMemberId] = formatCurrencyForDisplay(remaining, currency).toString();
+      }
+    }
+    setFormattedManualAmounts(newFormattedAmounts);
   };
 
   // 분담금액 계산
@@ -369,7 +382,7 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
       
       if (totalMultiplier === 0) return 0;
       return Math.round((amount * (multipliers[memberId] || 1) / totalMultiplier) * factor) / factor;
-    } else {
+    } else if (splitType === 'amounts') {
       return manualAmounts[memberId] || 0;
     }
   };
@@ -381,11 +394,7 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
     participants.forEach((memberId: string) => {
       let participantAmount = 0;
       
-      if (splitType === 'amounts') {
-        participantAmount = manualAmounts[memberId] || 0;
-      } else {
-        participantAmount = calculateShare(memberId);
-      }
+      participantAmount = calculateShare(memberId) || 0;
       
       participantsWithAmount.push({
         id: memberId,
@@ -468,6 +477,8 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
     
     const participantIds = new Set(data.participants.map(p => p.id));
     setParticipants(participantIds);
+
+    const memberIds = new Set(members?.map(member => member.id));
     
     if (data.splitType === 'amounts' && !data.isTransfer) {
       const newManualAmounts: Record<string, number> = {};
@@ -477,6 +488,13 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
         newManualAmounts[participant.id] = participant.amount;
         newFormattedAmounts[participant.id] = formatCurrency(participant.amount, data.currency);
       });
+
+      memberIds.forEach(memberId => {
+        if (!newManualAmounts[memberId]) {
+          newManualAmounts[memberId] = 0;
+          newFormattedAmounts[memberId] = formatCurrency(0, data.currency);
+        }
+      })
       
       setManualAmounts(newManualAmounts);
       setFormattedManualAmounts(newFormattedAmounts);
@@ -499,6 +517,12 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
           const relativeMultiplier = ratios[participant.id] / minRatio;
           newMultipliers[participant.id] = Math.max(1, Math.round(relativeMultiplier));
         });
+
+        memberIds.forEach(memberId => {
+          if (!newMultipliers[memberId]) {
+            newMultipliers[memberId] = 0
+          }
+        })
         
         setMultipliers(newMultipliers);
       }

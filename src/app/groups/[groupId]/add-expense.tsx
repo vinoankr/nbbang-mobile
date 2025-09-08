@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, Pressable } from 'react-native';
+import { View, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, Pressable, TextInput } from 'react-native';
 import { MenuView } from '@react-native-menu/menu';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -467,7 +467,7 @@ export default function AddExpense() {
               <View className="border border-gray-100 rounded-lg">
                 {members?.map((member: any, index: number) => {
                   const isSelected = participants.has(member.id);
-                  const share = calculateShare(member.id);
+                  const share = calculateShare(member.id) || 0;
                   
                   return (
                     <View key={member.id} className={`flex-row items-center px-4 ${index < members.length - 1 ? 'border-b border-gray-100' : ''}`}>
@@ -539,13 +539,14 @@ export default function AddExpense() {
                           <InputField
                             selectTextOnFocus={true}
                             value={formattedManualAmounts[member.id] || formatCurrency(manualAmounts[member.id] || 0, currency)}
-                            returnKeyType="done"
+                            returnKeyType={index === members.length-1 ? "done" : 'none'}
                             onChangeText={(value) => handleManualAmountInputChange(member.id, value)}
-                            onBlur={() => handleManualAmountBlur(member.id)}
+                            onBlur={() => {
+                              handleManualAmountBlur(member.id)
+                            }}
                             keyboardType="numeric"
-                            style={{ fontFamily: "Pretendard-500", textAlign: 'right', fontSize: 16, width: 100, lineHeight: 16, paddingVertical: 0, color: '#30333D', fontWeight: "500", }}
+                            style={{ fontFamily: "Pretendard-500", textAlign: 'right', fontSize: 16, width: 100, height:30, lineHeight: 20, paddingTop: 2, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: '#EEEFF3', color: '#30333D', fontWeight: "500", }}
                             placeholder={`${currencies[currency].symbol}0`}
-                            onSubmitEditing={(e) => e.target.blur()}
                           />
                         )}
                       </View>

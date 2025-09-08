@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useRef } from "react";
+import React, { useState, forwardRef, useRef, useImperativeHandle } from "react";
 import { TextInput, StyleSheet, TextInputProps, Platform } from "react-native";
 
 interface InputFieldProps extends TextInputProps {
@@ -8,19 +8,27 @@ interface InputFieldProps extends TextInputProps {
   selectTextOnFocus?: boolean;
 }
 
-export const InputField = forwardRef<TextInput, InputFieldProps>(
+export const InputField = forwardRef<any, InputFieldProps>(
   ({ placeholder, value, onChangeText, onBlur, selectTextOnFocus=false, ...rest }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
-    const myRef = useRef<TextInput>(null);
+    const innerRef = useRef<TextInput>(null);
 
     const handleBlur = (e: any) => {
       setIsFocused(false);
       onBlur?.(e);
     };
 
+    useImperativeHandle(ref, () => ({
+      focus: () => innerRef.current?.focus(),
+      blur: ()=> innerRef.current?.blur(),
+      setSelection: () =>
+        innerRef.current?.setSelection(0, value.length),
+    }));
+
+
     return (
       <TextInput
-        ref={ref || myRef}
+        ref={innerRef}
         style={[
           styles.input,
           isFocused && { borderColor: "#2C7FFF" }
@@ -35,11 +43,7 @@ export const InputField = forwardRef<TextInput, InputFieldProps>(
         onFocus={() => {
           setIsFocused(true);
           if (selectTextOnFocus) {
-            if(ref && typeof ref === 'object' && 'current' in ref) {
-              (ref as any).current?.setSelection(0, value.length);
-            } else {
-              myRef.current?.setSelection(0, value.length);
-            }
+            innerRef.current?.setSelection(0, value.length);
           }
         }}
         onBlur={handleBlur}
