@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { formatCurrency } from '../utils/formatter';
 import { currencies, CurrencyCode } from '../constants/currencies';
 
@@ -65,6 +65,8 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
   const [editInitialCurrency, setEditInitialCurrency] = useState<CurrencyCode>(defaultCurrency);
   const [tempTitle, setTempTitle] = useState<string>('');
 
+  const dontChangeExchangeRateAtInitialRender = useRef(true)
+
   // 초기화 - 멤버 로드 시
   useEffect(() => {
     if (members?.length && !isEditMode && participants.size === 0) {
@@ -97,7 +99,11 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
   // 통화 변경 시 환율 업데이트
   useEffect(() => {
     let newExchangeRate = 1;
-    
+        
+    if (isEditMode && currency === editInitialCurrency && dontChangeExchangeRateAtInitialRender.current) {
+      dontChangeExchangeRateAtInitialRender.current = false
+      return
+    }
     if (currency !== defaultCurrency) {
       // 두 통화 사이의 환율 계산
       const currencyRate = currencyMap.get(currency) || 1;
@@ -117,7 +123,10 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
 
   // 통화 변경 시 금액 초기화 (수정모드가 아닐 때)
   useEffect(() => {
-    if (isEditMode && currency === editInitialCurrency) return;
+    if (isEditMode) {
+      onAmountBlur()
+      return;
+    }
   
     setAmountForDisplay('');
     setAmount(0);
