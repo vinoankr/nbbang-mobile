@@ -5,6 +5,7 @@ export default function GroupLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="edit" />
+      <Stack.Screen name="ledger" options={{ presentation: 'modal' }} />
       <Stack.Screen name="add-expense" options={{ presentation: 'modal' }} />
       <Stack.Screen name="edit-expense" options={{ presentation: 'modal' }} />
     </Stack>

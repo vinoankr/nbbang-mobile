@@ -4,12 +4,14 @@ import { BoldText, SemiBoldText } from '../Texts';
 
 interface GroupSettingsModalProps {
   handleOpenShareModal: () => void;
+  handleNavigateToLedger: () => void;
   handleEditGroup: () => void;
   handleLeaveGroup: () => void;
 }
 
 export default function GroupSettingsModal({
   handleOpenShareModal,
+  handleNavigateToLedger,
   handleEditGroup,
   handleLeaveGroup,
 }: GroupSettingsModalProps) {
@@ -22,9 +24,17 @@ export default function GroupSettingsModal({
         activeOpacity={0.9}
         onPress={handleOpenShareModal}
       >
-        <SemiBoldText className="text-center text-base">그룹 공유하기</SemiBoldText>
+        <SemiBoldText className="text-center text-base">멤버 초대하기</SemiBoldText>
       </TouchableOpacity>
       
+      <TouchableOpacity 
+        className="w-full p-3 bg-gray-100 rounded-lg"
+        activeOpacity={0.9}
+        onPress={handleNavigateToLedger}
+      >
+        <SemiBoldText className="text-center text-base">가계부 보기</SemiBoldText>
+      </TouchableOpacity>
+
       <TouchableOpacity 
         className="w-full p-3 bg-gray-100 rounded-lg"
         activeOpacity={0.9}
