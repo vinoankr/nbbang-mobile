@@ -36,14 +36,6 @@ export default function SettingsModal() {
       <TouchableOpacity 
         className="w-full p-2.5 bg-gray-100 rounded-lg"
         activeOpacity={0.9}
-        onPress={() => handleNavigation('/profile/faq')}
-      >
-        <SemiBoldText className="text-center text-base">FAQ</SemiBoldText>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        className="w-full p-2.5 bg-gray-100 rounded-lg"
-        activeOpacity={0.9}
         onPress={() => handleNavigation('/profile')}
       >
         <SemiBoldText className="text-center text-base">내 정보 수정</SemiBoldText>
@@ -55,6 +47,22 @@ export default function SettingsModal() {
         onPress={() => handleNavigation('/profile/kakaopay')}
       >
         <SemiBoldText className="text-center text-base">카카오페이 연동</SemiBoldText>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        className="w-full p-2.5 bg-gray-100 rounded-lg"
+        activeOpacity={0.9}
+        onPress={async () => Linking.openURL('https://forms.gle/uhWYPMa3XHJXaH5LA')}
+      >
+        <SemiBoldText className="text-center text-base">오류 제보</SemiBoldText>
+      </TouchableOpacity>
+      
+      <TouchableOpacity 
+        className="w-full p-2.5 bg-gray-100 rounded-lg"
+        activeOpacity={0.9}
+        onPress={async () => Linking.openURL('https://forms.gle/XfaRAYiy3kZSYaYZ9')}
+      >
+        <SemiBoldText className="text-center text-base">새 기능 제안</SemiBoldText>
       </TouchableOpacity>
       
       <TouchableOpacity 
