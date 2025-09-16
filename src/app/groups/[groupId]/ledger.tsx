@@ -60,7 +60,7 @@ export default function LedgerPage() {
         title={group?.name || '지출 추가'} 
         showBackButton={true}
         onBackClick={() => router.back()} 
-        applyInsets={false}
+        applyInsets={Platform.OS !== 'ios'}
       />
         <ScrollView
           style={{ flex: 1 }}

@@ -317,7 +317,7 @@ export default function EditExpense() {
   if (isError) {
     return (
       <SafeAreaView className="flex-1 bg-white">
-        <Header title="지출 수정" showBackButton onBackClick={() => router.back()} />
+        <Header title="지출 수정" showBackButton onBackClick={() => router.back()} applyInsets={Platform.OS!=='ios'} />
         <View className="flex-1 justify-center items-center px-4">
           <MediumText className="text-red-500 text-base text-center">
             데이터를 불러오는 중 오류가 발생했습니다.
@@ -330,7 +330,7 @@ export default function EditExpense() {
   if (isLoading || !currency || !defaultCurrency || !isDataInitialized) {
     return (
       <SafeAreaView className="flex-1 bg-white">
-        <Header title="지출 수정" showBackButton onBackClick={() => router.back()} />
+        <Header title="지출 수정" showBackButton onBackClick={() => router.back()} applyInsets={Platform.OS!=='ios'} />
         <View className="flex-1 justify-center items-center">
           <Spinner />
         </View>
@@ -340,17 +340,17 @@ export default function EditExpense() {
 
   return (
     <SafeAreaView className="relative flex-1 bg-white">
+      <Header 
+        title={group?.name || '지출 수정'} 
+        showBackButton={true}
+        onBackClick={() => router.back()}
+        applyInsets={Platform.OS!=='ios'}
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
       >
-        <Header 
-          title={group?.name || '지출 수정'} 
-          showBackButton={true}
-          onBackClick={() => router.back()} 
-          applyInsets={false}
-        />
         <ScrollView
           style={{ flex: 1 }}
           className="px-4 pt-16"
