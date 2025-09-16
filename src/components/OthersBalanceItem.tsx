@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import React, { useRef, useState } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { MediumText, SemiBoldText } from './Texts';
@@ -69,7 +70,7 @@ const   OthersBalanceItem: React.FC<OthersBalanceItemProps> = ({
         title: '개인송금',
         amount: Math.abs(amount),
         amountInCurrency:Math.abs(amount),
-        spentAt: new Date(new Date().toISOString().split('T')[0]),
+        spentAt: new Date(new Date().toLocaleDateString('ko-kr', {year:'numeric', month:'2-digit', day:'2-digit'}).replace(/\./g,'').replace(/ /g,'').replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')),
         currency,
         exchangeRate: 1,
         paidBy: from,
@@ -77,6 +78,10 @@ const   OthersBalanceItem: React.FC<OthersBalanceItemProps> = ({
         isTransfer: true,
         transferTo: to,
       });
+      
+      Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Success
+      )
       
       // 모달 닫기
       closeModal();

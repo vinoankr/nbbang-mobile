@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform, Alert, TouchableOpacity, Pressable } from 'react-native';
 import { MenuView } from '@react-native-menu/menu';
@@ -293,7 +294,9 @@ export default function EditExpense() {
           createdAt: expense?.created_at ? new Date(expense.created_at) : undefined
         });
       }
-      
+      Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Success
+      )
       router.back();
     } catch (error: any) {
       Toast.show({

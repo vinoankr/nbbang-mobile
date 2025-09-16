@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, Pressable, TextInput } from 'react-native';
 import { MenuView } from '@react-native-menu/menu';
@@ -215,6 +216,9 @@ export default function AddExpense() {
       if (lastCurrency !== currency) {
         mmkvStorage.setItem(groupId+'currency', currency);
       }
+      Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Success
+      )
       router.back();
     } catch (error: any) {
       Toast.show({

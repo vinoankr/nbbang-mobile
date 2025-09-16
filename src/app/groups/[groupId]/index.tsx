@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics'
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -259,6 +260,7 @@ export default function GroupDetail() {
       {!isLoading && (
         <TouchableOpacity
           onPress={()=> {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
             router.push({
               pathname: '/groups/[groupId]/add-expense',
               params: { groupId: id, currency: group?.default_currency || 'KRW' },
