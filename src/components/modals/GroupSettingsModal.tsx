@@ -32,7 +32,7 @@ export default function GroupSettingsModal({
         activeOpacity={0.9}
         onPress={handleNavigateToLedger}
       >
-        <SemiBoldText className="text-center text-base">가계부 보기</SemiBoldText>
+        <SemiBoldText className="text-center text-base">쓴 돈 모아보기</SemiBoldText>
       </TouchableOpacity>
 
       <TouchableOpacity 
