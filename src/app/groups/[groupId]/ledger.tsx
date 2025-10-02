@@ -10,7 +10,7 @@ import { useGroupMembers } from '@/src/hooks/queries/useGroupMembers';
 import { useGroupInfo } from '@/src/hooks/queries/useGroupInfo';
 import Header from '@/src/components/Header';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BoldText, MediumText, SemiBoldText } from '@/src/components/Texts';
+import { BoldText, MediumText } from '@/src/components/Texts';
 import { MenuView } from '@react-native-menu/menu';
 
 export default function LedgerPage() {
