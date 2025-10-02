@@ -124,9 +124,18 @@ export default function LedgerPage() {
                   )}
                   <View className="flex-row justify-between">
                     <MediumText className='text-base'>{row.description?.substring(0,20)}</MediumText>
-                    <BoldText className="text-base text-right">
-                      {formatCurrency(row.amount, row.currency as any)}
-                    </BoldText>
+                    <View className="flex-col items-end">
+                      {/* 그룹 기본 통화로 환산된 금액 */}
+                      <BoldText className="text-base">
+                        {formatCurrency(row.amount, groupCurrency as any)}
+                      </BoldText>
+                      {/* 원래 통화가 그룹 기본 통화와 다른 경우 원래 통화 금액도 표시 */}
+                      {row.currency !== groupCurrency && (
+                        <MediumText className="text-sm text-gray-500 mt-0">
+                          {formatCurrency(row.amount_in_currency, row.currency as any)}
+                        </MediumText>
+                      )}
+                    </View>
                   </View>
                 </View>
               ))}

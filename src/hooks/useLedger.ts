@@ -6,24 +6,25 @@ interface ExpenseEntry {
   id: string;
   expense_id: string;
   member_id: string;
-  amount: number; // 분담액
+  amount: number; // 분담액 (그룹 기본 통화)
+  amount_in_currency: number; // 원래 통화로의 분담액
   paid_by: string;
   spent_at: string;
   currency: string;
+  exchange_rate: number;
 }
 export function useLedger(
   allexpenses: any[],
   data: ExpenseEntry[],
   memberId: string
 ) {
-  const expenseMap = new Map<string, string>();
-  const dateMap = new Map<string, string>();
-  allexpenses?.forEach((exp) => {
-    expenseMap.set(exp.id, exp.title);
-    dateMap.set(exp.id, exp.spent_at);
-  });
-
   const { ledger, totalSpending } = useMemo(() => {
+    const expenseMap = new Map<string, string>();
+    const dateMap = new Map<string, string>();
+    allexpenses?.forEach((exp) => {
+      expenseMap.set(exp.id, exp.title);
+      dateMap.set(exp.id, exp.spent_at);
+    });
     if (!memberId) return { ledger: [], totalSpending: 0 };
 
     let total = 0;
@@ -38,7 +39,9 @@ export function useLedger(
           date: formatDate(dateMap.get(entry.expense_id) || ""),
           description: expenseMap.get(entry.expense_id),
           amount: entry.amount,
+          amount_in_currency: entry.amount_in_currency,
           currency: entry.currency,
+          exchange_rate: entry.exchange_rate,
           isPayer,
         };
       })
@@ -49,7 +52,9 @@ export function useLedger(
       date: string;
       description: string | undefined;
       amount: number;
+      amount_in_currency: number;
       currency: string;
+      exchange_rate: number;
       isPayer: boolean;
       showDate: boolean;
       rowSpan: number;
