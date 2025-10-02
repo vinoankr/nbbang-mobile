@@ -1,6 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Platform, Alert, TouchableOpacity, Pressable } from 'react-native';
+import { View, Platform, Alert, TouchableOpacity, Pressable } from 'react-native';
 import { MenuView } from '@react-native-menu/menu';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -30,6 +30,7 @@ import { MediumText, BoldText, SemiBoldText } from '@/src/components/Texts';
 import Spinner from '@/src/components/Spinner';
 import { X } from 'lucide-react-native';
 import { DangerousButton } from '@/src/components/form/DangerousButton';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 export default function EditExpense() {
   const { groupId, expenseId } = useLocalSearchParams<{ groupId: string; expenseId: string }>();
@@ -339,326 +340,321 @@ export default function EditExpense() {
   }
 
   return (
-    <SafeAreaView className="relative flex-1 bg-white">
+    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="relative flex-1 bg-white">
       <Header 
         title={group?.name || '지출 수정'} 
         showBackButton={true}
         onBackClick={() => router.back()}
         applyInsets={Platform.OS!=='ios'}
       />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <KeyboardAwareScrollView
+        bottomOffset={50}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+        className="flex-1 px-4 pt-16"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+        overScrollMode="never"
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        alwaysBounceVertical={false}
       >
-        <ScrollView
-          style={{ flex: 1 }}
-          className="px-4 pt-16"
-          keyboardShouldPersistTaps="handled"
-          bounces={false}
-          alwaysBounceVertical={false}
-          overScrollMode="never"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom + 32 }}
-        >
-          {/* 지출 유형 (수정 불가) */}
-          <View className="rounded-xl p-1 w-full flex-row justify-around items-center bg-gray-50 mb-4">
-            <TouchableOpacity
-              className={`flex-1 py-2 rounded-lg ${
-                expenseType === '지출기록' ? 'bg-blue-500' : 'bg-transparent opacity-70'
+        {/* 지출 유형 (수정 불가) */}
+        <View className="rounded-xl p-1 w-full flex-row justify-around items-center bg-gray-50 mb-4">
+          <TouchableOpacity
+            className={`flex-1 py-2 rounded-lg ${
+              expenseType === '지출기록' ? 'bg-blue-500' : 'bg-transparent opacity-70'
+            }`}
+            activeOpacity={0.9}
+            disabled={true}
+          >
+            <BoldText 
+              className={`text-center text-sm ${
+                expenseType === '지출기록' ? 'text-white' : 'text-gray-800 opacity-70'
               }`}
-              activeOpacity={0.9}
-              disabled={true}
             >
-              <BoldText 
-                className={`text-center text-sm ${
-                  expenseType === '지출기록' ? 'text-white' : 'text-gray-800 opacity-70'
-                }`}
-              >
-                지출 기록
-              </BoldText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className={`flex-1 py-2 rounded-lg ${
-                expenseType === '송금기록' ? 'bg-blue-500' : 'bg-transparent opacity-70'
+              지출 기록
+            </BoldText>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className={`flex-1 py-2 rounded-lg ${
+              expenseType === '송금기록' ? 'bg-blue-500' : 'bg-transparent opacity-70'
+            }`}
+            activeOpacity={0.9}
+            disabled={true}
+          >
+            <BoldText 
+              className={`text-center text-sm ${
+                expenseType === '송금기록' ? 'text-white' : 'text-gray-800 opacity-70'
               }`}
-              activeOpacity={0.9}
-              disabled={true}
             >
-              <BoldText 
-                className={`text-center text-sm ${
-                  expenseType === '송금기록' ? 'text-white' : 'text-gray-800 opacity-70'
-                }`}
-              >
-                송금 기록
-              </BoldText>
-            </TouchableOpacity>
-          </View>
+              송금 기록
+            </BoldText>
+          </TouchableOpacity>
+        </View>
 
-          {/* 금액 */}
-          <FormLabel label="금액" />
-          <View className="mb-4 flex-row items-start gap-2">
-            <View className="w-[88px]">
-              <SelectField
-                value={currency}
-                onChangeValue={(value) => setCurrency(value as CurrencyCode)}
-                items={currencyItems}
-              />
-            </View>
-            <View className="flex-1">
-              <InputField
-                selectTextOnFocus={true}
-                placeholder={`${currencies[currency].symbol}0`}
-                value={amountForDisplay}
-                onChangeText={onAmountChange}
-                onBlur={onAmountBlur}
-                keyboardType="numeric"
-                returnKeyType="done"
-              />
-              {errors.amount && (
-                <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.amount}</MediumText>
-              )}
-            </View>
-          </View>
-
-          {/* 환율 입력 */}
-          {currency !== defaultCurrency && (
-            <View className="-mt-2 mb-4">
-              <View className="flex-row items-center">
-                <MediumText className="text-gray-500 text-base mr-2">
-                  {currency} 1 = {defaultCurrency}
-                </MediumText>
-                <InputField
-                  selectTextOnFocus={true}
-                  value={exchangeRateInput}
-                  onChangeText={onExchangeRateChange}
-                  onBlur={onExchangeRateBlur}
-                  keyboardType="numeric"
-                  returnKeyType="done"
-                  className="flex-1"
-                />
-              </View>
-              {errors.exchangeRate && (
-                <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.exchangeRate}</MediumText>
-              )}
-            </View>
-          )}
-
-          {/* 제목 */}
-          <View className="mb-4">
-            <FormLabel label="내용" />
-            <InputField
-              placeholder="간단한 내용을 입력하세요 (선택)"
-              value={title}
-              onChangeText={setTitle}
-              selectTextOnFocus={true}
-              editable={expenseType !== '송금기록'}
-              maxLength={16}
+        {/* 금액 */}
+        <FormLabel label="금액" />
+        <View className="mb-4 flex-row items-start gap-2">
+          <View className="w-[88px]">
+            <SelectField
+              value={currency}
+              onChangeValue={(value) => setCurrency(value as CurrencyCode)}
+              items={currencyItems}
             />
-            {errors.title && (
-              <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.title}</MediumText>
+          </View>
+          <View className="flex-1">
+            <InputField
+              selectTextOnFocus={true}
+              placeholder={`${currencies[currency].symbol}0`}
+              value={amountForDisplay}
+              onChangeText={onAmountChange}
+              onBlur={onAmountBlur}
+              keyboardType="numeric"
+              returnKeyType="done"
+            />
+            {errors.amount && (
+              <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.amount}</MediumText>
             )}
           </View>
+        </View>
 
-          {/* 결제자/송금자와 날짜 */}
-          <View className="flex-row gap-3 mb-4">
-            <View className="flex-1">
-              <FormLabel label={expenseType === '송금기록' ? '보내는 사람' : '결제한 사람'} />
-              <SelectField
-                value={paidBy}
-                onChangeValue={(value) => setPaidBy(value || '')}
-                items={memberItems}
-              />
-              {errors.paidBy && (
-                <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.paidBy}</MediumText>
-              )}
-            </View>
-            
-            <View className="flex-1">
-              <FormLabel label="날짜" />
-              <DateTimePickerField
-                value={spentAt}
-                onChange={setSpentAt}
+        {/* 환율 입력 */}
+        {currency !== defaultCurrency && (
+          <View className="-mt-2 mb-4">
+            <View className="flex-row items-center">
+              <MediumText className="text-gray-500 text-base mr-2">
+                {currency} 1 = {defaultCurrency}
+              </MediumText>
+              <InputField
+                selectTextOnFocus={true}
+                value={exchangeRateInput}
+                onChangeText={onExchangeRateChange}
+                onBlur={onExchangeRateBlur}
+                keyboardType="numeric"
+                returnKeyType="done"
+                className="flex-1"
               />
             </View>
+            {errors.exchangeRate && (
+              <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.exchangeRate}</MediumText>
+            )}
           </View>
+        )}
 
-          {/* 송금 받는 사람 (송금기록 선택 시) */}
-          {expenseType === '송금기록' && (
-            <View className="mb-6">
-              <FormLabel label="받는 사람" />
-              <SelectField
-                value={receiverId}
-                onChangeValue={(value) => setReceiverId(value || '')}
-                items={receiverItems}
-                placeholder="선택하세요"
-              />
-              {errors.receiverId && (
-                <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.receiverId}</MediumText>
-              )}
-            </View>
+        {/* 제목 */}
+        <View className="mb-4">
+          <FormLabel label="내용" />
+          <InputField
+            placeholder="간단한 내용을 입력하세요 (선택)"
+            value={title}
+            onChangeText={setTitle}
+            selectTextOnFocus={true}
+            editable={expenseType !== '송금기록'}
+            maxLength={16}
+          />
+          {errors.title && (
+            <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.title}</MediumText>
           )}
+        </View>
 
-          {/* 참가자 (지출기록 선택 시) */}
-          {expenseType === '지출기록' && (
-            <View className="mb-6">
-              {/* 헤더와 분배 방식 드롭다운 */}
-              <View className="flex-row justify-between items-center mb-1">
-                <View className="flex-row items-center">
-                  <SemiBoldText className="text-[17px] mr-1">
-                    참가한 사람
-                  </SemiBoldText>
-                  <MediumText className="text-gray-500 text-sm">
-                    ({selectedParticipants.size}명/{members?.length}명)
-                  </MediumText>
-                </View>
-                
-                {/* 메뉴 드롭다운 */}
-                <MenuView
-                  actions={[
-                    {
-                      id: 'equally',
-                      title: 'N분의1',
-                      state: splitType === 'equally' ? 'on' : 'off'
-                    },
-                    {
-                      id: 'parts',
-                      title: '배수입력',
-                      state: splitType === 'parts' ? 'on' : 'off'
-                    },
-                    {
-                      id: 'amounts',
-                      title: '직접입력',
-                      state: splitType === 'amounts' ? 'on' : 'off'
-                    }
-                  ]}
-                  onPressAction={({ nativeEvent }) => {
-                    setSplitType(nativeEvent.event as 'equally' | 'parts' | 'amounts');
-                  }}
-                >
-                  <View className="bg-gray-50 rounded-lg px-3 py-2 flex-row items-center">
-                    <MediumText className="text-gray-800 text-sm mr-2">
-                      {splitType === 'equally' && 'N분의1'}
-                      {splitType === 'parts' && '배수입력'}
-                      {splitType === 'amounts' && '직접입력'}
-                    </MediumText>
-                    <MediumText className="text-gray-500">▼</MediumText>
-                  </View>
-                </MenuView>
+        {/* 결제자/송금자와 날짜 */}
+        <View className="flex-row gap-3 mb-4">
+          <View className="flex-1">
+            <FormLabel label={expenseType === '송금기록' ? '보내는 사람' : '결제한 사람'} />
+            <SelectField
+              value={paidBy}
+              onChangeValue={(value) => setPaidBy(value || '')}
+              items={memberItems}
+            />
+            {errors.paidBy && (
+              <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.paidBy}</MediumText>
+            )}
+          </View>
+          
+          <View className="flex-1">
+            <FormLabel label="날짜" />
+            <DateTimePickerField
+              value={spentAt}
+              onChange={setSpentAt}
+            />
+          </View>
+        </View>
+
+        {/* 송금 받는 사람 (송금기록 선택 시) */}
+        {expenseType === '송금기록' && (
+          <View className="mb-6">
+            <FormLabel label="받는 사람" />
+            <SelectField
+              value={receiverId}
+              onChangeValue={(value) => setReceiverId(value || '')}
+              items={receiverItems}
+              placeholder="선택하세요"
+            />
+            {errors.receiverId && (
+              <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.receiverId}</MediumText>
+            )}
+          </View>
+        )}
+
+        {/* 참가자 (지출기록 선택 시) */}
+        {expenseType === '지출기록' && (
+          <View className="mb-6">
+            {/* 헤더와 분배 방식 드롭다운 */}
+            <View className="flex-row justify-between items-center mb-1">
+              <View className="flex-row items-center">
+                <SemiBoldText className="text-[17px] mr-1">
+                  참가한 사람
+                </SemiBoldText>
+                <MediumText className="text-gray-500 text-sm">
+                  ({selectedParticipants.size}명/{members?.length}명)
+                </MediumText>
               </View>
               
-              {/* 참가자 리스트 - border로 감싸고 divide로 구분 */}
-              <View className="border border-gray-100 rounded-lg">
-                {members?.map((member: any, index: number) => {
-                  const isSelected = selectedParticipants.has(member.id);
-                  const share = calculateShare(member.id) || 0;
-                  
-                  return (
-                    <View key={member.id} className={`flex-row items-center px-4 ${index < members.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                      {/* 체크박스 (균등분할에서만 표시) */}
+              {/* 메뉴 드롭다운 */}
+              <MenuView
+                actions={[
+                  {
+                    id: 'equally',
+                    title: 'N분의1',
+                    state: splitType === 'equally' ? 'on' : 'off'
+                  },
+                  {
+                    id: 'parts',
+                    title: '배수입력',
+                    state: splitType === 'parts' ? 'on' : 'off'
+                  },
+                  {
+                    id: 'amounts',
+                    title: '직접입력',
+                    state: splitType === 'amounts' ? 'on' : 'off'
+                  }
+                ]}
+                onPressAction={({ nativeEvent }) => {
+                  setSplitType(nativeEvent.event as 'equally' | 'parts' | 'amounts');
+                }}
+              >
+                <View className="bg-gray-50 rounded-lg px-3 py-2 flex-row items-center">
+                  <MediumText className="text-gray-800 text-sm mr-2">
+                    {splitType === 'equally' && 'N분의1'}
+                    {splitType === 'parts' && '배수입력'}
+                    {splitType === 'amounts' && '직접입력'}
+                  </MediumText>
+                  <MediumText className="text-gray-500">▼</MediumText>
+                </View>
+              </MenuView>
+            </View>
+            
+            {/* 참가자 리스트 - border로 감싸고 divide로 구분 */}
+            <View className="border border-gray-100 rounded-lg">
+              {members?.map((member: any, index: number) => {
+                const isSelected = selectedParticipants.has(member.id);
+                const share = calculateShare(member.id) || 0;
+                
+                return (
+                  <View key={member.id} className={`flex-row items-center px-4 ${index < members.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                    {/* 체크박스 (균등분할에서만 표시) */}
+                    {splitType === 'equally' && (
+                      <View className="flex-shrink-0 mr-2">
+                        <CheckboxField
+                          value={isSelected}
+                          onValueChange={() => toggleParticipant(member.id)}
+                        />
+                      </View>
+                    )}
+                    
+                    {/* 멤버 이름 */}
+                    <Pressable 
+                      className="flex-grow py-3.5"
+                      onPress={() => splitType === 'equally' && toggleParticipant(member.id)}
+                    >
+                      <BoldText className="text-gray-800 text-[15px]">
+                        {member.user_name} {member.user_id === currentUser?.id ? '(나)' : ''}
+                      </BoldText>
+                    </Pressable>
+                    
+                    {/* 분배 금액 또는 입력 UI */}
+                    <View className="flex-shrink-0 ml-auto">
                       {splitType === 'equally' && (
-                        <View className="flex-shrink-0 mr-2">
-                          <CheckboxField
-                            value={isSelected}
-                            onValueChange={() => toggleParticipant(member.id)}
-                          />
+                        <MediumText className="text-gray-600 text-base">
+                          {isSelected && amount > 0 ? formatCurrency(share, currency) : `${currencies[currency].symbol}0`}
+                        </MediumText>
+                      )}
+                      
+                      {splitType === 'parts' && (
+                        <View className="flex-row items-center">
+                          {/* 금액 표시 */}
+                          <MediumText className="text-gray-600 text-base mr-2">
+                            {isSelected && amount > 0 ? formatCurrency(share, currency) : `${currencies[currency].symbol}0`}
+                          </MediumText>
+                          
+                          {/* 배수 조정 버튼 */}
+                          <View className="flex-row items-center">
+                            <Pressable
+                              onPress={() => adjustMultiplier(member.id, -1)}
+                              disabled={multipliers[member.id] <= 0}
+                              className={`w-6 h-6 rounded-md bg-gray-50 items-center justify-center ${
+                                multipliers[member.id] <= 0 ? 'opacity-30' : ''
+                              }`}
+                            >
+                              <BoldText className="text-gray-800 text-lg">−</BoldText>
+                            </Pressable>
+                            
+                            <View className="flex-row items-end mx-1">
+                              <BoldText className="text-gray-800 text-base text-center self-end">
+                                {multipliers[member.id] || 0}
+                              </BoldText>
+                              <X width={12} height={12} color="#000" strokeWidth={4} style={{ marginBottom: 2 }} />
+                            </View>
+                            
+                            <Pressable
+                              onPress={() => adjustMultiplier(member.id, 1)}
+                              className="w-6 h-6 rounded-md bg-gray-50 items-center justify-center"
+                            >
+                              <BoldText className="text-gray-800 text-lg">+</BoldText>
+                            </Pressable>
+                          </View>
                         </View>
                       )}
                       
-                      {/* 멤버 이름 */}
-                      <Pressable 
-                        className="flex-grow py-3.5"
-                        onPress={() => splitType === 'equally' && toggleParticipant(member.id)}
-                      >
-                        <BoldText className="text-gray-800 text-[15px]">
-                          {member.user_name} {member.user_id === currentUser?.id ? '(나)' : ''}
-                        </BoldText>
-                      </Pressable>
-                      
-                      {/* 분배 금액 또는 입력 UI */}
-                      <View className="flex-shrink-0 ml-auto">
-                        {splitType === 'equally' && (
-                          <MediumText className="text-gray-600 text-base">
-                            {isSelected && amount > 0 ? formatCurrency(share, currency) : `${currencies[currency].symbol}0`}
-                          </MediumText>
-                        )}
-                        
-                        {splitType === 'parts' && (
-                          <View className="flex-row items-center">
-                            {/* 금액 표시 */}
-                            <MediumText className="text-gray-600 text-base mr-2">
-                              {isSelected && amount > 0 ? formatCurrency(share, currency) : `${currencies[currency].symbol}0`}
-                            </MediumText>
-                            
-                            {/* 배수 조정 버튼 */}
-                            <View className="flex-row items-center">
-                              <Pressable
-                                onPress={() => adjustMultiplier(member.id, -1)}
-                                disabled={multipliers[member.id] <= 0}
-                                className={`w-6 h-6 rounded-md bg-gray-50 items-center justify-center ${
-                                  multipliers[member.id] <= 0 ? 'opacity-30' : ''
-                                }`}
-                              >
-                                <BoldText className="text-gray-800 text-lg">−</BoldText>
-                              </Pressable>
-                              
-                              <View className="flex-row items-end mx-1">
-                                <BoldText className="text-gray-800 text-base text-center self-end">
-                                  {multipliers[member.id] || 0}
-                                </BoldText>
-                                <X width={12} height={12} color="#000" strokeWidth={4} style={{ marginBottom: 2 }} />
-                              </View>
-                              
-                              <Pressable
-                                onPress={() => adjustMultiplier(member.id, 1)}
-                                className="w-6 h-6 rounded-md bg-gray-50 items-center justify-center"
-                              >
-                                <BoldText className="text-gray-800 text-lg">+</BoldText>
-                              </Pressable>
-                            </View>
-                          </View>
-                        )}
-                        
-                        {splitType === 'amounts' && (
-                          <InputField
-                            selectTextOnFocus={true}
-                            value={formattedManualAmounts[member.id] || formatCurrency(manualAmounts[member.id] || 0, currency)}
-                            returnKeyType={index === members.length-1 ? "done" : 'none'}
-                            onChangeText={(value) => handleManualAmountInputChange(member.id, value)}
-                            onBlur={() => {
-                              handleManualAmountBlur(member.id)
-                            }}
-                            keyboardType="numeric"
-                            style={{ fontFamily: "Pretendard-500", textAlign: 'right', fontSize: 16, width: 100, height:30, lineHeight: 20, paddingTop: 2, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: '#EEEFF3', color: '#30333D', fontWeight: "500", }}
-                            placeholder={`${currencies[currency].symbol}0`}
-                          />
-                        )}
-                      </View>
+                      {splitType === 'amounts' && (
+                        <InputField
+                          selectTextOnFocus={true}
+                          value={formattedManualAmounts[member.id] || formatCurrency(manualAmounts[member.id] || 0, currency)}
+                          returnKeyType={index === members.length-1 ? "done" : 'none'}
+                          onChangeText={(value) => handleManualAmountInputChange(member.id, value)}
+                          onBlur={() => {
+                            handleManualAmountBlur(member.id)
+                          }}
+                          keyboardType="numeric"
+                          style={{ fontFamily: "Pretendard-500", textAlign: 'right', fontSize: 16, width: 100, height:30, lineHeight: 20, paddingTop: 2, paddingBottom: 0, borderBottomWidth: 1, borderBottomColor: '#EEEFF3', color: '#30333D', fontWeight: "500", }}
+                          placeholder={`${currencies[currency].symbol}0`}
+                        />
+                      )}
                     </View>
-                  );
-                })}
-              </View>
+                  </View>
+                );
+              })}
             </View>
-          )}
-
-          {/* 삭제 및 수정 버튼 */}
-          <View className="flex-row gap-2 pb-8">
-            <DangerousButton
-              title={isDeleting ? '삭제 중...' : '삭제하기'}
-              onPress={handleDelete}
-              disabled={isDeleting || isSubmitting}
-              loading={isDeleting}
-            />
-            <PrimaryButton
-              title={isSubmitting ? '처리 중...' : '수정하기'}
-              onPress={handleSubmit}
-              disabled={isSubmitting || isDeleting}
-              loading={isSubmitting}
-              doubleFlex={true}
-            />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        )}
+
+        {/* 삭제 및 수정 버튼 */}
+        <View className="flex-row gap-2 pb-8">
+          <DangerousButton
+            title={isDeleting ? '삭제 중...' : '삭제하기'}
+            onPress={handleDelete}
+            disabled={isDeleting || isSubmitting}
+            loading={isDeleting}
+          />
+          <PrimaryButton
+            title={isSubmitting ? '처리 중...' : '수정하기'}
+            onPress={handleSubmit}
+            disabled={isSubmitting || isDeleting}
+            loading={isSubmitting}
+            doubleFlex={true}
+          />
+        </View>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 } 

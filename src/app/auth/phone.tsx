@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, TouchableOpacity, Image, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, TouchableOpacity, Image, Alert } from 'react-native';
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePhoneAuth } from '@/src/hooks/usePhoneAuth';
 import { PhoneForm, VerifyForm, ProfileForm } from '@/src/components/auth';
@@ -64,28 +65,27 @@ export default function PhoneAuthPage() {
   }, [error]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <KeyboardAwareScrollView
+      bottomOffset={50}
       style={{ flex: 1 }}
+      contentContainerStyle={{ flexGrow: 1 }}
+      overScrollMode="never"
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      bounces={false}
+      alwaysBounceVertical={false}
     >
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ flexGrow: 1 }}
-        bounces={false}
-        overScrollMode="never"
-      >
-        <View className="bg-white px-4">
-          <View className="flex-row justify-between items-end pt-16 pb-8">
-            <TouchableOpacity onPress={() => router.dismissTo('/')}>
-              <Image 
-                source={require('../../../assets/images/logo.webp')} 
-                className="h-10 w-52 mt-12 mb-4"
-              />
-            </TouchableOpacity>
-            </View>
-            {renderForm()}
-          </View>
-        </ScrollView>
-    </KeyboardAvoidingView>
+      <View className="bg-white flex-1 px-4">
+        <View className="flex-row justify-between items-end pt-16 pb-8">
+          <TouchableOpacity onPress={() => router.dismissTo('/')}>
+            <Image 
+              source={require('../../../assets/images/logo.webp')} 
+              className="h-10 w-52 mt-12 mb-4"
+            />
+          </TouchableOpacity>
+        </View>
+        {renderForm()}
+      </View>
+    </KeyboardAwareScrollView>
   );
 }

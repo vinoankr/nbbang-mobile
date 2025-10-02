@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, Pressable, TouchableOpacity, Platform, BackHandler, KeyboardAvoidingView } from 'react-native';
+import { View, Pressable, TouchableOpacity, Platform, BackHandler } from 'react-native';
 import { useModal } from '../../hooks/useModal';
 import X from '../../../assets/icons/x.svg';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 
 export default function Modal() {
   const { component, isOpen, closeModal, canClose } = useModal();

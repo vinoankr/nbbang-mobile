@@ -12,6 +12,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { toastConfig } from '../utils/toastConfig';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
 import * as Sentry from '@sentry/react-native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 initializeKakaoSDK('93959bb8c9aa19c9ae9ad2ca73ffb3c5');
 // 스플래시 스크린 자동 숨김 방지
@@ -61,10 +62,12 @@ function RootLayout() {
       persistOptions={{ persister }}
     >
       <NetworkProvider>
-        <SafeAreaProvider>  
-          <Stack screenOptions={{ headerShown: false, animation: 'none' }}/>
-          <Modal />
-          <Toast config={toastConfig} />
+        <SafeAreaProvider>
+          <KeyboardProvider>  
+            <Stack screenOptions={{ headerShown: false, animation: 'none' }}/>
+            <Modal />
+            <Toast config={toastConfig} />
+          </KeyboardProvider>
         </SafeAreaProvider>
       </NetworkProvider>
     </PersistQueryClientProvider>

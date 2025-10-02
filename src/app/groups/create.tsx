@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, ScrollView, TouchableOpacity, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, TouchableOpacity, Keyboard, Platform } from 'react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -14,6 +14,7 @@ import { PrimaryButton } from '@/src/components/form/PrimaryButton';
 import { MediumText } from '@/src/components/Texts';
 import X from '../../../assets/icons/x.svg';
 import Header from '@/src/components/Header';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 interface CreateGroupForm {
   groupName: string;
@@ -153,19 +154,16 @@ export default function CreateGroup() {
         showBackButton={true}
         onBackClick={() => router.dismissTo('/groups')}
       />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom + 32 }}
+        <KeyboardAwareScrollView
+          bottomOffset={50}
+          style={{ flex: 1 }}
           className="flex-1 px-4 pt-20"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+          overScrollMode="never"
+          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           bounces={false}
           alwaysBounceVertical={false}
-          overScrollMode="never"
-          showsVerticalScrollIndicator={false}
         >
           <View className="mb-6">
             <FormLabel label="그룹 이름" />
@@ -258,8 +256,7 @@ export default function CreateGroup() {
               loading={isSubmitting}
             />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

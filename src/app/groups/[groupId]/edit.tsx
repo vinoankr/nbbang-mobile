@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, ScrollView, TouchableOpacity, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, TouchableOpacity, Keyboard, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
@@ -15,6 +15,7 @@ import { MediumText } from '@/src/components/Texts';
 import Header from '@/src/components/Header';
 import { X } from 'lucide-react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 interface EditGroupForm {
   groupName: string;
@@ -257,153 +258,149 @@ export default function EditGroup() {
   }));
 
   return (
-    <SafeAreaView className='flex-1 bg-white'>
+    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="relative flex-1 bg-white">
       <Header 
         title="그룹 수정" 
         showBackButton={true}
         onBackClick={() => router.back()}
       />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <KeyboardAwareScrollView
+        bottomOffset={50}
         style={{ flex: 1 }}
+        className="flex-1 px-4 pt-16"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+        overScrollMode="never"
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        alwaysBounceVertical={false}
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom + 32 }}
-          className="flex-1 px-4 pt-20"
-          keyboardShouldPersistTaps="handled"
-          bounces={false}
-          alwaysBounceVertical={false}
-          overScrollMode="never"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* 그룹 이름 */}
-          <View className="mb-6">
-            <FormLabel label="그룹 이름" />
-            <View className="relative">
-              <InputField
-                placeholder="그룹 이름을 입력해주세요"
-                value={formData.groupName}
-                onChangeText={(text) => {
-                  setFormData(prev => ({ ...prev, groupName: text }));
-                  setErrors((prev: any) => ({ ...prev, groupName: '' }));
-                }}
-                maxLength={12}
-                returnKeyType="done"
-              />
-              {formData.groupName !== originalGroupName && formData.groupName && (
-                <View className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <MediumText className="text-blue-500 text-sm">변경됨</MediumText>
-                </View>
-              )}
-            </View>
-            {errors.groupName && (
-              <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.groupName}</MediumText>
-            )}
-          </View>
-
-          {/* 정산 통화 (비활성화) */}
-          <View className="mb-6">
-            <FormLabel label="정산 통화" />
-            <SelectField
-              value={formData.currency}
-              onChangeValue={() => {}} // 비활성화
-              items={currencyItems}
-              disabled={true}
+        {/* 그룹 이름 */}
+        <View className="mb-6">
+          <FormLabel label="그룹 이름" />
+          <View className="relative">
+            <InputField
+              placeholder="그룹 이름을 입력해주세요"
+              value={formData.groupName}
+              onChangeText={(text) => {
+                setFormData(prev => ({ ...prev, groupName: text }));
+                setErrors((prev: any) => ({ ...prev, groupName: '' }));
+              }}
+              maxLength={12}
+              returnKeyType="done"
             />
-          </View>
-
-          {/* 비밀번호 */}
-          <View className="mb-6">
-            <FormLabel label="입장 비밀번호 (선택)" />
-            <View className="relative">
-              <InputField
-                placeholder="4자리 숫자 입력 (선택)"
-                value={formData.password}
-                onChangeText={handlePasswordChange}
-                keyboardType="numeric"
-                maxLength={4}
-                returnKeyType="done"
-                onSubmitEditing={Keyboard.dismiss}
-              />
-              {formData.password !== originalPassword && (
-                <View className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <MediumText className="text-blue-500 text-sm">변경됨</MediumText>
-                </View>
-              )}
-            </View>
-            {errors.password && (
-              <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.password}</MediumText>
+            {formData.groupName !== originalGroupName && formData.groupName && (
+              <View className="absolute right-3 top-1/2 -translate-y-1/2">
+                <MediumText className="text-blue-500 text-sm">변경됨</MediumText>
+              </View>
             )}
           </View>
+          {errors.groupName && (
+            <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.groupName}</MediumText>
+          )}
+        </View>
 
-          {/* 멤버 목록 */}
-          <View className="mb-8">
-            <FormLabel label="멤버 이름변경" />
-            
-            {/* 기존 멤버들 */}
-            <View className="flex flex-col gap-2 mb-2">
-              {originalMembers.map((member) => (
-                <View key={member.id} className="relative">
-                  <InputField
-                    placeholder="멤버 이름"
-                    value={member.currentName}
-                    onChangeText={(text) => handleMemberNameChange(member.id, text)}
-                    returnKeyType="done"
-                  />
-                  {member.isModified && (
-                    <View className="absolute right-3 top-1/2 -translate-y-1/2">
-                      <MediumText className="text-blue-500 text-sm">변경됨</MediumText>
-                    </View>
-                  )}
-                </View>
-              ))}
-              
-              {/* 새로 추가된 멤버들 */}
-              {addedMembers.map((member) => (
-                <View key={member.id} className="relative">
-                  <InputField
-                    placeholder="새 멤버 이름"
-                    value={member.name}
-                    onChangeText={(text) => handleAddedMemberNameChange(member.id, text)}
-                    returnKeyType="done"
-                  />
-                  <TouchableOpacity
-                    onPress={() => handleRemoveAddedMember(member.id)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-gray-100 rounded-full p-1"
-                    activeOpacity={0.7}
-                  >
-                    <X width={16} height={16} color="#6B7280" strokeWidth={2.5} />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-            
-            {/* 멤버 추가 버튼 */}
-            <TouchableOpacity
-              onPress={handleAddMember}
-              className="h-12 flex items-start justify-center"
-              activeOpacity={0.7}
-            >
-              <MediumText className="text-blue-500 text-base">+ 멤버 추가하기</MediumText>
-            </TouchableOpacity>
-            
-            {errors.members && (
-              <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.members}</MediumText>
-            )}
-          </View>
+        {/* 정산 통화 (비활성화) */}
+        <View className="mb-6">
+          <FormLabel label="정산 통화" />
+          <SelectField
+            value={formData.currency}
+            onChangeValue={() => {}} // 비활성화
+            items={currencyItems}
+            disabled={true}
+          />
+        </View>
 
-          {/* 수정 버튼 */}
-          <View className="pb-4">
-            <PrimaryButton
-              title={isSubmitting || editGroupMutation.isPending ? '처리 중...' : '수정하기'}
-              onPress={handleSubmit}
-              disabled={!hasChanges || isSubmitting || editGroupMutation.isPending}
-              loading={isSubmitting || editGroupMutation.isPending}
+        {/* 비밀번호 */}
+        <View className="mb-6">
+          <FormLabel label="입장 비밀번호 (선택)" />
+          <View className="relative">
+            <InputField
+              placeholder="4자리 숫자 입력 (선택)"
+              value={formData.password}
+              onChangeText={handlePasswordChange}
+              keyboardType="numeric"
+              maxLength={4}
+              returnKeyType="done"
+              onSubmitEditing={Keyboard.dismiss}
             />
+            {formData.password !== originalPassword && (
+              <View className="absolute right-3 top-1/2 -translate-y-1/2">
+                <MediumText className="text-blue-500 text-sm">변경됨</MediumText>
+              </View>
+            )}
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          {errors.password && (
+            <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.password}</MediumText>
+          )}
+        </View>
+
+        {/* 멤버 목록 */}
+        <View className="mb-8">
+          <FormLabel label="멤버 이름변경" />
+          
+          {/* 기존 멤버들 */}
+          <View className="flex flex-col gap-2 mb-2">
+            {originalMembers.map((member) => (
+              <View key={member.id} className="relative">
+                <InputField
+                  placeholder="멤버 이름"
+                  value={member.currentName}
+                  onChangeText={(text) => handleMemberNameChange(member.id, text)}
+                  returnKeyType="done"
+                />
+                {member.isModified && (
+                  <View className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <MediumText className="text-blue-500 text-sm">변경됨</MediumText>
+                  </View>
+                )}
+              </View>
+            ))}
+            
+            {/* 새로 추가된 멤버들 */}
+            {addedMembers.map((member) => (
+              <View key={member.id} className="relative">
+                <InputField
+                  placeholder="새 멤버 이름"
+                  value={member.name}
+                  onChangeText={(text) => handleAddedMemberNameChange(member.id, text)}
+                  returnKeyType="done"
+                />
+                <TouchableOpacity
+                  onPress={() => handleRemoveAddedMember(member.id)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-gray-100 rounded-full p-1"
+                  activeOpacity={0.7}
+                >
+                  <X width={16} height={16} color="#6B7280" strokeWidth={2.5} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+          
+          {/* 멤버 추가 버튼 */}
+          <TouchableOpacity
+            onPress={handleAddMember}
+            className="h-12 flex items-start justify-center"
+            activeOpacity={0.7}
+          >
+            <MediumText className="text-blue-500 text-base">+ 멤버 추가하기</MediumText>
+          </TouchableOpacity>
+          
+          {errors.members && (
+            <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.members}</MediumText>
+          )}
+        </View>
+
+        {/* 수정 버튼 */}
+        <View className="pb-8">
+          <PrimaryButton
+            title={isSubmitting || editGroupMutation.isPending ? '처리 중...' : '수정하기'}
+            onPress={handleSubmit}
+            disabled={!hasChanges || isSubmitting || editGroupMutation.isPending}
+            loading={isSubmitting || editGroupMutation.isPending}
+          />
+        </View>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

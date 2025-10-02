@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, TouchableOpacity, ScrollView, Image, Platform, KeyboardAvoidingView, SafeAreaView } from "react-native";
+import { View, TouchableOpacity, ScrollView, Image, Platform, SafeAreaView } from "react-native";
 import { router } from "expo-router";
 import { useProfile } from "../../hooks/queries/useMe";
 import { useUpdateProfile } from "../../hooks/mutations/useUpdateProfile";
@@ -13,6 +13,7 @@ import { InputField } from "../../components/form/InputField";
 import { FormInfo } from "../../components/form/FormInfo";
 import Spinner from "../../components/Spinner";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 // 이미지 import
 const step1Image = require('../../../assets/images/step-1.webp');
@@ -225,53 +226,50 @@ const LinkKakaopayPage = () => {
         showBackButton={true} 
         onBackClick={() => router.back()} 
       />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <KeyboardAwareScrollView
+        bottomOffset={50}
         style={{ flex: 1, backgroundColor: 'white' }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+        overScrollMode="never"
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        alwaysBounceVertical={false}
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flexGrow: 1 }}
-          bounces={false}
-          alwaysBounceVertical={false}
-          overScrollMode="never"
-          showsVerticalScrollIndicator={false}
-        >
-          <View className="px-4 pt-20">
-            {renderTutorialStep()}
-          </View>
-    
-          <View className="px-4 pb-4 pt-4 flex-row gap-2">
-            {[1, 2, 3].includes(currentStep) && (
-              <SecondaryButton
-                title="이전"
-                onPress={handlePrevious}
-                disabled={isPending}
-                className="flex-1"
-              />
-            )}
-            <PrimaryButton
-              title={
-                isPending 
-                  ? '처리 중...'
-                  : currentStep === 0 
-                    ? (initialValue ? "수정하기" : "등록하기")
-                    : currentStep === 3 
-                      ? "등록하러가기"
-                      : "다음"
-              }
-              onPress={currentStep === 0 ? handleSubmit : handleNext}
-              disabled={
-                isPending || 
-                (currentStep === 0 && initialValue && kakaopayId.trim() === initialValue) || 
-                (currentStep === 0 && (!kakaopayId.trim() || isError))
-              }
+        <View className="px-4 pt-20">
+          {renderTutorialStep()}
+        </View>
+  
+        <View className="px-4 pb-4 pt-4 flex-row gap-2">
+          {[1, 2, 3].includes(currentStep) && (
+            <SecondaryButton
+              title="이전"
+              onPress={handlePrevious}
+              disabled={isPending}
               className="flex-1"
-              loading={isPending}
             />
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          )}
+          <PrimaryButton
+            title={
+              isPending 
+                ? '처리 중...'
+                : currentStep === 0 
+                  ? (initialValue ? "수정하기" : "등록하기")
+                  : currentStep === 3 
+                    ? "등록하러가기"
+                    : "다음"
+            }
+            onPress={currentStep === 0 ? handleSubmit : handleNext}
+            disabled={
+              isPending || 
+              (currentStep === 0 && initialValue && kakaopayId.trim() === initialValue) || 
+              (currentStep === 0 && (!kakaopayId.trim() || isError))
+            }
+            className="flex-1"
+            loading={isPending}
+          />
+        </View>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };
