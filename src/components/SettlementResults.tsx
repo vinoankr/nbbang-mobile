@@ -3,6 +3,7 @@ import { View, TouchableOpacity } from 'react-native';
 import { BoldText, MediumText } from './Texts';
 import MyBalanceItem from './MyBalanceItem';
 import OthersBalanceItem from './OthersBalanceItem';
+import ChevronUp from '../../assets/icons/chevron-up.svg';
 import ChevronDown from '../../assets/icons/chevron-down.svg';
 import Spinner from './Spinner';
 
@@ -50,7 +51,8 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
   isError
 }) => {
   const [isOthersTransactionsOpen, setIsOthersTransactionsOpen] = useState(false);
-  
+  const [isWhyThisAmountOpen, setIsWhyThisAmountOpen] = useState(false);
+
   const { myTransactions, othersTransactions } = settlementData;
 
   if (isLoading || !currentMemberId) {
@@ -83,7 +85,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
           </MediumText>
         </View>
       ) : (
-        <View className="w-full flex flex-col gap-2">
+        <View className="w-full flex flex-col gap-2 mb-16">
           {myTransactions.length === 0 && othersTransactions.length === 0 ? (
             <View className="py-8 text-center">
               <MediumText className="text-lg text-gray-800 text-center">
@@ -123,7 +125,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
                 <BoldText className="text-gray-800 text-base">
                   다른 멤버간 정산 결과
                 </BoldText>
-                <ChevronDown width={16} height={16} />
+                {isOthersTransactionsOpen ? <ChevronUp width={16} height={16} /> : <ChevronDown width={16} height={16} />}
               </View>
               
               {isOthersTransactionsOpen && (
@@ -146,6 +148,35 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
               )}
             </TouchableOpacity>
           )}
+          {
+            (myTransactions.length > 0 || othersTransactions.length > 0) && members?.length > 2 && (
+              <TouchableOpacity
+                className="py-3.5 px-4 border border-gray-100 rounded-lg flex flex-col"
+                onPress={() => setIsWhyThisAmountOpen(!isWhyThisAmountOpen)}
+                activeOpacity={0.9}
+              >
+                <View className="flex-row justify-between items-center">
+                  <BoldText className="text-gray-600 text-base">
+                    왜 이런 정산 결과가 나왔나요?
+                  </BoldText>
+                  {isWhyThisAmountOpen ? <ChevronUp width={16} height={16} /> : <ChevronDown width={16} height={16} />}
+                </View>
+                {isWhyThisAmountOpen && (
+                  <View className="flex flex-col mt-2">
+                    <MediumText className="text-gray-600 text-sm">
+                      N빵은 송금 횟수를 최소화하는 알고리즘을 사용해요!
+                    </MediumText>
+                    <MediumText className="text-gray-600 text-sm">
+                      예상한 결과와 달라도 안심하고 사용해주세요 🤗
+                    </MediumText>
+                    <MediumText className="text-gray-600 text-sm mt-1.5">
+                      예시: A → B, B → C로 각각 송금해야 하는 경우, A → C로 직접 송금하도록 알고리즘이 작동합니다.
+                    </MediumText>
+                  </View>
+                )}
+              </TouchableOpacity>
+            )
+          }
         </View>
       )}
     </View>
