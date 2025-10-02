@@ -444,7 +444,7 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
     }
     
     if (!paidBy) {
-      newErrors.paidBy = expenseType === '송금기록' ? '보낸 사람을 선택해주세요' : '결제한 사람을 선택해주세요';
+      newErrors.paidBy = expenseType === '송금기록' ? '보내는 사람을 선택해주세요' : '결제한 사람을 선택해주세요';
     }
     
     if (expenseType === '송금기록' && !receiverId) {

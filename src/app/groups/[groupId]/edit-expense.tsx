@@ -463,7 +463,7 @@ export default function EditExpense() {
           {/* 결제자/송금자와 날짜 */}
           <View className="flex-row gap-3 mb-4">
             <View className="flex-1">
-              <FormLabel label={expenseType === '송금기록' ? '보낸 사람' : '결제한 사람'} />
+              <FormLabel label={expenseType === '송금기록' ? '보내는 사람' : '결제한 사람'} />
               <SelectField
                 value={paidBy}
                 onChangeValue={(value) => setPaidBy(value || '')}
