@@ -3,8 +3,6 @@ import { View, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { BoldText, MediumText } from './Texts';
 import { useExpenseParticipants } from '@/src/hooks/queries/useExpenseParticipants';
-import { useGroupExpenses } from '@/src/hooks/queries/useGroupExpenses';
-import { useGroupedExpenses } from '@/src/hooks/useGroupedExpenses';
 import { formatCurrency } from '@/src/utils/formatter';
 import Pencil from '../../assets/icons/pencil.svg';
 import { ArrowRightIcon } from 'lucide-react-native';
@@ -15,13 +13,19 @@ interface CurrencyCode {
   symbol: string;
 }
 
+interface GroupedExpense {
+  date: string;
+  expenses: any[];
+}
+
 interface ExpensesListProps {
-  groupId: string;
   groupCurrency: CurrencyCode | string;
   memberNameMap: Map<string, string>;
   currentUserMemberId: string;
-  currentUser: any;
-  isMemberOfGroup: boolean;
+  groupedExpenses: GroupedExpense[];
+  rawExpenses: any[] | undefined;
+  isLoading: boolean;
+  isError: boolean;
 }
 
 interface ExpenseCardProps {
@@ -130,33 +134,18 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
 };
 
 const ExpensesList: React.FC<ExpensesListProps> = ({ 
-  groupId,
   groupCurrency, 
   memberNameMap, 
   currentUserMemberId,
-  currentUser,
-  isMemberOfGroup
+  groupedExpenses,
+  rawExpenses,
+  isLoading,
+  isError
 }) => {
-  const { data: rawExpenses, isLoading: expensesLoading, isError: expensesError } = useGroupExpenses(groupId, currentUser, isMemberOfGroup);
-  const groupedExpenses = useGroupedExpenses(rawExpenses);
-
-  if (expensesLoading || !rawExpenses) {
+  if (isLoading || isError || !rawExpenses) {
     return (
       <View className="flex-1 justify-center items-center py-16">
         <Spinner size={24} color="#30333D" strokeWidth={2.5} />
-      </View>
-    );
-  }
-
-  if (expensesError) {
-    return (
-      <View className="flex-1 justify-center items-center py-8">
-        <MediumText className="text-red-500 text-xl text-center">
-          지출 내역을 불러오는데 실패했습니다.
-        </MediumText>
-        <MediumText className="text-red-500 text-xl text-center">
-          네트워크 연결 상태를 확인해주세요.
-        </MediumText>
       </View>
     );
   }

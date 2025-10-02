@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { BoldText, MediumText } from './Texts';
-import { useAllExpenseParticipations } from '@/src/hooks/queries/useAllExpenseParticipations';
 import MyBalanceItem from './MyBalanceItem';
 import OthersBalanceItem from './OthersBalanceItem';
 import ChevronDown from '../../assets/icons/chevron-down.svg';
-import { calculateSettlement } from '../utils/settlementCalculator';
 import Spinner from './Spinner';
 
 interface Member {
   id: string;
   user_name: string;
   user_id: string | null;
+}
+
+interface Transaction {
+  from: string;
+  to: string;
+  amount: number;
+}
+
+interface SettlementData {
+  myTransactions: Transaction[];
+  othersTransactions: Transaction[];
+  totalAmount: number;
 }
 
 interface SettlementResultsProps {
@@ -21,7 +31,10 @@ interface SettlementResultsProps {
   groupId: string;
   groupCurrency: string;
   openInviteModal: () => void;
-  isMemberOfGroup: boolean;
+  allExpenseParticipations: any[] | undefined;
+  settlementData: SettlementData;
+  isLoading: boolean;
+  isError: boolean;
 }
 
 const SettlementResults: React.FC<SettlementResultsProps> = ({
@@ -31,18 +44,16 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
   groupId,
   groupCurrency,
   openInviteModal,
-  isMemberOfGroup
+  allExpenseParticipations,
+  settlementData,
+  isLoading,
+  isError
 }) => {
   const [isOthersTransactionsOpen, setIsOthersTransactionsOpen] = useState(false);
-  const { data: allExpenseParticipations, isLoading, isError } = useAllExpenseParticipations(groupId, isMemberOfGroup);
   
-  const { myTransactions, othersTransactions } = calculateSettlement(
-    allExpenseParticipations || [],
-    currentMemberId,
-    members
-  );
+  const { myTransactions, othersTransactions } = settlementData;
 
-  if (isLoading || !allExpenseParticipations) {
+  if (isLoading || !currentMemberId) {
     return (
       <View className="flex justify-center items-center py-16">
         <Spinner size={24} color="#30333D" strokeWidth={2.5} />

@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { BoldText } from './Texts';
 import ExpensesList from './ExpensesList';
 import SettlementResults from './SettlementResults';
-import Spinner from './Spinner';
 import { useLocalSearchParams } from 'expo-router';
+import { useGroupExpenses } from '@/src/hooks/queries/useGroupExpenses';
+import { useAllExpenseParticipations } from '@/src/hooks/queries/useAllExpenseParticipations';
+import { useGroupedExpenses } from '@/src/hooks/useGroupedExpenses';
+import { calculateSettlement } from '@/src/utils/settlementCalculator';
 
 interface Member {
   id: string;
@@ -40,6 +43,23 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
 
   const [activeTab, setActiveTab] = useState<'expenses' | 'settlement'>(activeTabParam || 'expenses');
 
+  // 데이터 페칭
+  const { data: rawExpenses, isLoading: expensesLoading, isError: expensesError } = useGroupExpenses(groupId, currentUser, isMemberOfGroup);
+  const { data: allExpenseParticipations, isLoading: participationsLoading, isError: participationsError } = useAllExpenseParticipations(groupId, isMemberOfGroup);
+
+  // 데이터 재구성 (memoized)
+  const groupedExpenses = useGroupedExpenses(rawExpenses);
+  
+  const settlementData = useMemo(() => {
+    return calculateSettlement(allExpenseParticipations, currentUserMemberId, members);
+  }, [allExpenseParticipations, currentUserMemberId, members]);
+
+  const numMyTransactions = settlementData.myTransactions.length || 0;
+
+  // 각 탭별 로딩 상태
+  const expensesTabLoading = expensesLoading || isLoading;
+  const settlementTabLoading = participationsLoading || isLoading;
+
   return (
     <View className="flex-1">
       {/* 탭 메뉴 */}
@@ -66,46 +86,51 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
           activeOpacity={0.9}
           onPress={() => setActiveTab('settlement')}
         >
-          <BoldText 
-            className={`text-center text-[14px] ${
-              activeTab === 'settlement' ? 'text-white' : 'text-gray-800'
-            }`}
-          >
-            정산 결과
-          </BoldText>
+          <View className="flex-row items-center justify-center gap-1">
+            <BoldText 
+              className={`text-center text-[14px] ${
+                activeTab === 'settlement' ? 'text-white' : 'text-gray-800'
+              }`}
+            >
+              정산 결과
+            </BoldText>
+            {numMyTransactions > 0 && (
+              <BoldText 
+                className={`text-xs ${
+                  activeTab === 'settlement' ? 'text-white' : 'text-gray-800'
+                }`}
+              >
+                ({numMyTransactions})
+              </BoldText>
+            )}
+          </View>
         </TouchableOpacity>
       </View>
 
-      {
-        isLoading ? (
-          <View className="flex-1 justify-center items-center py-16">
-            <Spinner size={24} color="#30333D" strokeWidth={2.5} />
-          </View>
-        ) : (
-          <>
-            {activeTab === 'expenses' ? (
-              <ExpensesList 
-                groupId={groupId}
-                groupCurrency={currency as any} 
-                memberNameMap={memberNameMap} 
-                currentUserMemberId={currentUserMemberId}
-                currentUser={currentUser}
-                isMemberOfGroup={isMemberOfGroup}
-              />
-            ) : (
-              <SettlementResults 
-                groupId={groupId}
-                groupCurrency={currency as any}
-                currentMemberId={currentUserMemberId}
-                members={members}
-                memberNameMap={memberNameMap}
-                openInviteModal={openInviteModal}
-                isMemberOfGroup={isMemberOfGroup}
-              />
-            )}
-          </>
-        )
-      }
+      {activeTab === 'expenses' ? (
+        <ExpensesList 
+          groupCurrency={currency as any} 
+          memberNameMap={memberNameMap} 
+          currentUserMemberId={currentUserMemberId}
+          groupedExpenses={groupedExpenses}
+          rawExpenses={rawExpenses}
+          isLoading={expensesTabLoading}
+          isError={expensesError}
+        />
+      ) : (
+        <SettlementResults 
+          groupId={groupId}
+          groupCurrency={currency as any}
+          currentMemberId={currentUserMemberId}
+          members={members}
+          memberNameMap={memberNameMap}
+          openInviteModal={openInviteModal}
+          allExpenseParticipations={allExpenseParticipations}
+          settlementData={settlementData}
+          isLoading={settlementTabLoading}
+          isError={participationsError}
+        />
+      )}
 
     </View>
   );
