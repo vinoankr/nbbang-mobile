@@ -123,7 +123,7 @@ export default function LedgerPage() {
                     </MediumText>
                   )}
                   <View className="flex-row justify-between">
-                    <MediumText className='text-base'>{row.description?.substring(0,20)}</MediumText>
+                    <MediumText className='text-base'>{row.description?.substring(0,20) || '지출'}</MediumText>
                     <View className="flex-col items-end">
                       {/* 그룹 기본 통화로 환산된 금액 */}
                       <BoldText className="text-base">

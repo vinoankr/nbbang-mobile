@@ -10,6 +10,7 @@ interface ExpenseEntry {
   amount_in_currency: number; // 원래 통화로의 분담액
   paid_by: string;
   spent_at: string;
+  created_at: string;
   currency: string;
   exchange_rate: number;
 }
@@ -43,6 +44,7 @@ export function useLedger(
         const isPayer = entry.paid_by === memberId;
         return {
           date: formatDate(dateMap.get(entry.expense_id) || ""),
+          created_at: entry.created_at,
           description: expenseMap.get(entry.expense_id),
           amount: entry.amount,
           amount_in_currency: entry.amount_in_currency,
@@ -51,11 +53,19 @@ export function useLedger(
           isPayer,
         };
       })
-     ?.sort((a, b) => b.date.localeCompare(a.date))
+     ?.sort((a, b) => {
+        // 먼저 날짜로 정렬 (최신 날짜가 위로)
+        const dateCompare = b.date.localeCompare(a.date);
+        if (dateCompare !== 0) return dateCompare;
+        
+        // 같은 날짜라면 created_at으로 정렬 (최신이 위로)
+        return b.created_at.localeCompare(a.created_at);
+      })
 
     // 2) 날짜별 그룹핑하여 rowSpan 계산
     const ledgerWithSpan: {
       date: string;
+      created_at: string;
       description: string | undefined;
       amount: number;
       amount_in_currency: number;
@@ -69,7 +79,13 @@ export function useLedger(
     let i = 0;
     while (i < rawLedger?.length) {
       const currentDate = rawLedger[i].date;
-      const sameDateEntries = rawLedger.filter((r) => r.date === currentDate);
+      // 같은 날짜 항목들을 순서대로 가져오기 (이미 정렬된 상태)
+      const sameDateEntries = [];
+      let j = i;
+      while (j < rawLedger.length && rawLedger[j].date === currentDate) {
+        sameDateEntries.push(rawLedger[j]);
+        j++;
+      }
 
       sameDateEntries.forEach((entry, idx) => {
         ledgerWithSpan.push({
