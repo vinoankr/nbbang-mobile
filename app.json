@@ -19,8 +19,6 @@
       },
       "associatedDomains": [
         "applinks:nbbang.app",
-        "webcredentials:nbbang.app",
-        "applinks:nbbang.app",
         "webcredentials:nbbang.app"
       ],
       "privacyManifests": {
@@ -76,21 +74,6 @@
       "package": "com.busitdol.nbbang",
       "softwareKeyboardLayoutMode": "resize",
       "intentFilters": [
-        {
-          "action": "VIEW",
-          "autoVerify": true,
-          "data": [
-            {
-              "scheme": "https",
-              "host": "nbbang.app",
-              "pathPrefix": "/groups"
-            }
-          ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
-        },
         {
           "action": "VIEW",
           "autoVerify": true,
