@@ -454,6 +454,11 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
     if (currency !== defaultCurrency && (!exchangeRate || exchangeRate <= 0)) {
       newErrors.exchangeRate = '환율을 입력해주세요';
     }
+    
+    // 다른 통화 선택 시 환율이 1인 경우 검증
+    if (currency !== defaultCurrency && exchangeRate === 1) {
+      newErrors.exchangeRate = '환율 정보를 확인해주세요.';
+    }
         
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
