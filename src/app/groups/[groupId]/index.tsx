@@ -117,7 +117,7 @@ export default function GroupDetail() {
   }, [isAuthenticated, isMemberOfGroup, isLoading, group, unlinkedMembers, id, currentUser, modalShown, initialEnter]);
 
   useEffect(() => {
-    if (!isAuthenticated || !id) {
+    if (!isAuthenticated || !id || !isMemberOfGroup) {
       return;
     }
     const YYYYMMDD = new Date().toISOString().split('T')[0];
@@ -127,7 +127,7 @@ export default function GroupDetail() {
     }
     logActiveUser(id, YYYYMMDD, Platform.OS);
     mmkvStorage.setItem(`lastVisitDate-${id}`, YYYYMMDD);
-  }, [isAuthenticated, id]);
+  }, [isAuthenticated, id, isMemberOfGroup]);
 
   if (!id) {
     router.replace('/');
