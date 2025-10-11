@@ -21,17 +21,23 @@ export function useLedger(
   const { ledger, totalSpending } = useMemo(() => {
     const expenseMap = new Map<string, string>();
     const dateMap = new Map<string, string>();
+    // 개인송금(is_transfer: true)은 제외
+    const transferExpenseIds = new Set<string>();
     allexpenses?.forEach((exp) => {
-      expenseMap.set(exp.id, exp.title);
-      dateMap.set(exp.id, exp.spent_at);
+      if (exp.is_transfer) {
+        transferExpenseIds.add(exp.id);
+      } else {
+        expenseMap.set(exp.id, exp.title);
+        dateMap.set(exp.id, exp.spent_at);
+      }
     });
     if (!memberId) return { ledger: [], totalSpending: 0 };
 
     let total = 0;
 
-    // 1) memberId 필터링 & ledger 생성
+    // 1) memberId 필터링 & 개인송금 제외 & ledger 생성
     const rawLedger = data
-      ?.filter((e) => e.member_id === memberId)
+      ?.filter((e) => e.member_id === memberId && !transferExpenseIds.has(e.expense_id))
       ?.map((entry) => {
         total += entry.amount;
         const isPayer = entry.paid_by === memberId;
