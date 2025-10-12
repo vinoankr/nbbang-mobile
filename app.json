@@ -15,7 +15,10 @@
       "appName": "nbbang",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleDisplayName": "엔빵"
+        "CFBundleDisplayName": "엔빵",
+        "LSApplicationQueriesSchemes": [
+          "supertoss"
+        ]
       },
       "associatedDomains": [
         "applinks:nbbang.app",
