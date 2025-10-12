@@ -86,7 +86,7 @@ const LinkKakaopayPage = () => {
     }
   };
 
-  const renderTutorialStep = () => {
+  const renderTutorialStep = (currentStep: number) => {
     switch (currentStep) {
       case 0:
         return (
@@ -135,72 +135,78 @@ const LinkKakaopayPage = () => {
           </View>
         );
 
-             case 1:
-         return (
-           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-             <View className="flex-1 items-center px-4">
-               <View className="w-full max-w-md mb-6">
-                 <BoldText className="text-xl text-gray-800 text-center leading-7">
-                   카카오톡 더보기 상단의{'\n'}
-                   QR코드 아이콘을 눌러주세요
-                 </BoldText>
-               </View>
-               <View className="bg-gray-50 rounded-xl p-6 mb-4 w-full">
-                 <Image 
-                   source={step1Image} 
-                   className="w-full h-80"
-                   resizeMode="contain"
-                 />
-               </View>
-             </View>
-           </ScrollView>
-         );
+      case 1:
+        return (
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <View className="flex-1 items-center px-4">
+              <View className="w-full max-w-md mb-6">
+                <BoldText className="text-xl text-gray-800 text-center leading-7">
+                  카카오톡 더보기 상단의{'\n'}
+                  QR코드 아이콘을 눌러주세요
+                </BoldText>
+              </View>
+              <View className="bg-gray-50 rounded-xl p-6 mb-4 w-full">
+                <Image 
+                  source={step1Image} 
+                  className="w-full h-80"
+                  resizeMode="contain"
+                />
+              </View>
+            </View>
+          </ScrollView>
+        );
 
-             case 2:
-         return (
-           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-             <View className="flex-1 items-center px-4">
-               <View className="w-full max-w-md mb-6">
-                 <BoldText className="text-xl text-gray-800 text-center leading-7">
-                   하단 세 개 버튼 중{'\n'}
-                   송금코드 버튼을 눌러주세요
-                 </BoldText>
-               </View>
-               <View className="bg-gray-50 rounded-xl p-6 mb-4 w-full">
-                 <Image 
-                   source={step2Image} 
-                   className="w-full h-80"
-                   resizeMode="contain"
-                 />
-               </View>
-             </View>
-           </ScrollView>
-         );
+      case 2:
+        return (
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <View className="flex-1 items-center px-4">
+              <View className="w-full max-w-md mb-6">
+                <BoldText className="text-xl text-gray-800 text-center leading-7">
+                  하단 세 개 버튼 중{'\n'}
+                  송금코드 버튼을 눌러주세요
+                </BoldText>
+              </View>
+              <View className="bg-gray-50 rounded-xl p-6 mb-4 w-full">
+                <Image 
+                  source={step2Image} 
+                  className="w-full h-80"
+                  resizeMode="contain"
+                />
+              </View>
+            </View>
+          </ScrollView>
+        );
 
-             case 3:
-         return (
-           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-             <View className="flex-1 items-center px-4">
-               <View className="w-full max-w-md mb-6">
-                 <BoldText className="text-xl text-gray-800 text-center leading-7">
-                   QR코드 바로 아래{'\n'}
-                   링크복사 버튼을 눌러주세요!
-                 </BoldText>
-               </View>
-               <View className="bg-gray-50 rounded-xl p-6 mb-4 w-full">
-                 <Image 
-                   source={step3Image} 
-                   className="w-full h-80"
-                   resizeMode="contain"
-                 />
-               </View>
-             </View>
-           </ScrollView>
-         );
+      case 3:
+        return (
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <View className="flex-1 items-center px-4">
+              <View className="w-full max-w-md mb-6">
+                <BoldText className="text-xl text-gray-800 text-center leading-7">
+                  QR코드 바로 아래{'\n'}
+                  링크복사 버튼을 눌러주세요!
+                </BoldText>
+              </View>
+              <View className="bg-gray-50 rounded-xl p-6 mb-4 w-full">
+                <Image 
+                  source={step3Image} 
+                  className="w-full h-80"
+                  resizeMode="contain"
+                />
+              </View>
+            </View>
+          </ScrollView>
+        );
       default:
         return null;
     }
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setCurrentStep(1);
+    }, 50);
+  }, []);
 
   if (isLoading) {
     return (
@@ -237,7 +243,7 @@ const LinkKakaopayPage = () => {
         alwaysBounceVertical={false}
       >
         <View className="px-4 pt-20">
-          {renderTutorialStep()}
+          {renderTutorialStep(currentStep)}
         </View>
   
         <View className="px-4 pb-4 pt-4 flex-row gap-2">
