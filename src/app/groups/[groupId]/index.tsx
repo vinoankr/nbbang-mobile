@@ -28,7 +28,9 @@ export default function GroupDetail() {
   const token = getAuthToken();
   const isAuthenticated = !!token;
   const currentUser = getUserData();
-  const { activeTab } = useLocalSearchParams() as { activeTab: string | null };
+  const { activeTab: activeTabParam } = useLocalSearchParams() as { activeTab: 'expenses' | 'settlement' | null };
+
+  const [activeTab, setActiveTab] = useState<'expenses' | 'settlement'>(activeTabParam || 'expenses');
   const { initialEnter } = useLocalSearchParams() as { initialEnter: string | null };
   
   const { data: group, isLoading: groupLoading, isError: groupError } = useGroupInfo(id);
@@ -246,6 +248,8 @@ export default function GroupDetail() {
         
         {/* 탭 메뉴와 내용 */}
         <GroupDetailTabs 
+          activeTab={activeTab as 'expenses' | 'settlement'}
+          setActiveTab={setActiveTab}
           groupId={id}
           currency={group?.default_currency || 'KRW'}
           currentUser={currentUser}
@@ -257,7 +261,7 @@ export default function GroupDetail() {
           isLoading={isLoading}
         />
       </ScrollView>
-      {!isLoading && (
+      {!isLoading && isMemberOfGroup && activeTab === 'expenses' && (
         <TouchableOpacity
           onPress={()=> {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)

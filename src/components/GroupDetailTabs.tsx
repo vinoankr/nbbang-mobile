@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { BoldText } from './Texts';
 import ExpensesList from './ExpensesList';
 import SettlementResults from './SettlementResults';
-import { useLocalSearchParams } from 'expo-router';
 import { useGroupExpenses } from '@/src/hooks/queries/useGroupExpenses';
 import { useAllExpenseParticipations } from '@/src/hooks/queries/useAllExpenseParticipations';
 import { useGroupedExpenses } from '@/src/hooks/useGroupedExpenses';
@@ -16,6 +15,8 @@ interface Member {
 }
 
 interface GroupDetailTabsProps {
+  activeTab: 'expenses' | 'settlement';
+  setActiveTab: (tab: 'expenses' | 'settlement') => void;
   groupId: string;
   currency: string;
   currentUser: any;
@@ -28,6 +29,8 @@ interface GroupDetailTabsProps {
 }
 
 const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
+  activeTab,
+  setActiveTab,
   groupId,
   currency,
   currentUser,
@@ -38,11 +41,6 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
   openInviteModal,
   isLoading = false,
 }) => {
-  
-  const { activeTab: activeTabParam } = useLocalSearchParams() as { activeTab: 'expenses' | 'settlement' | null };
-
-  const [activeTab, setActiveTab] = useState<'expenses' | 'settlement'>(activeTabParam || 'expenses');
-
   // 데이터 페칭
   const { data: rawExpenses, isLoading: expensesLoading, isError: expensesError } = useGroupExpenses(groupId, currentUser, isMemberOfGroup);
   const { data: allExpenseParticipations, isLoading: participationsLoading, isError: participationsError } = useAllExpenseParticipations(groupId, isMemberOfGroup);
@@ -53,8 +51,6 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
   const settlementData = useMemo(() => {
     return calculateSettlement(allExpenseParticipations, currentUserMemberId, members);
   }, [allExpenseParticipations, currentUserMemberId, members]);
-
-  const numMyTransactions = settlementData.myTransactions.length || 0;
 
   // 각 탭별 로딩 상태
   const expensesTabLoading = expensesLoading || isLoading;
@@ -94,15 +90,6 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
             >
               정산 결과
             </BoldText>
-            {numMyTransactions > 0 && (
-              <BoldText 
-                className={`text-xs ${
-                  activeTab === 'settlement' ? 'text-white' : 'text-gray-800'
-                }`}
-              >
-                ({numMyTransactions})
-              </BoldText>
-            )}
           </View>
         </TouchableOpacity>
       </View>

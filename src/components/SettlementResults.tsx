@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { BoldText, MediumText } from './Texts';
 import MyBalanceItem from './MyBalanceItem';
 import OthersBalanceItem from './OthersBalanceItem';
 import ChevronUp from '../../assets/icons/chevron-up.svg';
 import ChevronDown from '../../assets/icons/chevron-down.svg';
 import Spinner from './Spinner';
+import Toast from 'react-native-toast-message';
+import { formatCurrency } from '../utils/formatter';
+import { josa } from 'es-hangul';
+import { ClipboardCopy } from 'lucide-react-native';
 
 interface Member {
   id: string;
@@ -51,9 +56,75 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
   isError
 }) => {
   const [isOthersTransactionsOpen, setIsOthersTransactionsOpen] = useState(false);
-  const [isWhyThisAmountOpen, setIsWhyThisAmountOpen] = useState(false);
-
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isCompleteCopy, setIsCompleteCopy] = useState(false);
   const { myTransactions, othersTransactions } = settlementData;
+
+
+  const getSettlementResultText = () => {
+    let text = '';
+    const allTransactions = [...myTransactions, ...othersTransactions];
+    // 보내는 사람별로 그룹화
+    const transactionsByFrom = new Map<string, Transaction[]>();
+    
+    allTransactions.forEach((transaction) => {
+      const fromId = transaction.from;
+      if (!transactionsByFrom.has(fromId)) {
+        transactionsByFrom.set(fromId, []);
+      }
+      transactionsByFrom.get(fromId)!.push(transaction);
+    });
+
+    // 각 보내는 사람별로 텍스트 생성
+    transactionsByFrom.forEach((transactions, fromId) => {
+      const fromName = memberNameMap.get(fromId) || '알 수 없음';
+      
+      text += `${josa(fromName, '이/가')} 송금할 내역:\n`;
+      transactions.forEach((transaction) => {
+        const toName = memberNameMap.get(transaction.to) || '알 수 없음';
+        const amount = formatCurrency(transaction.amount, groupCurrency as any);
+        text += `  → ${toName}에게 ${amount} 보내기\n`;
+      });
+      text += '\n';
+    });
+
+    return text;
+  }
+
+  // 송금 내역을 텍스트로 변환하는 함수
+  const generateSettlementShareText = () => {
+    let text = '엔빵 정산 결과\n\n';
+    text += getSettlementResultText();
+    text += '송금 횟수 최소화 알고리즘을 사용해 계산했어요.';
+    text += '\n자세한 내역을 보려면 아래 링크를 클릭하세요.';
+    text += '\nhttps://nbbang.app/groups/' + groupId;
+    
+    return text;
+  };
+
+  // 클립보드에 복사하는 함수
+  const copySettlementToClipboard = async () => {
+    try {
+      const settlementText = generateSettlementShareText();
+      await Clipboard.setStringAsync(settlementText);
+      setIsCompleteCopy(true);
+      setTimeout(() => {
+        setIsCompleteCopy(false);
+      }, 3000);
+      Toast.show({
+        type: 'success',
+        text1: '정산 결과가 클립보드에 복사되었습니다',
+        text2: '다른 앱에서 붙여넣기 할 수 있어요!',
+      });
+    } catch (error) {
+      console.error('클립보드 복사 실패:', error);
+      Toast.show({
+        type: 'error',
+        text1: '복사에 실패했습니다',
+        text2: '다시 시도해주세요.',
+      });
+    }
+  };
 
   if (isLoading || !currentMemberId) {
     return (
@@ -85,7 +156,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
           </MediumText>
         </View>
       ) : (
-        <View className="w-full flex flex-col gap-2 mb-16">
+        <View className="w-full flex flex-col gap-2.5 mb-16">
           {myTransactions.length === 0 && othersTransactions.length === 0 ? (
             <View className="py-8 text-center">
               <MediumText className="text-lg text-gray-800 text-center">
@@ -123,7 +194,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
             >
               <View className="flex-row justify-between items-center">
                 <BoldText className="text-gray-800 text-base">
-                  다른 멤버간 정산 결과
+                  다른 멤버간 정산 결과 {isOthersTransactionsOpen ? '닫기' : '보기'}
                 </BoldText>
                 {isOthersTransactionsOpen ? <ChevronUp width={16} height={16} /> : <ChevronDown width={16} height={16} />}
               </View>
@@ -149,29 +220,33 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
             </TouchableOpacity>
           )}
           {
-            (myTransactions.length > 0 || othersTransactions.length > 0) && members?.length > 2 && (
+            (myTransactions.length > 0 || othersTransactions.length > 0) && (
               <TouchableOpacity
                 className="py-3.5 px-4 border border-gray-100 rounded-lg flex flex-col"
-                onPress={() => setIsWhyThisAmountOpen(!isWhyThisAmountOpen)}
+                onPress={() => setIsShareOpen(!isShareOpen)}
                 activeOpacity={0.9}
               >
                 <View className="flex-row justify-between items-center">
-                  <BoldText className="text-gray-600 text-base">
-                    왜 이런 정산 결과가 나왔나요?
+                  <BoldText className="text-gray-800 text-base">
+                    { isShareOpen ? '정산결과 전체 내역:' : '정산결과 전체 복사하기' }
                   </BoldText>
-                  {isWhyThisAmountOpen ? <ChevronUp width={16} height={16} /> : <ChevronDown width={16} height={16} />}
+                  {isShareOpen ? <ChevronUp width={16} height={16} /> : <ChevronDown width={16} height={16} />}
                 </View>
-                {isWhyThisAmountOpen && (
+                {isShareOpen && (
                   <View className="flex flex-col mt-2">
                     <MediumText className="text-gray-600 text-sm">
-                      N빵은 송금 횟수를 최소화하는 알고리즘을 사용해요!
+                      {getSettlementResultText()}
                     </MediumText>
-                    <MediumText className="text-gray-600 text-sm">
-                      예상한 결과와 달라도 안심하고 사용해주세요 🤗
-                    </MediumText>
-                    <MediumText className="text-gray-600 text-sm mt-1.5">
-                      예시: A → B, B → C로 각각 송금해야 하는 경우, A → C로 직접 송금하도록 알고리즘이 작동합니다.
-                    </MediumText>
+                    <TouchableOpacity
+                      className="py-3.5 px-4 bg-blue-500 rounded-lg flex flex-row gap-1 items-center justify-center -mt-4"
+                      onPress={copySettlementToClipboard}
+                      activeOpacity={0.8}
+                    >
+                      <ClipboardCopy width={16} height={16} color="white" />
+                      <BoldText className="text-white text-base">
+                        클립보드에 복사{isCompleteCopy ? '완료' : '하기'}
+                      </BoldText>
+                    </TouchableOpacity>
                   </View>
                 )}
               </TouchableOpacity>

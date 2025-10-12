@@ -196,29 +196,36 @@ const MyBalanceItem: React.FC<MyBalanceItemProps> = ({
           {isToMe ? fromName : toName}{isToMe ? josa.pick(fromName || '()', '으로부터/로부터') : '에게'} <BoldText className={`${getColor()}`}>{formatCurrency(Math.abs(amount), currency)}</BoldText> {isToMe ? '받기' : '보내기'}
         </BoldText>
       </View>
-      {shouldInvite && !shouldRegisterBank && (
+      {/* {shouldInvite && !shouldRegisterBank && (
         <View className="self-start -mt-1">
           <MediumText className="text-gray-500 text-base">아직 그룹에 들어오지 않았어요!</MediumText>
         </View>
-      )}
+      )} */}
       <View className='w-full flex-row gap-2'>
-        {isToMe && <TouchableOpacity 
+        {/* {isToMe && <TouchableOpacity  */}
+        <TouchableOpacity 
           className='flex-1 items-center justify-center gap-2 py-2.5 bg-white rounded-lg'
           onPress={() => openTransferConfirmModal(null)}
           activeOpacity={0.9}
         >
           <BoldText className='w-full text-center text-lg text-gray-700'>정산완료</BoldText>
-        </TouchableOpacity>}
-        <TouchableOpacity 
-          className={`${isToMe ? 'flex-2' : 'flex-1'} items-center justify-center gap-2 py-2.5 bg-white rounded-lg`}
-          onPress={shouldRegisterBank ? openRegisterBankModal : shouldInvite ? () => openInviteModal() : isToMe ? () => handleHurryUp() : openTransferModal}
-          activeOpacity={0.9}
-        >
-          <View className="w-full flex-row items-center justify-center gap-1.5">
-            {getIcon()}
-            <BoldText className={`text-lg ${getColor()}`}>{getText()}</BoldText>
-          </View>
         </TouchableOpacity>
+        {/* </TouchableOpacity>} */}
+        {
+          getText() === '재촉하기' ? null : (
+            <TouchableOpacity 
+              // className={`${isToMe ? 'flex-2' : 'flex-1'} items-center justify-center gap-2 py-2.5 bg-white rounded-lg`}
+              className={`flex-1 items-center justify-center gap-2 py-2.5 bg-white rounded-lg`}
+              onPress={shouldRegisterBank ? openRegisterBankModal : shouldInvite ? () => openInviteModal() : isToMe ? () => handleHurryUp() : openTransferModal}
+              activeOpacity={0.9}
+            >
+              <View className="w-full flex-row items-center justify-center gap-1.5">
+                {getIcon()}
+                <BoldText className={`text-lg ${getColor()}`}>{getText()}</BoldText>
+              </View>
+            </TouchableOpacity>
+          ) 
+        }
       </View>
     </View>
   )
