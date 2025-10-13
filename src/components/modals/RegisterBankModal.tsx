@@ -33,8 +33,8 @@ const RegisterBankModal: React.FC<RegisterBankModalProps> = ({
     <View className="w-full flex flex-col">
       <BoldText className="text-[23px] mb-4 text-gray-800">송금받기</BoldText>
       <MediumText className="text-gray-600 text-base mb-4 leading-5">
-        앱 안에서 직접 송금을 받으려면,{'\n'}
-        계좌나 카카오페이 등록이 필요해요.
+        계좌번호나 카카오페이를 등록하면,{'\n'}
+        상대방이 원터치 송금을 할 수 있어요.
       </MediumText>
       
       <View className="w-full flex flex-col gap-2 mb-3">

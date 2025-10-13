@@ -1,18 +1,14 @@
-import { SafeAreaView, ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
-import Header from '../../components/Header';
-import { BoldText, MediumText } from '../../components/Texts';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Header from '../../../components/Header';
+import { BoldText, MediumText } from '../../../components/Texts';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const FaqPage = () => {
 
-  const insets = useSafeAreaInsets();
-
   return (
-    <SafeAreaView className="flex-1 bg-white" style={{
-      paddingTop: insets.top,
-    }}>
-      <Header title="FAQ" showBackButton onBackClick={() => router.back()} />
+    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="relative flex-1 bg-white">
+      <Header title="FAQ" showBackButton onBackClick={() => router.back()} applyInsets={Platform.OS!=='ios'} />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1 }}
@@ -21,7 +17,7 @@ const FaqPage = () => {
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
       > 
-        <View className="flex-1 px-4 pt-20 flex-col gap-4">
+        <View className="flex-1 px-4 pt-16 flex-col gap-4">
           {/* 첫 번째 질문 */}
           <View className="mb-5">
             <BoldText className="text-lg mb-2 text-gray-900">
@@ -48,6 +44,9 @@ const FaqPage = () => {
               </MediumText>
               <MediumText className="text-gray-600 text-base">
                 • 예시: A → B, B → C로 각각 송금해야 하는 경우, A → C로 직접 송금
+              </MediumText>
+              <MediumText className="text-gray-600 text-base">  
+                • 예상한 결과와 달라도 안심하고 사용해주세요 🤗
               </MediumText>
             </View>
           </View>

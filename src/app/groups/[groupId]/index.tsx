@@ -156,6 +156,11 @@ export default function GroupDetail() {
     router.push(`/groups/${id}/ledger`);
   }
 
+  const handleNavigateToFaq = () => {
+    closeModal();
+    router.push(`/groups/${id}/faq`);
+  }
+
   const handleEditGroup = () => {
     closeModal();
     router.push(`/groups/${id}/edit`);
@@ -209,6 +214,7 @@ export default function GroupDetail() {
         onRightButtonClick={() => {
           showModal(
             <GroupSettingsModal
+              handleNavigateToFaq={handleNavigateToFaq}
               handleOpenShareModal={handleOpenShareModal}
               handleNavigateToLedger={handleNavigateToLedger}
               handleEditGroup={handleEditGroup}

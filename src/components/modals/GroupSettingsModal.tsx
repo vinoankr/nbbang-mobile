@@ -7,6 +7,7 @@ interface GroupSettingsModalProps {
   handleNavigateToLedger: () => void;
   handleEditGroup: () => void;
   handleLeaveGroup: () => void;
+  handleNavigateToFaq: () => void;
 }
 
 export default function GroupSettingsModal({
@@ -14,11 +15,19 @@ export default function GroupSettingsModal({
   handleNavigateToLedger,
   handleEditGroup,
   handleLeaveGroup,
+  handleNavigateToFaq,
 }: GroupSettingsModalProps) {
   return (
     <View className="w-full flex flex-col gap-2">
       <BoldText className="text-[23px] mb-4">그룹 설정</BoldText>
       
+      <TouchableOpacity 
+        className="w-full p-3 bg-gray-100 rounded-lg"
+        activeOpacity={0.9}
+        onPress={handleNavigateToFaq}
+      >
+        <SemiBoldText className="text-center text-base">FAQ</SemiBoldText>
+      </TouchableOpacity>
       <TouchableOpacity 
         className="w-full p-3 bg-gray-100 rounded-lg"
         activeOpacity={0.9}
