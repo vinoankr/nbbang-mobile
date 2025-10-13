@@ -107,6 +107,8 @@ const TransferModal: React.FC<TransferModalProps> = ({
     }, 2000);
   };
 
+  const cannotTransfer = !memberAccountInfo?.kakaopay_id && !memberAccountInfo?.account_number;
+
   return (
     <View>
       <BoldText className="text-[23px] mb-4 text-gray-800">송금하기</BoldText>
@@ -114,7 +116,7 @@ const TransferModal: React.FC<TransferModalProps> = ({
         {toName}에게 {formatCurrency(amount, currency)} 보내기
       </BoldText>
       <MediumText className="text-gray-500 text-base mb-6 leading-5">
-        송금 완료후, 정산완료 버튼을 눌러주세요!
+        { (!isMemberAccountInfoLoading && cannotTransfer) ? '상대방이 수령계좌를 등록하지 않았어요.' : '송금 완료후, 정산완료 버튼을 눌러주세요!'}
       </MediumText>
       {
         currency !== 'KRW' && (
@@ -158,7 +160,7 @@ const TransferModal: React.FC<TransferModalProps> = ({
           </TouchableOpacity>
           <TouchableOpacity className='self-center border-b border-gray-800 pb-0.25 mt-2' onPress={() => openConfirmModal('')}>
             <MediumText className="text-gray-800 text-base">
-              송금이 완료됐나요?
+              송금이 벌써 완료됐나요?
             </MediumText>
           </TouchableOpacity>
         </View>

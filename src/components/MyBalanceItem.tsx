@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import React, { useRef, useState } from 'react';
 import { View, TouchableOpacity, Share } from 'react-native';
-import { BoldText, MediumText } from './Texts';
+import { BoldText } from './Texts';
 import { ParticipantWithAmount, useAddExpense } from '../hooks/mutations/useAddExpense';
 import { useModal } from '../hooks/useModal';
 import { CurrencyCode } from '../constants/currencies';

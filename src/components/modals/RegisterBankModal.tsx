@@ -3,7 +3,6 @@ import { View, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { BoldText, MediumText } from '../Texts';
 import { useModal } from '../../hooks/useModal';
-import PersonIcon from '../../../assets/icons/person.svg';
 import { Landmark } from 'lucide-react-native';
 
 interface RegisterBankModalProps {
@@ -34,8 +33,8 @@ const RegisterBankModal: React.FC<RegisterBankModalProps> = ({
     <View className="w-full flex flex-col">
       <BoldText className="text-[23px] mb-4 text-gray-800">송금받기</BoldText>
       <MediumText className="text-gray-600 text-base mb-4 leading-5">
-        손쉬운 정산을 위해{'\n'}
-        송금 받을 방법을 등록해주세요
+        앱 안에서 직접 송금을 받으려면,{'\n'}
+        계좌나 카카오페이 등록이 필요해요.
       </MediumText>
       
       <View className="w-full flex flex-col gap-2 mb-3">

@@ -50,7 +50,7 @@ export default function ShareModal({
     <View className="max-w-md w-full" style={{ position: 'relative' }}>
       <BoldText className="w-full text-gray-800 text-[23px] mb-4">초대하기</BoldText>
       <MediumText className="text-gray-500 mb-4 text-base leading-5">
-        구성원들이 그룹에 들어올 수 있도록{'\n'}초대링크를 공유해주세요!
+        초대링크를 받은 구성원은,{'\n'}앱 다운로드 없이 웹으로 참여할 수 있습니다!
       </MediumText>
       
       <View className="mb-4">
