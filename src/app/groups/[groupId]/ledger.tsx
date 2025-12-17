@@ -16,6 +16,7 @@ import { MenuView } from '@react-native-menu/menu';
 export default function LedgerPage() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const router = useRouter();
+  const ALL_VALUE = "__all__";
 
   const insets = useSafeAreaInsets()
   
@@ -32,10 +33,11 @@ export default function LedgerPage() {
 
   useEffect(() => {
     const currentUserMemberId = members?.find((member : any) => member.user_id === currentUser?.id)?.id || null;
-    if (!!currentUserMemberId) {
+    // 최초 진입 시에만 기본값을 '본인'으로 세팅 (사용자가 '전체' 등으로 바꾼 경우 덮어쓰지 않음)
+    if (!selectedMember && !!currentUserMemberId) {
       setSelectedMember(currentUserMemberId);
     }
-  }, [members, currentUser?.id]);
+  }, [members, currentUser?.id, selectedMember]);
 
   const isLoading = partiLoading || groupLoading || membersLoading || expLoading;
   const isError = partiError || groupError || membersError || expError;
@@ -76,18 +78,23 @@ export default function LedgerPage() {
             <BoldText className="text-2xl">사용한 금액</BoldText>
 
             <MenuView
-              actions={members?.map((m: any) => ({
-                id: m.id,
-                title: m.user_name,
-                state: selectedMember === m.id ? 'on' : 'off'
-              })) || []}
+              actions={[
+                { id: ALL_VALUE, title: '전체', state: selectedMember === ALL_VALUE ? 'on' : 'off' },
+                ...(members?.map((m: any) => ({
+                  id: m.id,
+                  title: m.user_name,
+                  state: selectedMember === m.id ? 'on' : 'off',
+                })) || []),
+              ]}
               onPressAction={({ nativeEvent }) => {
                 setSelectedMember(nativeEvent.event);
               }}
             >
               <View className="bg-gray-50 rounded-lg px-3 py-2 flex-row items-center">
                 <MediumText className="text-gray-800 text-base mr-2">
-                  {selectedMember
+                  {selectedMember === ALL_VALUE
+                    ? '전체'
+                    : selectedMember
                     ? members?.find((m: any) => m.id === selectedMember)?.user_name || '--선택--'
                     : '--선택--'
                   }
@@ -115,28 +122,36 @@ export default function LedgerPage() {
               {ledger.map((row, idx) => (
                 <View key={idx} className="flex flex-col gap-3">
                   {row.showDate && idx !== 0 && (
-                    <View className="h-[1px] bg-gray-50" />
+                    <View className="h-[1px] bg-gray-200" />
                   )}
                   {row.showDate && (
                     <MediumText className="text-base text-gray-400">
                       {row.date}
                     </MediumText>
                   )}
-                  <View className="flex-row justify-between">
-                    <MediumText className='text-base'>{row.description?.substring(0,20) || '지출'}</MediumText>
-                    <View className="flex-col items-end">
-                      {/* 그룹 기본 통화로 환산된 금액 */}
-                      <BoldText className="text-base">
-                        {formatCurrency(row.amount, groupCurrency as any)}
+                  {(row as any).isDailyTotal ? (
+                    <View className="flex-row justify-end items-center pt-0.5">
+                      <BoldText className="text-base text-blue-600">
+                        {!groupCurrency ? '...' : formatCurrency(row.amount, groupCurrency as any)}
                       </BoldText>
-                      {/* 원래 통화가 그룹 기본 통화와 다른 경우 원래 통화 금액도 표시 */}
-                      {row.currency !== groupCurrency && (
-                        <MediumText className="text-sm text-gray-500 mt-0">
-                          {formatCurrency(row.amount_in_currency, row.currency as any)}
-                        </MediumText>
-                      )}
                     </View>
-                  </View>
+                  ) : (
+                    <View className="flex-row justify-between">
+                      <MediumText className='text-base'>{row.description?.substring(0,20) || '지출'}</MediumText>
+                      <View className="flex-col items-end">
+                        {/* 그룹 기본 통화로 환산된 금액 */}
+                        <BoldText className="text-base">
+                          {formatCurrency(row.amount, groupCurrency as any)}
+                        </BoldText>
+                        {/* 원래 통화가 그룹 기본 통화와 다른 경우 원래 통화 금액도 표시 */}
+                        {row.currency !== groupCurrency && (
+                          <MediumText className="text-sm text-gray-500 mt-0">
+                            ({formatCurrency(row.amount_in_currency, row.currency as any)})
+                          </MediumText>
+                        )}
+                      </View>
+                    </View>
+                  )}
                 </View>
               ))}
             </View>

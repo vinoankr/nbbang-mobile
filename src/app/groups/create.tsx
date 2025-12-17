@@ -184,7 +184,7 @@ export default function CreateGroup() {
           </View>
 
           <View className="mb-6">
-            <FormLabel label="정산 통화" />
+            <FormLabel label="송금할 때 사용할 통화" />
             <SelectField
               value={formData.currency}
               onChangeValue={(value) => {
@@ -192,7 +192,7 @@ export default function CreateGroup() {
               }}
               items={currencyItems}
             />
-            <MediumText className="text-gray-500 text-sm mt-1 ml-1">정산 시 기준으로 사용되며, 추후 변경이 불가해요</MediumText>
+            <MediumText className="text-red-500 text-sm mt-1 ml-1">정산 시 기준으로 사용되며, 추후 변경이 불가해요</MediumText>
           </View>
 
           <View className="mb-6">

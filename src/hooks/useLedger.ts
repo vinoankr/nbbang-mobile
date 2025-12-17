@@ -14,6 +14,21 @@ interface ExpenseEntry {
   currency: string;
   exchange_rate: number;
 }
+
+type LedgerRow = {
+  date: string;
+  created_at: string;
+  description: string | undefined;
+  amount: number;
+  amount_in_currency: number;
+  currency: string;
+  exchange_rate: number;
+  isPayer: boolean;
+  showDate: boolean;
+  rowSpan: number;
+  isDailyTotal?: boolean;
+};
+
 export function useLedger(
   allexpenses: any[],
   data: ExpenseEntry[],
@@ -36,24 +51,42 @@ export function useLedger(
 
     let total = 0;
 
-    // 1) memberId 필터링 & 개인송금 제외 & ledger 생성
-    const rawLedger = data
-      ?.filter((e) => e.member_id === memberId && !transferExpenseIds.has(e.expense_id))
-      ?.map((entry) => {
-        total += entry.amount;
-        const isPayer = entry.paid_by === memberId;
-        return {
-          date: formatDate(dateMap.get(entry.expense_id) || ""),
-          created_at: entry.created_at,
-          description: expenseMap.get(entry.expense_id),
-          amount: entry.amount,
-          amount_in_currency: entry.amount_in_currency,
-          currency: entry.currency,
-          exchange_rate: entry.exchange_rate,
-          isPayer,
-        };
-      })
-     ?.sort((a, b) => {
+    const isAll = memberId === "__all__";
+
+    // 1) 개인 상세: 분담(참여) 기준 / 전체: 지출(expenses) 기준으로 ledger 생성
+    const rawLedger = (isAll
+      ? allexpenses
+          ?.filter((exp) => exp && !exp.is_transfer)
+          ?.map((exp) => {
+            total += exp.amount ?? 0;
+            return {
+              date: formatDate(exp.spent_at || ""),
+              created_at: exp.created_at,
+              description: exp.title,
+              amount: exp.amount,
+              amount_in_currency: exp.amount_in_currency,
+              currency: exp.currency,
+              exchange_rate: exp.exchange_rate,
+              isPayer: false,
+            };
+          })
+      : data
+          ?.filter((e) => e.member_id === memberId && !transferExpenseIds.has(e.expense_id))
+          ?.map((entry) => {
+            total += entry.amount;
+            const isPayer = entry.paid_by === memberId;
+            return {
+              date: formatDate(dateMap.get(entry.expense_id) || ""),
+              created_at: entry.created_at,
+              description: expenseMap.get(entry.expense_id),
+              amount: entry.amount,
+              amount_in_currency: entry.amount_in_currency,
+              currency: entry.currency,
+              exchange_rate: entry.exchange_rate,
+              isPayer,
+            };
+          })
+    )?.sort((a, b) => {
         // 먼저 날짜로 정렬 (최신 날짜가 위로)
         const dateCompare = b.date.localeCompare(a.date);
         if (dateCompare !== 0) return dateCompare;
@@ -63,18 +96,7 @@ export function useLedger(
       })
 
     // 2) 날짜별 그룹핑하여 rowSpan 계산
-    const ledgerWithSpan: {
-      date: string;
-      created_at: string;
-      description: string | undefined;
-      amount: number;
-      amount_in_currency: number;
-      currency: string;
-      exchange_rate: number;
-      isPayer: boolean;
-      showDate: boolean;
-      rowSpan: number;
-    }[] = [];
+    const ledgerWithSpan: LedgerRow[] = [];
 
     let i = 0;
     while (i < rawLedger?.length) {
@@ -87,12 +109,29 @@ export function useLedger(
         j++;
       }
 
+      const dailyTotal = sameDateEntries.reduce((sum, e) => sum + (e.amount ?? 0), 0);
+
       sameDateEntries.forEach((entry, idx) => {
         ledgerWithSpan.push({
           ...entry,
           showDate: idx === 0,          // 날짜 출력 여부
           rowSpan: idx === 0 ? sameDateEntries.length : 0, // rowspan 크기
         });
+      });
+
+      // 날짜 섹션 맨 아래에 일자 합계 row 추가
+      ledgerWithSpan.push({
+        date: currentDate,
+        created_at: sameDateEntries[sameDateEntries.length - 1]?.created_at ?? "",
+        description: undefined,
+        amount: dailyTotal,
+        amount_in_currency: dailyTotal,
+        currency: sameDateEntries[0]?.currency ?? "",
+        exchange_rate: sameDateEntries[0]?.exchange_rate ?? 1,
+        isPayer: false,
+        showDate: false,
+        rowSpan: 0,
+        isDailyTotal: true,
       });
 
       i += sameDateEntries.length;
