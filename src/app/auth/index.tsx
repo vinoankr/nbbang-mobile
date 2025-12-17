@@ -66,7 +66,7 @@ export default function Auth() {
     if (isLoading) return;
     setIsLoading(true);
     const now = Date.now();
-    const cutoff = new Date('2025-10-16T00:00:00Z').getTime();
+    const cutoff = new Date('2025-12-19T00:00:00Z').getTime();
     if (now >= cutoff) {
       setTimeout(() => {
         Toast.show({
