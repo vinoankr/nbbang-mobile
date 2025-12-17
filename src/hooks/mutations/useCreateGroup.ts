@@ -8,6 +8,7 @@ interface CreateGroupData {
   userName: string;
   defaultCurrency: string;
   password: string;
+  treasurerName?: string;
 }
 
 interface CreateGroupResponse {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, Keyboard, Platform } from 'react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,11 +41,22 @@ export default function CreateGroup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
   const [errors, setErrors] = useState<any>({});
+  const [treasurerName, setTreasurerName] = useState<string>('');
   
   const createGroupMutation = useCreateGroup();
   
   const passwordInputRef = useRef<any>(null);
   const participantInputRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!treasurerName) return;
+    const available = Array.from(
+      new Set([user?.name, ...participants].filter(Boolean).map((n) => n.trim()).filter(Boolean))
+    );
+    if (!available.includes(treasurerName)) {
+      setTreasurerName('');
+    }
+  }, [participants, user?.name, treasurerName]);
 
   const validateForm = (): boolean => {
     const newErrors: any = {};
@@ -123,7 +134,8 @@ export default function CreateGroup() {
         participants,
         userName: user.name,
         defaultCurrency: formData.currency,
-        password: formData.password
+        password: formData.password,
+        treasurerName
       });
       
       router.replace(`/groups/${result.data.newGroup.id}?initialEnter=true`);
@@ -145,6 +157,14 @@ export default function CreateGroup() {
     label: `${name} (${code})`,
     title: `${name} (${code})`,
     value: code
+  }));
+
+  const treasurerItems = Array.from(
+    new Set([user?.name, ...participants].filter(Boolean).map((n) => n.trim()).filter(Boolean))
+  ).map((name) => ({
+    label: `총무: ${name}`,
+    title: `총무: ${name}`,
+    value: name
   }));
 
   return (
@@ -192,7 +212,7 @@ export default function CreateGroup() {
               }}
               items={currencyItems}
             />
-            <MediumText className="text-red-500 text-sm mt-1 ml-1">정산 시 기준으로 사용되며, 추후 변경이 불가해요</MediumText>
+            <MediumText className="text-red-500 text-sm mt-1 ml-1">정산과 송금의 기준이 되며, 추후 변경이 불가해요</MediumText>
           </View>
 
           <View className="mb-6">
@@ -200,8 +220,7 @@ export default function CreateGroup() {
             
             <View className="flex-row flex-wrap gap-2 mb-2 min-h-12 p-2 border border-gray-100 rounded-lg">
               <View className="flex-row items-center rounded-lg px-3 py-1.5 bg-gray-50">
-                <MediumText className="text-gray-800 text-base mr-1">{user?.name}</MediumText>
-                <MediumText className="text-xs text-gray-800">(그룹장)</MediumText>
+                <MediumText className="text-gray-800 text-base">{user?.name}</MediumText>
               </View>
               {participants.map((name, index) => (
                 <View key={index} className="flex-row items-center rounded-lg px-3 py-1.5 bg-gray-50">
@@ -231,6 +250,22 @@ export default function CreateGroup() {
               )
             )}
           </View>
+
+          {participants.length >= 2 && (
+            <View className="-mt-2 mb-6">
+              <SelectField
+                value={treasurerName}
+                onChangeValue={(value) => setTreasurerName(value || '')}
+                items={[
+                  { label: '총무 없음(기본값)', title: '총무 없음(기본값)', value: '' },
+                  ...treasurerItems,
+                ]}
+              />
+              <MediumText className="text-gray-500 text-sm mt-1 ml-1">
+                선택 시 총무를 통해서만 송금이 오가도록 정산돼요
+              </MediumText>
+            </View>
+          )}
 
           <View className="mb-4">
             <FormLabel label="입장 비밀번호 (선택)" />

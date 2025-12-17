@@ -23,6 +23,7 @@ interface GroupDetailTabsProps {
   currentUserMemberId: string;
   members: Member[];
   memberNameMap: Map<string, string>;
+  treasurerMemberId?: string | null;
   isMemberOfGroup: boolean;
   openInviteModal: () => void;
   isLoading: boolean;
@@ -37,6 +38,7 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
   currentUserMemberId,
   members,
   memberNameMap,
+  treasurerMemberId = null,
   isMemberOfGroup,
   openInviteModal,
   isLoading = false,
@@ -49,8 +51,8 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
   const groupedExpenses = useGroupedExpenses(rawExpenses);
   
   const settlementData = useMemo(() => {
-    return calculateSettlement(allExpenseParticipations, currentUserMemberId, members);
-  }, [allExpenseParticipations, currentUserMemberId, members]);
+    return calculateSettlement(allExpenseParticipations, currentUserMemberId, members, treasurerMemberId || undefined);
+  }, [allExpenseParticipations, currentUserMemberId, members, treasurerMemberId]);
 
   // 각 탭별 로딩 상태
   const expensesTabLoading = expensesLoading || isLoading;
@@ -111,6 +113,7 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
           currentMemberId={currentUserMemberId}
           members={members}
           memberNameMap={memberNameMap}
+          treasurerMemberId={treasurerMemberId || undefined}
           openInviteModal={openInviteModal}
           allExpenseParticipations={allExpenseParticipations}
           settlementData={settlementData}

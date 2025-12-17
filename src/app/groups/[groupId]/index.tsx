@@ -262,6 +262,7 @@ export default function GroupDetail() {
           currentUserMemberId={currentUserMemberId || ''}
           members={members || []}
           memberNameMap={memberNameMap}
+          treasurerMemberId={group?.treasurer || null}
           isMemberOfGroup={isMemberOfGroup}
           openInviteModal={handleOpenShareModal}
           isLoading={isLoading}

@@ -56,6 +56,8 @@ export default function EditGroup() {
   const [hasChanges, setHasChanges] = useState(false);
   const [originalGroupName, setOriginalGroupName] = useState('');
   const [originalPassword, setOriginalPassword] = useState('');
+  const [originalTreasurerMemberId, setOriginalTreasurerMemberId] = useState<string | null>(null);
+  const [treasurerMemberId, setTreasurerMemberId] = useState<string>('');
   const [errors, setErrors] = useState<any>({});
 
   // 그룹과 멤버 정보가 로드되면 초기값 설정
@@ -68,13 +70,16 @@ export default function EditGroup() {
       });
       setOriginalGroupName(group.name);
       setOriginalPassword(group.password || '');
+      const treasurerId = group.treasurer != null ? String(group.treasurer) : '';
+      setOriginalTreasurerMemberId(treasurerId || null);
+      setTreasurerMemberId(treasurerId);
     }
   }, [group]);
 
   useEffect(() => {
     if (members) {
       const memberStates: MemberState[] = members.map((member: any) => ({
-        id: member.id,
+        id: String(member.id),
         originalName: member.user_name,
         currentName: member.user_name,
         isModified: false
@@ -91,9 +96,10 @@ export default function EditGroup() {
     const passwordChanged = formData.password !== originalPassword;
     const hasMemberChanges = originalMembers.some(member => member.isModified);
     const hasNewMembers = addedMembers.some(member => member.name.trim());
+    const treasurerChanged = treasurerMemberId !== (originalTreasurerMemberId || '');
 
-    setHasChanges(groupNameChanged || passwordChanged || hasMemberChanges || hasNewMembers);
-  }, [formData.groupName, originalGroupName, originalMembers, addedMembers, formData.password, originalPassword]);
+    setHasChanges(groupNameChanged || passwordChanged || hasMemberChanges || hasNewMembers || treasurerChanged);
+  }, [formData.groupName, originalGroupName, originalMembers, addedMembers, formData.password, originalPassword, treasurerMemberId, originalTreasurerMemberId]);
 
   // 로딩 중
   if (groupLoading || membersLoading) return null;
@@ -151,6 +157,7 @@ export default function EditGroup() {
       password?: string;
       membersToRename?: {memberId: string, newName: string}[];
       membersToAdd?: string[];
+      treasurerMemberId?: string | null;
     } = {};
 
     // 그룹 이름 변경 확인
@@ -176,6 +183,11 @@ export default function EditGroup() {
     const validNewMembers = addedMembers.filter(member => member.name.trim());
     if (validNewMembers.length > 0) {
       changes.membersToAdd = validNewMembers.map(member => member.name.trim());
+    }
+
+    // 총무 변경/해제 확인
+    if (treasurerMemberId !== (originalTreasurerMemberId || '')) {
+      changes.treasurerMemberId = treasurerMemberId ? treasurerMemberId : null;
     }
 
     return changes;
@@ -334,6 +346,30 @@ export default function EditGroup() {
             <MediumText className="text-red-500 text-sm mt-1 ml-1">{errors.password}</MediumText>
           )}
         </View>
+
+        {/* 총무 변경/해제 */}
+        {originalMembers.length >= 3 && (
+          <View className="mb-6">
+            <FormLabel label="총무 변경" />
+            <SelectField
+              value={treasurerMemberId}
+              onChangeValue={(value) => setTreasurerMemberId(value || '')}
+              items={[
+                { label: '총무 없음(기본값)', title: '총무 없음(기본값)', value: '' },
+                ...originalMembers
+                  .filter((m) => m.currentName.trim())
+                  .map((m) => ({
+                    label: `총무: ${m.currentName}`,
+                    title: `총무: ${m.currentName}`,
+                    value: m.id,
+                  })),
+              ]}
+            />
+            <MediumText className="text-gray-500 text-sm mt-1 ml-1">
+              선택 시 총무를 통해서만 송금이 오가도록 정산돼요
+            </MediumText>
+          </View>
+        )}
 
         {/* 멤버 목록 */}
         <View className="mb-8">

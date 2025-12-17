@@ -9,7 +9,6 @@ import ChevronDown from '../../assets/icons/chevron-down.svg';
 import Spinner from './Spinner';
 import Toast from 'react-native-toast-message';
 import { formatCurrency } from '../utils/formatter';
-import { josa } from 'es-hangul';
 import { ClipboardCopy } from 'lucide-react-native';
 
 interface Member {
@@ -36,6 +35,7 @@ interface SettlementResultsProps {
   memberNameMap: Map<string, string>;
   groupId: string;
   groupCurrency: string;
+  treasurerMemberId?: string;
   openInviteModal: () => void;
   allExpenseParticipations: any[] | undefined;
   settlementData: SettlementData;
@@ -49,6 +49,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
   memberNameMap,
   groupId,
   groupCurrency,
+  treasurerMemberId,
   openInviteModal,
   allExpenseParticipations,
   settlementData,
@@ -79,11 +80,11 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
     transactionsByFrom.forEach((transactions, fromId) => {
       const fromName = memberNameMap.get(fromId) || '알 수 없음';
       
-      text += `${josa(fromName, '이/가')} 송금할 내역:\n`;
+      text += `${fromName}님,`;
       transactions.forEach((transaction) => {
         const toName = memberNameMap.get(transaction.to) || '알 수 없음';
         const amount = formatCurrency(transaction.amount, groupCurrency as any);
-        text += `  → ${toName}에게 ${amount} 보내기\n`;
+        text += ` ${toName}님께 ${amount} 송금하세요.\n`;
       });
       text += '\n';
     });
@@ -93,10 +94,9 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
 
   // 송금 내역을 텍스트로 변환하는 함수
   const generateSettlementShareText = () => {
-    let text = '엔빵 정산 결과\n\n';
+    let text = '엔빵 정산 결과:\n\n';
     text += getSettlementResultText();
-    text += '송금 횟수 최소화 알고리즘을 사용해 계산했어요.';
-    text += '\n자세한 내역을 보려면 아래 링크를 클릭하세요.';
+    text += '자세한 내역을 보려면 아래 링크에서 확인하세요';
     text += '\nhttps://nbbang.app/groups/' + groupId;
     
     return text;
@@ -156,7 +156,7 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
           </MediumText>
         </View>
       ) : (
-        <View className="w-full flex flex-col gap-2.5 mb-16">
+        <View className="w-full flex flex-col gap-2.5 mb-8">
           {myTransactions.length === 0 && othersTransactions.length === 0 ? (
             <View className="py-8 text-center">
               <MediumText className="text-lg text-gray-800 text-center">
@@ -220,7 +220,9 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
             </TouchableOpacity>
           )}
           {
-            (myTransactions.length > 0 || othersTransactions.length > 0) && (
+            !!treasurerMemberId &&
+            othersTransactions.length === 0 &&
+            myTransactions.length > 0 && (
               <TouchableOpacity
                 className="py-3.5 px-4 border border-gray-100 rounded-lg flex flex-col"
                 onPress={() => setIsShareOpen(!isShareOpen)}

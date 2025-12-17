@@ -10,8 +10,10 @@ interface MemberToRename {
 interface EditGroupRequest {
   groupId: string;
   groupName?: string;
+  password?: string;
   membersToRename?: MemberToRename[];
   membersToAdd?: string[];
+  treasurerMemberId?: string | null;
 }
 
 interface EditGroupResponse {
