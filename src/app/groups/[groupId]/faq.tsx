@@ -40,13 +40,16 @@ const FaqPage = () => {
             </BoldText>
             <View className="flex-col gap-1">
               <MediumText className="text-gray-600 text-base">
-                • N빵은 송금 횟수 최소화를 위해 정산 결과를 단순화해요.
+                • 그룹에 총무가 있는 경우와 아닌 경우가 달라요.
+              </MediumText>
+              <MediumText className="text-gray-600 text-base">
+                • 총무가 설정된 경우에는 모든 사람이 총무를 통해서 송금을 주고받고 정산을 완료해요.
+              </MediumText>
+              <MediumText className="text-gray-600 text-base">
+                • 총무가 없는 그룹은 멤버들끼리 서로 송금을 주고받는데, 송금과정이 단순화될 수 있어요.
               </MediumText>
               <MediumText className="text-gray-600 text-base">
                 • 예시: A → B, B → C로 각각 송금해야 하는 경우, A → C로 직접 송금
-              </MediumText>
-              <MediumText className="text-gray-600 text-base">  
-                • 예상한 결과와 달라도 안심하고 사용해주세요 🤗
               </MediumText>
             </View>
           </View>
