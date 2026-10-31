@@ -1,7 +1,7 @@
+import ScreenLayout from '@/src/components/ScreenLayout';
 import React, { useState, useRef, useEffect } from 'react';
-import { View, TouchableOpacity, Keyboard, Platform } from 'react-native';
+import { View, TouchableOpacity, Keyboard } from 'react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { useCreateGroup } from '@/src/hooks/mutations/useCreateGroup';
@@ -14,7 +14,7 @@ import { PrimaryButton } from '@/src/components/form/PrimaryButton';
 import { MediumText } from '@/src/components/Texts';
 import X from '../../../assets/icons/x.svg';
 import Header from '@/src/components/Header';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView } from '@/src/components/Keyboard';
 
 interface CreateGroupForm {
   groupName: string;
@@ -26,7 +26,6 @@ interface CreateGroupForm {
 export default function CreateGroup() {
   const router = useRouter();
   const user = getUserData();
-  const insets = useSafeAreaInsets();
   const [formData, setFormData] = useState<CreateGroupForm>({
     groupName: '',
     currency: 'KRW',
@@ -168,7 +167,7 @@ export default function CreateGroup() {
   }));
 
   return (
-    <SafeAreaView className='flex-1 bg-white'>
+    <ScreenLayout variant="form">
       <Header 
         title="새 그룹 만들기" 
         showBackButton={true}
@@ -177,8 +176,8 @@ export default function CreateGroup() {
         <KeyboardAwareScrollView
           bottomOffset={50}
           style={{ flex: 1 }}
-          className="flex-1 px-4 pt-20"
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+          className="flex-1 pt-4"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
           overScrollMode="never"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -292,6 +291,6 @@ export default function CreateGroup() {
             />
           </View>
       </KeyboardAwareScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }

@@ -21,6 +21,7 @@ export const  DangerousButton: React.FC<DangerousButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity
+      accessibilityRole="button"
       style={[
         styles.button,
         (disabled || loading) && { opacity: 0.5 }
@@ -47,6 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFE5E5",
     borderRadius: 12,
     height: 56,
+    minHeight: 56,
     justifyContent: "center",
     alignItems: "center",
     flex: 1,

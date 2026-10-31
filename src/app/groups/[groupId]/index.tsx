@@ -1,8 +1,8 @@
+import ScreenLayout from '@/src/components/ScreenLayout';
 import * as Haptics from 'expo-haptics'
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BoldText, MediumText, SemiBoldText } from '@/src/components/Texts';
 import { useModal } from '@/src/hooks/useModal';
 import { useGroupInfo } from '@/src/hooks/queries/useGroupInfo';
@@ -23,7 +23,6 @@ import { mmkvStorage } from '@/src/utils/storage';
 export default function GroupDetail() {
   const router = useRouter();
   const { groupId } = useLocalSearchParams();
-  const insets = useSafeAreaInsets();
   const id = Array.isArray(groupId) ? groupId[0] : groupId;
   const token = getAuthToken();
   const isAuthenticated = !!token;
@@ -136,7 +135,7 @@ export default function GroupDetail() {
     return null;
   }
 
-  const handleOpenShareModal = () => {
+  function handleOpenShareModal() {
     const url = `https://nbbang.app/groups/${id}`;
     
     showModal(
@@ -149,7 +148,7 @@ export default function GroupDetail() {
         password={group?.password}
       />
     );
-  };
+  }
 
   const handleNavigateToLedger = () => {
     closeModal();
@@ -189,7 +188,7 @@ export default function GroupDetail() {
 
   if (!isLoading && isError) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
+      <ScreenLayout>
         <View className="container mx-auto px-4 py-8">
           <MediumText className="text-base">
             그룹 정보를 불러오는데 실패했습니다.
@@ -200,12 +199,12 @@ export default function GroupDetail() {
             </MediumText>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="flex-1 bg-white">
+    <ScreenLayout>
       <Header 
         title="" 
         showBackButton 
@@ -225,15 +224,15 @@ export default function GroupDetail() {
       />    
       
       <ScrollView    
-        className="flex-1 px-4 flex-col pt-[72px]"
+        className="flex-1 flex-col pt-4"
         contentContainerStyle={{ paddingBottom: 100 }}
         bounces={false}
         alwaysBounceVertical={false}
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
       >
-        <View className="h-9 flex-row items-center justify-start mb-6">
-          <BoldText className="text-[26px] text-black">
+        <View className="min-h-9 flex-row flex-wrap items-center justify-start mb-6">
+          <BoldText className="shrink text-[26px] text-black">
             {isLoading ? '...' : group?.name}
           </BoldText>
           <TouchableOpacity 
@@ -277,11 +276,12 @@ export default function GroupDetail() {
               params: { groupId: id, currency: group?.default_currency || 'KRW' },
             });
           }}
+          accessibilityRole="button" accessibilityLabel="지출 추가"
           activeOpacity={0.9}
           className="absolute left-1/2 w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
           style={{ 
-            transform: [{ translateX: -36 }],
-            bottom: insets.bottom + 12,
+            transform: [{ translateX: -40 }],
+            bottom: 12,
             shadowColor: '#000',
             shadowOffset: {
               width: 0,
@@ -295,6 +295,6 @@ export default function GroupDetail() {
           <Plus width={48} height={48} color="white" strokeWidth={2.5} />
         </TouchableOpacity>
       )}
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }

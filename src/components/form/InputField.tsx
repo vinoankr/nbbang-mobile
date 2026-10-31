@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useRef, useImperativeHandle } from "react";
-import { TextInput, StyleSheet, TextInputProps, Platform } from "react-native";
+import { TextInput, StyleSheet, TextInputProps, TextInputInstance, Platform } from "react-native";
 
 interface InputFieldProps extends TextInputProps {
   placeholder?: string;
@@ -11,7 +11,7 @@ interface InputFieldProps extends TextInputProps {
 export const InputField = forwardRef<any, InputFieldProps>(
   ({ placeholder, value, onChangeText, onBlur, selectTextOnFocus=false, ...rest }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
-    const innerRef = useRef<TextInput>(null);
+    const innerRef = useRef<TextInputInstance>(null);
 
     const handleBlur = (e: any) => {
       setIsFocused(false);
@@ -21,8 +21,6 @@ export const InputField = forwardRef<any, InputFieldProps>(
     useImperativeHandle(ref, () => ({
       focus: () => innerRef.current?.focus(),
       blur: ()=> innerRef.current?.blur(),
-      setSelection: () =>
-        innerRef.current?.setSelection(0, value.length),
     }));
 
 
@@ -39,12 +37,10 @@ export const InputField = forwardRef<any, InputFieldProps>(
         placeholder={placeholder}
         placeholderTextColor="#9C9DA4"
         value={value}
+        selectTextOnFocus={selectTextOnFocus}
         onChangeText={onChangeText}
         onFocus={() => {
           setIsFocused(true);
-          if (selectTextOnFocus) {
-            innerRef.current?.setSelection(0, value.length);
-          }
         }}
         onBlur={handleBlur}
         {...rest}

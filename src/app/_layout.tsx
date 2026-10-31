@@ -12,13 +12,16 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { toastConfig } from '../utils/toastConfig';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
 import * as Sentry from '@sentry/react-native';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { KeyboardProvider } from '@/src/components/Keyboard';
+import { Platform } from 'react-native';
 
-initializeKakaoSDK('93959bb8c9aa19c9ae9ad2ca73ffb3c5');
+if (Platform.OS !== 'web') {
+  initializeKakaoSDK('93959bb8c9aa19c9ae9ad2ca73ffb3c5');
+}
 // 스플래시 스크린 자동 숨김 방지
 SplashScreen.preventAutoHideAsync(); 
 
-Sentry.init({
+if (Platform.OS !== 'web') Sentry.init({
   dsn: 'https://395ddb85ebce2db174caa415354c130c@o4509882054410240.ingest.us.sentry.io/4509882436026368',
 
   // Adds more context data to events (IP address, cookies, user, etc.)
@@ -74,4 +77,4 @@ function RootLayout() {
   )
 }
 
-export default Sentry.wrap(RootLayout);
+export default Platform.OS === 'web' ? RootLayout : Sentry.wrap(RootLayout);

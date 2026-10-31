@@ -202,10 +202,10 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
       <PrimaryButton
         title={isLoading || isBankVerifying ? '처리중...' : isEdit ? '정보 수정' : '가입 완료'}
         className="my-4"
-        onPress={handleSubmit(onSubmit)}
+        onPress={() => { void handleSubmit(onSubmit)(); }}
         disabled={!isFormValid}
         loading={isLoading || isBankVerifying}
       />
     </View>
   );
-}; 
+};

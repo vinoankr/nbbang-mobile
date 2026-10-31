@@ -41,6 +41,10 @@ app-example
 /android
 /ios
 
+# Browser verification artifacts
+/test-results/
+/playwright-report/
+
 .env
 
 google-services.json

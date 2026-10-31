@@ -1,5 +1,6 @@
+import ScreenLayout from '@/src/components/ScreenLayout';
 import { useState, useEffect } from "react";
-import { View, TouchableOpacity, ScrollView, Image, Platform, SafeAreaView } from "react-native";
+import { View, TouchableOpacity, ScrollView, Image } from "react-native";
 import { router } from "expo-router";
 import { useProfile } from "../../hooks/queries/useMe";
 import { useUpdateProfile } from "../../hooks/mutations/useUpdateProfile";
@@ -12,8 +13,7 @@ import { FormLabel } from "../../components/form/FormLabel";
 import { InputField } from "../../components/form/InputField";
 import { FormInfo } from "../../components/form/FormInfo";
 import Spinner from "../../components/Spinner";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { KeyboardAwareScrollView } from "@/src/components/Keyboard";
 
 // 이미지 import
 const step1Image = require('../../../assets/images/step-1.webp');
@@ -23,13 +23,12 @@ const step3Image = require('../../../assets/images/step-3.webp');
 const LinkKakaopayPage = () => {
   const { data: user, isLoading } = useProfile();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
   const [kakaopayId, setKakaopayId] = useState("");
   const [isError, setIsError] = useState(false);
   const [initialValue, setInitialValue] = useState('');
   const [isInfo, setIsInfo] = useState(false);
 
-  const insets = useSafeAreaInsets();
 
   // 사용자 정보가 로드되면 기본값 설정
   useEffect(() => {
@@ -148,7 +147,7 @@ const LinkKakaopayPage = () => {
               <View className="bg-gray-50 rounded-xl p-6 mb-4 w-full">
                 <Image 
                   source={step1Image} 
-                  className="w-full h-80"
+                  style={{ width: '100%', height: 320 }}
                   resizeMode="contain"
                 />
               </View>
@@ -169,7 +168,7 @@ const LinkKakaopayPage = () => {
               <View className="bg-gray-50 rounded-xl p-6 mb-4 w-full">
                 <Image 
                   source={step2Image} 
-                  className="w-full h-80"
+                  style={{ width: '100%', height: 320 }}
                   resizeMode="contain"
                 />
               </View>
@@ -190,7 +189,7 @@ const LinkKakaopayPage = () => {
               <View className="bg-gray-50 rounded-xl p-6 mb-4 w-full">
                 <Image 
                   source={step3Image} 
-                  className="w-full h-80"
+                  style={{ width: '100%', height: 320 }}
                   resizeMode="contain"
                 />
               </View>
@@ -202,15 +201,9 @@ const LinkKakaopayPage = () => {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      setCurrentStep(1);
-    }, 50);
-  }, []);
-
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white">
+      <ScreenLayout variant="form">
         <Header 
           title="카카오페이 연동" 
           showBackButton={true} 
@@ -219,14 +212,12 @@ const LinkKakaopayPage = () => {
         <View className="flex-1 justify-center items-center">
           <Spinner />
         </View>
-      </View>
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" style={{
-      paddingTop: insets.top,
-    }}>
+    <ScreenLayout variant="form">
       <Header 
         title="카카오페이 연동" 
         showBackButton={true} 
@@ -235,18 +226,18 @@ const LinkKakaopayPage = () => {
       <KeyboardAwareScrollView
         bottomOffset={50}
         style={{ flex: 1, backgroundColor: 'white' }}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         bounces={false}
         alwaysBounceVertical={false}
       >
-        <View className="px-4 pt-20">
+        <View className="pt-4">
           {renderTutorialStep(currentStep)}
         </View>
   
-        <View className="px-4 pb-4 pt-4 flex-row gap-2">
+        <View className="pb-4 pt-4 flex-row gap-2">
           {[1, 2, 3].includes(currentStep) && (
             <SecondaryButton
               title="이전"
@@ -276,7 +267,7 @@ const LinkKakaopayPage = () => {
           />
         </View>
       </KeyboardAwareScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 

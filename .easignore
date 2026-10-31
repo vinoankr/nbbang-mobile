@@ -41,4 +41,7 @@ app-example
 /android
 /ios
 
+/test-results/
+/playwright-report/
+
 .env

@@ -1,8 +1,8 @@
+import ScreenLayout from '@/src/components/ScreenLayout';
 import * as Haptics from 'expo-haptics';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { View, Platform, Alert, TouchableOpacity, Pressable } from 'react-native';
-import { MenuView } from '@react-native-menu/menu';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Alert, TouchableOpacity, Pressable } from 'react-native';
+import { MenuView } from '@/src/components/Menu';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -30,7 +30,7 @@ import { MediumText, BoldText, SemiBoldText } from '@/src/components/Texts';
 import Spinner from '@/src/components/Spinner';
 import { X } from 'lucide-react-native';
 import { DangerousButton } from '@/src/components/form/DangerousButton';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView } from '@/src/components/Keyboard';
 
 export default function EditExpense() {
   const { groupId, expenseId } = useLocalSearchParams<{ groupId: string; expenseId: string }>();
@@ -53,7 +53,6 @@ export default function EditExpense() {
   const { mutateAsync: editExpense } = useEditExpense();
   const { mutateAsync: deleteExpense } = useDeleteExpense();
   const defaultCurrency = group?.default_currency as CurrencyCode;
-  const insets = useSafeAreaInsets();
   const isLoading = groupLoading || membersLoading || currenciesLoading || expenseLoading || participantsLoading;
   const isError = groupError || membersError || currenciesError || expenseError || participantsError;
   
@@ -317,41 +316,40 @@ export default function EditExpense() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <Header title="지출 수정" showBackButton onBackClick={() => router.back()} applyInsets={Platform.OS!=='ios'} />
+      <ScreenLayout variant="form">
+        <Header title="지출 수정" showBackButton onBackClick={() => router.back()} />
         <View className="flex-1 justify-center items-center px-4">
           <MediumText className="text-red-500 text-base text-center">
             데이터를 불러오는 중 오류가 발생했습니다.
           </MediumText>
         </View>
-      </SafeAreaView>
+      </ScreenLayout>
     );
   }
 
   if (isLoading || !currency || !defaultCurrency || !isDataInitialized) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <Header title="지출 수정" showBackButton onBackClick={() => router.back()} applyInsets={Platform.OS!=='ios'} />
+      <ScreenLayout variant="form">
+        <Header title="지출 수정" showBackButton onBackClick={() => router.back()} />
         <View className="flex-1 justify-center items-center">
           <Spinner />
         </View>
-      </SafeAreaView>
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="relative flex-1 bg-white">
+    <ScreenLayout variant="form">
       <Header 
         title={group?.name || '지출 수정'} 
         showBackButton={true}
         onBackClick={() => router.back()}
-        applyInsets={Platform.OS!=='ios'}
       />
       <KeyboardAwareScrollView
         bottomOffset={50}
         style={{ flex: 1 }}
-        className="flex-1 px-4 pt-16"
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+        className="flex-1 pt-4"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -655,6 +653,6 @@ export default function EditExpense() {
           />
         </View>
       </KeyboardAwareScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 } 

@@ -47,7 +47,9 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
   const [paidBy, setPaidBy] = useState<string>('');
   const [receiverId, setReceiverId] = useState<string>('');
   const [spentAt, setSpentAt] = useState<Date>(new Date());
-  const [currency, setCurrency] = useState<CurrencyCode>(lastCurrency || defaultCurrency);
+  const [selectedCurrency, setCurrency] = useState<CurrencyCode | undefined>(lastCurrency);
+  // The group's default may arrive after the first render on a cold/deep-link entry.
+  const currency = selectedCurrency || defaultCurrency;
   const [exchangeRate, setExchangeRate] = useState<number>(1);
   const [exchangeRateInput, setExchangeRateInput] = useState<string>('1');
   
@@ -259,10 +261,10 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
     }
   };
 
-  const onAmountBlur = () => {
+  function onAmountBlur() {
     const formatted = formatCurrencyForDisplay(amountForDisplay, currency);
     setAmountForDisplay(formatted.toString());
-  };
+  }
 
   // 환율 입력 처리
   const onExchangeRateChange = (value: string) => {
@@ -585,4 +587,4 @@ export const useExpenseForm = ({ members, currentUser, defaultCurrency, currency
     validateForm,
     setInitialDataForEdit,
   };
-}; 
+};

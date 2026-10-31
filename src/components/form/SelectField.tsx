@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { View, Keyboard, Platform, Pressable } from "react-native";
-import { MenuView, MenuAction, MenuComponentRef } from "@react-native-menu/menu";
+import { MenuView, MenuAction, MenuComponentRef } from "@/src/components/Menu";
 import ChevronDown from "../.././../assets/icons/chevron-down.svg";
 import { MediumText } from "../Texts";
 
@@ -21,7 +21,7 @@ export const SelectField = forwardRef<any, SelectFieldProps>(
   const [isPressed, setIsPressed] = useState(false);
 
   useImperativeHandle(ref, () => ({
-    focus: () => {},
+      focus: () => menuRef.current?.show(),
   }));
 
   const actions: MenuAction[] = items.map((item) => ({
@@ -61,6 +61,7 @@ export const SelectField = forwardRef<any, SelectFieldProps>(
 
   return (
     <MenuView
+      title={placeholder || '항목 선택'}
       actions={actions}
       onOpenMenu={() => {
         Keyboard.dismiss();

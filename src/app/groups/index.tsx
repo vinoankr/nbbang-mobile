@@ -1,6 +1,6 @@
+import ScreenLayout from '@/src/components/ScreenLayout';
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useRef, useState } from 'react'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TouchableOpacity, View, ScrollView, Image } from 'react-native';
 import { MediumText, SemiBoldText } from '@/src/components/Texts';
 import { useModal } from '@/src/hooks/useModal';
@@ -21,7 +21,6 @@ export default function Groups() {
   const { goto } = useLocalSearchParams<{ goto?: string }>();
 
 
-  const insets = useSafeAreaInsets();
 
   // 실제 hooks 사용
   const { mutate: updatePrimaryGroup, isPending: isUpdatingPrimaryGroup } = useUpdatePrimaryGroup();
@@ -94,9 +93,9 @@ export default function Groups() {
   }, [goto, router]);
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <ScreenLayout>
       <ScrollView    
-        className="flex-1 px-4" 
+        className="flex-1"
         contentContainerStyle={{ paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
         bounces={false}
@@ -108,10 +107,11 @@ export default function Groups() {
           <TouchableOpacity onPress={() => router.dismissTo('/')}>
             <Image 
               source={require('../../../assets/images/logo.webp')} 
-              className="w-52 h-10" 
+              style={{ width: 208, height: 40 }}
             />
           </TouchableOpacity>
           <TouchableOpacity
+            accessibilityRole="button" accessibilityLabel="설정"
             onPress={() => showModal(<SettingsModal />)}
             className="bg-gray-50 rounded-xl p-2 text-gray-800"
             activeOpacity={0.7}
@@ -148,7 +148,7 @@ export default function Groups() {
               </View>
             )}
             
-            <View className="h-16" />
+
           </View>
         ) : (
           <View className="mt-4 flex-col items-center gap-1.5">
@@ -164,7 +164,7 @@ export default function Groups() {
         )}
       </ScrollView>
       {/* 하단 고정 버튼 */}
-      <View className="absolute left-0 right-0 p-4 bg-white" style={{ bottom: insets.bottom }}>
+      <View className="py-4 bg-white">
         <TouchableOpacity
           onPress={handleCreateGroup}
           className="w-full py-5 bg-blue-500 rounded-xl flex-row items-center justify-center"
@@ -175,6 +175,6 @@ export default function Groups() {
           <PlusIcon size={16} color="white" />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScreenLayout>
   )
 }

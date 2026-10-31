@@ -139,7 +139,7 @@ const TransferModal: React.FC<TransferModalProps> = ({
             onPress={onKakaoClick}
             disabled={isMemberAccountInfoLoading || !memberAccountInfo?.kakaopay_id}
           >
-            <Image source={require('../../../assets/images/kakao.webp')} resizeMode="contain" className="w-4 h-4" />
+            <Image source={require('../../../assets/images/kakao.webp')} resizeMode="contain" style={{ width: 16, height: 16 }} />
             <BoldText className="text-lg text-[#333333]">카카오 송금</BoldText>
           </TouchableOpacity>
           <TouchableOpacity 
@@ -147,7 +147,7 @@ const TransferModal: React.FC<TransferModalProps> = ({
             onPress={onTossClick}
             disabled={isMemberAccountInfoLoading || !memberAccountInfo?.account_number}
           >
-            <Image source={require('../../../assets/images/toss.webp')} resizeMode="contain" className="w-4 h-4" />
+            <Image source={require('../../../assets/images/toss.webp')} resizeMode="contain" style={{ width: 16, height: 16 }} />
             <BoldText className="text-lg text-white">토스 송금</BoldText>
           </TouchableOpacity>
           <TouchableOpacity 

@@ -2,17 +2,19 @@
   "expo": {
     "name": "엔빵",
     "slug": "nbbang-mobile",
-    "version": "1.0.14",
-    "orientation": "portrait",
+    "version": "1.1.0",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "nbbang",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
     "ios": {
       "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "com.busitdol.nbbang",
-      "appName": "nbbang",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDisplayName": "엔빵",
@@ -73,7 +75,6 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.busitdol.nbbang",
       "softwareKeyboardLayoutMode": "resize",
       "intentFilters": [
@@ -117,6 +118,9 @@
       [
         "expo-build-properties",
         {
+          "ios": {
+            "deploymentTarget": "16.4"
+          },
           "android": {
             "extraMavenRepos": [
               "https://devrepo.kakao.com/nexus/content/groups/public/"
@@ -143,7 +147,8 @@
           "project": "mobile",
           "organization": "nbbang"
         }
-      ]
+      ],
+      "./plugins/withKakaoSceneUrls"
     ],
     "experiments": {
       "typedRoutes": true

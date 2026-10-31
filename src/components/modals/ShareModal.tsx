@@ -101,11 +101,11 @@ export default function ShareModal({
           onPress={handleShare}
           />
           </View>
-      <View className="absolute left-0 right-0" style={{ bottom: Platform.OS === 'ios' ? -48 : -72 }}>
-        <MediumText className="text-center text-gray-300 text-base">
+      <View className="mt-4">
+        <MediumText className="text-center text-gray-500 text-sm">
           *링크가 외부에 유출되지 않도록 조심해주세요!
         </MediumText>
       </View>
     </View>
   );
-} 
+}

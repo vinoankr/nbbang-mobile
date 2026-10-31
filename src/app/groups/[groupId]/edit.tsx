@@ -1,6 +1,6 @@
+import ScreenLayout from '@/src/components/ScreenLayout';
 import React, { useState, useEffect, useRef } from 'react';
-import { View, TouchableOpacity, Keyboard, Platform } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, TouchableOpacity, Keyboard } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { useGroupInfo } from '@/src/hooks/queries/useGroupInfo';
@@ -15,7 +15,7 @@ import { MediumText } from '@/src/components/Texts';
 import Header from '@/src/components/Header';
 import { X } from 'lucide-react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView } from '@/src/components/Keyboard';
 
 interface EditGroupForm {
   groupName: string;
@@ -41,7 +41,6 @@ export default function EditGroup() {
   const { data: group, isLoading: groupLoading } = useGroupInfo(groupId as string);
   const { data: members, isLoading: membersLoading } = useGroupMembers(groupId as string);
   const editGroupMutation = useEditGroup();
-  const insets = useSafeAreaInsets();
   const { isInternetReachable } = useNetInfo();
   const [formData, setFormData] = useState<EditGroupForm>({
     groupName: '',
@@ -270,7 +269,7 @@ export default function EditGroup() {
   }));
 
   return (
-    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="relative flex-1 bg-white">
+    <ScreenLayout variant="form">
       <Header 
         title="그룹 수정" 
         showBackButton={true}
@@ -279,8 +278,8 @@ export default function EditGroup() {
       <KeyboardAwareScrollView
         bottomOffset={50}
         style={{ flex: 1 }}
-        className="flex-1 px-4 pt-16"
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+        className="flex-1 pt-4"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -437,6 +436,6 @@ export default function EditGroup() {
           />
         </View>
       </KeyboardAwareScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }

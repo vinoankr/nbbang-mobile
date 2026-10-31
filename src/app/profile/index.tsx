@@ -1,4 +1,5 @@
-import { Platform, SafeAreaView, View } from "react-native";
+import ScreenLayout from '@/src/components/ScreenLayout';
+import { View } from "react-native";
 import { router } from "expo-router";
 import { useProfile } from "../../hooks/queries/useMe";
 import { BankName } from "../../constants/banks";
@@ -7,8 +8,7 @@ import Toast from "react-native-toast-message";
 import Header from "../../components/Header";
 import { ProfileForm } from "../../components/auth/ProfileForm";
 import Spinner from "../../components/Spinner";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { KeyboardAwareScrollView } from "@/src/components/Keyboard";
 
 const ProfilePage = () => {
   const { data: user, isLoading } = useProfile();
@@ -30,12 +30,9 @@ const ProfilePage = () => {
     });
   };
 
-  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView className="flex-1 bg-white" style={{
-      paddingTop: insets.top,
-    }}>
+    <ScreenLayout variant="form">
       <Header 
         title="내 정보 수정" 
         showBackButton={true} 
@@ -44,8 +41,8 @@ const ProfilePage = () => {
       <KeyboardAwareScrollView
         bottomOffset={50}
         style={{ flex: 1 }}
-        className="flex-1 px-4 pt-16"
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+        className="flex-1 pt-4"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -69,7 +66,7 @@ const ProfilePage = () => {
           </View>
         )}
       </KeyboardAwareScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 

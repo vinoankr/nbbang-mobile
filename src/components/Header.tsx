@@ -1,5 +1,4 @@
 import { View, TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SemiBoldText } from './Texts';
 import ChevronLeftIcon from '../../assets/icons/chevron-left.svg';
@@ -11,32 +10,27 @@ const Header = ({
   onBackClick,
   showRightButton = false,
   onRightButtonClick,
-  applyInsets = true,
 }: {
   title?: string;
   showBackButton?: boolean;
   onBackClick?: () => void;
   showRightButton?: boolean;
   onRightButtonClick?: () => void;
-  applyInsets?: boolean;
 }) => {
-  const insets = useSafeAreaInsets();
-
   return (
     <View
-      className="absolute top-0 w-full flex-row items-center justify-between z-10 bg-white"
-      style={{ top: applyInsets ? insets.top : 0 }}
+      className="w-full min-h-14 flex-row items-center justify-between bg-white"
     >
       {showBackButton ? (
-        <TouchableOpacity onPress={() => onBackClick && onBackClick()} className="w-14 h-14 flex items-center justify-center">
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="뒤로" onPress={() => onBackClick && onBackClick()} className="w-14 h-14 flex items-center justify-center">
           <ChevronLeftIcon width={26} height={26} />
         </TouchableOpacity>
       ) : (
         <View className="w-14 h-14" />
       )}
-      <SemiBoldText className="text-lg text-gray-800">{title}</SemiBoldText>
+      <SemiBoldText className="flex-1 text-center text-lg text-gray-800" numberOfLines={1}>{title}</SemiBoldText>
       {showRightButton ? (
-        <TouchableOpacity onPress={() => onRightButtonClick && onRightButtonClick()} className="w-14 h-14 flex items-center justify-center">
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="화면 설정" onPress={() => onRightButtonClick && onRightButtonClick()} className="w-14 h-14 flex items-center justify-center">
           <EllipsisVerticalIcon size={26} color="#71737C" strokeWidth={2} />
         </TouchableOpacity>
       ) : (

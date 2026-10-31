@@ -25,6 +25,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity
+      accessibilityRole="button"
       style={[
         styles.button,
         (disabled || loading) && { opacity: 0.5 },
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#2C7FFF",
     borderRadius: 12,
     height: 56,
+    minHeight: 56,
     justifyContent: "center",
     alignItems: "center",
     flex: 1,

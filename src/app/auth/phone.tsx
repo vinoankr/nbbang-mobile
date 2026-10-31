@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { View, TouchableOpacity, Image, Alert } from 'react-native';
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { KeyboardAwareScrollView } from "@/src/components/Keyboard";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePhoneAuth } from '@/src/hooks/usePhoneAuth';
 import { PhoneForm, VerifyForm, ProfileForm } from '@/src/components/auth';
+import ScreenLayout from '@/src/components/ScreenLayout';
 
 export default function PhoneAuthPage() {
   const router = useRouter();
@@ -65,6 +66,7 @@ export default function PhoneAuthPage() {
   }, [error]);
 
   return (
+    <ScreenLayout variant="form">
     <KeyboardAwareScrollView
       bottomOffset={50}
       style={{ flex: 1 }}
@@ -75,17 +77,18 @@ export default function PhoneAuthPage() {
       bounces={false}
       alwaysBounceVertical={false}
     >
-      <View className="bg-white flex-1 px-4">
-        <View className="flex-row justify-between items-end pt-16 pb-8">
+      <View className="bg-white flex-1 pb-6">
+        <View className="flex-row justify-between items-end pt-8 pb-8">
           <TouchableOpacity onPress={() => router.dismissTo('/')}>
             <Image 
               source={require('../../../assets/images/logo.webp')} 
-              className="h-10 w-52 mt-12 mb-4"
+              style={{ width: 208, height: 40 }} className="mb-4"
             />
           </TouchableOpacity>
         </View>
         {renderForm()}
       </View>
     </KeyboardAwareScrollView>
+    </ScreenLayout>
   );
 }

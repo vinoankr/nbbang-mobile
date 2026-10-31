@@ -1,0 +1,17 @@
+diff --git a/node_modules/@react-native-kakao/core/android/package-json.gradle b/node_modules/@react-native-kakao/core/android/package-json.gradle
+index 08d84e1..7520ac6 100644
+--- a/node_modules/@react-native-kakao/core/android/package-json.gradle
++++ b/node_modules/@react-native-kakao/core/android/package-json.gradle
+@@ -21,6 +21,12 @@ Object corePkg, pkg
+ try {
+     corePkg = new JsonSlurper().parse(_corePkg)
+     ext.RNCKakaoSdkVersions = corePkg.sdkVersions.android
++    // Follow the app's SDK/Kotlin versions instead of the package's API 33 defaults.
++    [compileSdk: 'compileSdkVersion', targetSdk: 'targetSdkVersion', minSdk: 'minSdkVersion', kotlin: 'kotlinVersion'].each { key, rootKey ->
++        if (rootProject.ext.has(rootKey)) {
++            ext.RNCKakaoSdkVersions[key] = rootProject.ext.get(rootKey)
++        }
++    }
+     ext.RNCKakaoCorePkg = corePkg
+ } catch (Exception ignored) {
+     throw new GradleException(":${project.name} failed to parse ${fileName} found at ${_corePkg}.")

@@ -49,7 +49,7 @@ const RegisterBankModal: React.FC<RegisterBankModalProps> = ({
           className="w-full py-3.5 bg-[#FEE500] rounded-xl flex items-center justify-center gap-1.5 flex-row"
           onPress={handleKakaopayRegister}
         >
-          <Image source={require('../../../assets/images/kakao.webp')} resizeMode="contain" className="w-4 h-4" />
+          <Image source={require('../../../assets/images/kakao.webp')} resizeMode="contain" style={{ width: 16, height: 16 }} />
           <BoldText className="text-lg text-[#333333]">카카오페이 등록</BoldText>
         </TouchableOpacity>
       </View>

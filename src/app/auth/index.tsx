@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Image, Platform } from 'react-native';
+import { View, TouchableOpacity, Image, Platform, ScrollView } from 'react-native';
+import ScreenLayout from '@/src/components/ScreenLayout';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { BoldText, MediumText, SemiBoldText } from '@/src/components/Texts';
 import { login, me } from '@react-native-kakao/user';
@@ -110,14 +111,13 @@ export default function Auth() {
     }
   }
   return (
-    <View className="flex-1 bg-white">
-      <View className='flex-1 bg-blue-500'>
-      <View className="flex-1 px-4 justify-center items-center">
+    <ScreenLayout variant="full" backgroundColor="#2C7FFF">
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 24 }}>
         <View className="max-w-md w-full rounded-2xl px-4 py-12 pb-8 items-center bg-white">
           {/* 로고 이미지 */}
           <Image 
             source={require('../../../assets/images/logo.webp')} 
-            className="h-10 w-56 mb-12"
+            style={{ width: 224, height: 40 }} className="mb-12"
           />
           
           {/* 홍보 멘트 */}
@@ -139,7 +139,7 @@ export default function Auth() {
             >
             <Image 
               source={require('../../../assets/images/kakao.webp')} 
-              className="w-5 h-5"
+              style={{ width: 20, height: 20 }}
               />
             <SemiBoldText className="text-base text-[#333333]">
               카카오로 시작하기
@@ -175,8 +175,7 @@ export default function Auth() {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-      </View>
-    </View>
+      </ScrollView>
+    </ScreenLayout>
   );
 }

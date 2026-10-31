@@ -1,5 +1,6 @@
+import ScreenLayout from '@/src/components/ScreenLayout';
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, ActivityIndicator, Platform } from 'react-native';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useLedger } from '@/src/hooks/useLedger';
 import { useGroupExpenses } from '@/src/hooks/queries/useGroupExpenses';
@@ -9,16 +10,14 @@ import { useAllExpenseParticipations } from '@/src/hooks/queries/useAllExpensePa
 import { useGroupMembers } from '@/src/hooks/queries/useGroupMembers';
 import { useGroupInfo } from '@/src/hooks/queries/useGroupInfo';
 import Header from '@/src/components/Header';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BoldText, MediumText } from '@/src/components/Texts';
-import { MenuView } from '@react-native-menu/menu';
+import { MenuView } from '@/src/components/Menu';
 
 export default function LedgerPage() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const router = useRouter();
   const ALL_VALUE = "__all__";
 
-  const insets = useSafeAreaInsets()
   
   const { data: group, isLoading: groupLoading, isError: groupError } = useGroupInfo(groupId);
   const { data: allExpenseParticipations, isLoading: partiLoading, isError: partiError } = useAllExpenseParticipations(groupId, true);
@@ -57,22 +56,21 @@ export default function LedgerPage() {
   }
   
   return (
-    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="relative flex-1 bg-white">
+    <ScreenLayout>
       <Header
         title={group?.name || '지출 추가'} 
         showBackButton={true}
-        onBackClick={() => router.back()} 
-        applyInsets={Platform.OS !== 'ios'}
+        onBackClick={() => router.back()}
       />
         <ScrollView
           style={{ flex: 1 }}
-          className="px-4 pt-16"
+          className="pt-4"
           keyboardShouldPersistTaps="handled"
           bounces={false}
           alwaysBounceVertical={false}
           overScrollMode="never"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
         >
           <View className="flex-row justify-between items-end mb-4">
             <BoldText className="text-2xl">사용한 금액</BoldText>
@@ -158,6 +156,6 @@ export default function LedgerPage() {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }

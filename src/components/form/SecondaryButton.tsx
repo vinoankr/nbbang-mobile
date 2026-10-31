@@ -21,6 +21,7 @@ export const  SecondaryButton: React.FC<SecondaryButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity
+      accessibilityRole="button"
       style={[
         styles.button,
         (disabled || loading) && { opacity: 0.5 }
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F6FA",
     borderRadius: 12,
     height: 56,
+    minHeight: 56,
     justifyContent: "center",
     alignItems: "center",
     flex: 1,

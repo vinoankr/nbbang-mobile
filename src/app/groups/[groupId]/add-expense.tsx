@@ -1,8 +1,8 @@
+import ScreenLayout from '@/src/components/ScreenLayout';
 import * as Haptics from 'expo-haptics';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { View, Platform, TouchableOpacity, Pressable } from 'react-native';
-import { MenuView } from '@react-native-menu/menu';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, TouchableOpacity, Pressable } from 'react-native';
+import { MenuView } from '@/src/components/Menu';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -27,7 +27,7 @@ import { MediumText, BoldText, SemiBoldText } from '@/src/components/Texts';
 import Spinner from '@/src/components/Spinner';
 import { X } from 'lucide-react-native';
 import { mmkvStorage } from '@/src/utils/storage';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView } from '@/src/components/Keyboard';
 
 export default function AddExpense() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
@@ -44,7 +44,6 @@ export default function AddExpense() {
   const { mutateAsync: addExpense } = useAddExpense();
   const defaultCurrency = group?.default_currency as CurrencyCode;
   const lastCurrency = mmkvStorage.getItem(groupId+'currency') as CurrencyCode;
-  const insets = useSafeAreaInsets();
   const isLoading = groupLoading || membersLoading || currenciesLoading;
   const isError = groupError || membersError || currenciesError;
   
@@ -234,41 +233,40 @@ export default function AddExpense() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <Header title="지출 추가" showBackButton onBackClick={() => router.back()} applyInsets={Platform.OS!=='ios'} />
+      <ScreenLayout variant="form">
+        <Header title="지출 추가" showBackButton onBackClick={() => router.back()} />
         <View className="flex-1 justify-center items-center px-4">
           <MediumText className="text-red-500 text-base text-center">
             그룹 정보를 불러오는 중 오류가 발생했습니다.
           </MediumText>
         </View>
-      </SafeAreaView>
+      </ScreenLayout>
     );
   }
 
   if (isLoading || !currency || !defaultCurrency) {
     return (
-      <SafeAreaView className="flex-1 bg-white">
-        <Header title="지출 추가" showBackButton onBackClick={() => router.back()} applyInsets={Platform.OS!=='ios'} />
+      <ScreenLayout variant="form">
+        <Header title="지출 추가" showBackButton onBackClick={() => router.back()} />
         <View className="flex-1 justify-center items-center">
           <Spinner />
         </View>
-      </SafeAreaView>
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="relative flex-1 bg-white">
+    <ScreenLayout variant="form">
       <Header 
         title={group?.name || '지출 추가'} 
         showBackButton={true}
         onBackClick={() => router.back()}
-        applyInsets={Platform.OS!=='ios'}
       />
       <KeyboardAwareScrollView
         bottomOffset={50}
         style={{ flex: 1 }}
-        className="flex-1 px-4 pt-16"
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: Platform.OS === "ios" ? 0 : insets.bottom }}
+        className="flex-1 pt-4"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -567,6 +565,6 @@ export default function AddExpense() {
           />
         </View>
       </KeyboardAwareScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 } 

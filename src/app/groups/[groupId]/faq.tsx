@@ -1,16 +1,16 @@
-import { Linking, Platform, Pressable, ScrollView, View } from 'react-native';
+import ScreenLayout from '@/src/components/ScreenLayout';
+import { Linking, Pressable, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import Header from '../../../components/Header';
 import { BoldText, MediumText } from '../../../components/Texts';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCurrencyMetadata } from '../../../hooks/queries/useCurrencyMetadata';
 
 const FaqPage = () => {
   const { data, updatedAtText, isPending, isError, refetch } = useCurrencyMetadata();
 
   return (
-    <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="relative flex-1 bg-white">
-      <Header title="FAQ" showBackButton onBackClick={() => router.back()} applyInsets={Platform.OS!=='ios'} />
+    <ScreenLayout>
+      <Header title="FAQ" showBackButton onBackClick={() => router.back()} />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1 }}
@@ -19,7 +19,7 @@ const FaqPage = () => {
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
       > 
-        <View className="flex-1 px-4 pt-16 pb-8 flex-col gap-4">
+        <View className="flex-1 pt-4 pb-8 flex-col gap-4">
           {/* 첫 번째 질문 */}
           <View className="mb-5">
             <BoldText className="text-lg mb-2 text-gray-900">
@@ -107,7 +107,7 @@ const FaqPage = () => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 };
 
