@@ -10,6 +10,9 @@ import Spinner from './Spinner';
 import Toast from 'react-native-toast-message';
 import { formatCurrency } from '../utils/formatter';
 import { ClipboardCopy } from 'lucide-react-native';
+import SettlementSummary from './SettlementSummary';
+import { SettlementResult, Transaction } from '../utils/settlementCalculator';
+import { CurrencyCode } from '../constants/currencies';
 
 interface Member {
   id: string;
@@ -17,28 +20,16 @@ interface Member {
   user_id: string | null;
 }
 
-interface Transaction {
-  from: string;
-  to: string;
-  amount: number;
-}
-
-interface SettlementData {
-  myTransactions: Transaction[];
-  othersTransactions: Transaction[];
-  totalAmount: number;
-}
-
 interface SettlementResultsProps {
   currentMemberId: string;
   members: Member[];
   memberNameMap: Map<string, string>;
   groupId: string;
-  groupCurrency: string;
+  groupCurrency: CurrencyCode;
   treasurerMemberId?: string;
   openInviteModal: () => void;
   allExpenseParticipations: any[] | undefined;
-  settlementData: SettlementData;
+  settlementData: SettlementResult;
   isLoading: boolean;
   isError: boolean;
 }
@@ -254,10 +245,13 @@ const SettlementResults: React.FC<SettlementResultsProps> = ({
               </TouchableOpacity>
             )
           }
+          {myTransactions.length > 0 && (
+            <SettlementSummary summary={settlementData.summary} currency={groupCurrency} />
+          )}
         </View>
       )}
     </View>
   );
 };
 
-export default SettlementResults; 
+export default SettlementResults;

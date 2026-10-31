@@ -51,12 +51,12 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
   const groupedExpenses = useGroupedExpenses(rawExpenses);
   
   const settlementData = useMemo(() => {
-    return calculateSettlement(allExpenseParticipations, currentUserMemberId, members, treasurerMemberId || undefined);
-  }, [allExpenseParticipations, currentUserMemberId, members, treasurerMemberId]);
+    return calculateSettlement(allExpenseParticipations, currentUserMemberId, members, treasurerMemberId || undefined, rawExpenses);
+  }, [allExpenseParticipations, rawExpenses, currentUserMemberId, members, treasurerMemberId]);
 
   // 각 탭별 로딩 상태
   const expensesTabLoading = expensesLoading || isLoading;
-  const settlementTabLoading = participationsLoading || isLoading;
+  const settlementTabLoading = expensesLoading || participationsLoading || isLoading;
 
   return (
     <View className="flex-1">
@@ -118,7 +118,7 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
           allExpenseParticipations={allExpenseParticipations}
           settlementData={settlementData}
           isLoading={settlementTabLoading}
-          isError={participationsError}
+          isError={participationsError || expensesError}
         />
       )}
 
@@ -126,4 +126,4 @@ const GroupDetailTabs: React.FC<GroupDetailTabsProps> = ({
   );
 };
 
-export default GroupDetailTabs; 
+export default GroupDetailTabs;

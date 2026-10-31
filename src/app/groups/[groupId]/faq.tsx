@@ -1,10 +1,12 @@
-import { Platform, ScrollView, View } from 'react-native';
+import { Linking, Platform, Pressable, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import Header from '../../../components/Header';
 import { BoldText, MediumText } from '../../../components/Texts';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCurrencyMetadata } from '../../../hooks/queries/useCurrencyMetadata';
 
 const FaqPage = () => {
+  const { data, updatedAtText, isPending, isError, refetch } = useCurrencyMetadata();
 
   return (
     <SafeAreaView edges={Platform.OS === 'ios' ? ['top'] : ['top', 'bottom']} className="relative flex-1 bg-white">
@@ -17,7 +19,7 @@ const FaqPage = () => {
         overScrollMode="never"
         showsVerticalScrollIndicator={false}
       > 
-        <View className="flex-1 px-4 pt-16 flex-col gap-4">
+        <View className="flex-1 px-4 pt-16 pb-8 flex-col gap-4">
           {/* 첫 번째 질문 */}
           <View className="mb-5">
             <BoldText className="text-lg mb-2 text-gray-900">
@@ -66,6 +68,31 @@ const FaqPage = () => {
               <MediumText className="text-gray-600 text-base">
                 • 남은 정산을 빠르게 마치고 새로운 방을 만들어 사용하세요!
               </MediumText>
+            </View>
+          </View>
+
+          <View className="mb-5">
+            <BoldText className="text-lg mb-2 text-gray-900">
+              환율은 언제 기준인가요?
+            </BoldText>
+            <View className="flex-col gap-1">
+              <MediumText className="text-gray-600 text-base">
+                • {data?.source ?? 'exchangeratesapi.io'}가 전 세계 은행과 금융 데이터 제공업체의 시장 환율을 종합한 데이터를 사용해요.
+              </MediumText>
+              <MediumText className="text-gray-600 text-base">
+                • 일반적으로 매수·매도 가격의 중간값을 기준으로 하며, 은행의 실제 환전·송금 환율과는 차이가 있을 수 있어요.
+              </MediumText>
+              <MediumText className="text-gray-600 text-base" accessibilityLiveRegion="polite">
+                • 최근 업데이트: {isPending ? '확인 중이에요.' : isError ? '업데이트 정보를 불러오지 못했어요.' : updatedAtText ?? '업데이트 정보가 아직 없어요.'}
+              </MediumText>
+              {isError && (
+                <Pressable accessibilityRole="button" onPress={() => refetch()} className="self-start p-2">
+                  <MediumText className="text-gray-600 text-base underline">다시 시도</MediumText>
+                </Pressable>
+              )}
+              <Pressable accessibilityRole="link" onPress={() => Linking.openURL('https://exchangeratesapi.io/faq/')} className="self-start py-2">
+                <MediumText className="text-gray-600 text-base underline">환율 원출처 안내</MediumText>
+              </Pressable>
             </View>
           </View>
 

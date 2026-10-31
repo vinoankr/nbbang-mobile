@@ -21,6 +21,7 @@ export interface SettlementResult {
   myTransactions: Transaction[];
   othersTransactions: Transaction[];
   totalAmount: number;
+  summary: SettlementSummary;
 }
 
 export interface Transaction {
@@ -29,17 +30,28 @@ export interface Transaction {
   amount: number;
 }
 
+export interface SettlementSummary {
+  paid: number;
+  spent: number;
+  sent: number;
+  received: number;
+  balance: number;
+}
+
 export const calculateSettlement = (
   expenses: ExpenseParticipant[] | undefined | null,
   currentMemberId: string,
   members: Member[],
-  treasurerMemberId?: string
+  treasurerMemberId?: string,
+  expenseRecords?: { id: string; is_transfer: boolean }[] | null,
 ): SettlementResult => {
+  const summary: SettlementSummary = { paid: 0, spent: 0, sent: 0, received: 0, balance: 0 };
   if (!expenses || !currentMemberId || !members) {
     return { 
       myTransactions: [],
       othersTransactions: [],
-      totalAmount: 0
+      totalAmount: 0,
+      summary,
      };
   }
 
@@ -50,14 +62,32 @@ export const calculateSettlement = (
     balances.set(member.id, 0);
   });
 
+  const transferIds = new Set<string>();
+  for (const expense of expenseRecords ?? []) {
+    if (expense.is_transfer) transferIds.add(expense.id);
+  }
+
   // 각 지출에 대해 잔액 업데이트
   expenses.forEach(expense => {
     // 지불한 사람은 돈을 받아야 함 (+)
     balances.set(expense.paid_by, (balances.get(expense.paid_by) || 0) + expense.amount);
     // 지출 참여자는 돈을 지불해야 함 (-)
     balances.set(expense.member_id, (balances.get(expense.member_id) || 0) - expense.amount);
-  });
 
+    // 잔액 계산과 같은 순회에서 내 정산 내역도 함께 집계합니다.
+    if (expense.paid_by === currentMemberId || expense.member_id === currentMemberId) {
+      if (transferIds.has(expense.expense_id)) {
+        if (expense.paid_by === currentMemberId) summary.sent += expense.amount;
+        if (expense.member_id === currentMemberId) summary.received += expense.amount;
+      } else {
+        if (expense.paid_by === currentMemberId) summary.paid += expense.amount;
+        if (expense.member_id === currentMemberId) summary.spent += expense.amount;
+      }
+    }
+  });
+  summary.balance = balances.get(currentMemberId) || 0;
+
+  // 2단계: 거래 생성
   const transactions: Transaction[] = [];
 
   // 총무가 있으면 모든 송금이 총무를 통해서만 이뤄지도록 강제
@@ -129,22 +159,22 @@ export const calculateSettlement = (
   // 3단계: 현재 사용자와 관련된 거래와 관련되지 않은 거래로 분리
   const myTransactions: Transaction[] = [];
   const othersTransactions: Transaction[] = [];
+  let totalAmount = 0;
   
   // O(n) 시간복잡도로 한 번 순회하여 거래 분류
   transactions.forEach(transaction => {
     if (transaction.from === currentMemberId || transaction.to === currentMemberId) {
       myTransactions.push(transaction);
+      totalAmount += transaction.amount;
     } else {
       othersTransactions.push(transaction);
     }
   });
 
-  const totalAmount = myTransactions.reduce((acc, transaction) => acc + transaction.amount, 0);
-  
-
   return {
     myTransactions,
     othersTransactions,
-    totalAmount
+    totalAmount,
+    summary,
   };
-}; 
+};

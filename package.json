@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
+    "test": "node --test tests/*.test.mjs",
     "start": "npx expo start --clear",
     "start-android": "npx expo start --dev-client",
     "android": "eas build --platform android --profile development",
