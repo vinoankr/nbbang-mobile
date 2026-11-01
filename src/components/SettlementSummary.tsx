@@ -40,15 +40,15 @@ const SettlementSummary = ({ summary, currency }: SettlementSummaryProps) => {
         <View className="gap-3 px-4 pb-4 pt-1">
           {rows.map(row => (
             <View key={row.label} className="flex-row items-center justify-between gap-3">
-              <MediumText className="text-base text-gray-600">{row.label}</MediumText>
-              <SemiBoldText className={`text-base ${row.color}`}>
+              <MediumText className="text-sm text-gray-600">{row.label}</MediumText>
+              <SemiBoldText className={`text-sm ${row.color}`}>
                 {formatCurrency(row.amount, currency)}
               </SemiBoldText>
             </View>
           ))}
           <View className="mt-1 flex-row flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-4">
-            <BoldText className="text-base text-gray-900">{totalLabel}</BoldText>
-            <BoldText className={`text-2xl ${totalColor}`}>
+            <BoldText className="text-lg text-gray-900">{totalLabel}</BoldText>
+            <BoldText className={`text-lg ${totalColor}`}>
               {formatCurrency(Math.abs(balance), currency)}
             </BoldText>
           </View>
